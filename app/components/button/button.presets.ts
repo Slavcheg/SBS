@@ -7,7 +7,7 @@ import { color, spacing } from "../../theme"
 const BASE_VIEW: ViewStyle = {
   paddingVertical: spacing[2],
   paddingHorizontal: spacing[2],
-  borderRadius: 4,
+  borderRadius: 22,
   justifyContent: "center",
   alignItems: "center",
 }

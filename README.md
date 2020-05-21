@@ -1,3 +1,10 @@
+# packages
+
+yarn add rn-progress-loader@^1.0.8
+yarn add react-native-elements@^1.2.7
+yarn add react-native-vector-icons
+
+
 # ignite_green_field
 
 [![CircleCI](https://circleci.com/gh/infinitered/ignite-bowser.svg?style=svg)](https://circleci.com/gh/infinitered/ignite-bowser)

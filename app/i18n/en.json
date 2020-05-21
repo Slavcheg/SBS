@@ -8,9 +8,8 @@
     "invalidEmail": "Invalid email address."
   },
   "welcomeScreen": {
-    "poweredBy": "POWERED BY BOWSER",
-    "readyForLaunch": "Ready for launch.",
-    "continue": "CONTINUE"
+    "registrationBtn": "РЕГИСТРАЦИЯ",
+    "entryBtn": "ВХОД"
   },
   "demoScreen": {
     "howTo": "HOW TO",
