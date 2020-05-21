@@ -360,6 +360,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 76U9QKTWQ5;
+						ProvisioningStyle = Automatic;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -743,11 +744,14 @@
 			baseConfigurationReference = 4CA7186D6CD32D833D9435F1 /* Pods-ignite_green_field.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 76U9QKTWQ5;
 				INFOPLIST_FILE = ignite_green_field/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -755,6 +759,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ignite;
 				PRODUCT_NAME = ignite_green_field;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -764,10 +769,13 @@
 			baseConfigurationReference = 3ADD6D350DD74BD7421BEAEE /* Pods-ignite_green_field.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 76U9QKTWQ5;
 				INFOPLIST_FILE = ignite_green_field/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -775,6 +783,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ignite;
 				PRODUCT_NAME = ignite_green_field;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
