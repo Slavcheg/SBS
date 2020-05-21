@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { View, Text} from "react-native"
 import { color } from "../../theme";
 import { Icon } from "react-native-elements";
-import { Button } from "../button/button";
+import { Button } from "../../components/button/button";
 import { globalStyles, device_width, device_height } from "../../global-helper";
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { MainHeaderProps } from "./header-main.props"
 import { Badge } from 'react-native-elements'
 import { Image, View } from 'react-native';
-import { Icon } from '../../icon/icon';
+import { Icon } from '../../../components/icon/icon';
 import { imgs } from '../../../assets';
 import { CustomHeader } from "../header-custom/header-custom"
 import { color } from '../../../theme';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr } from '../../../components'
 import { color } from '../../../theme';
-import {Accordeon} from "../../../components/accordeon"
+import { Accordeon } from "../../../components"
 
 export function PaymentsScreen({navigation}) {
 

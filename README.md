@@ -7,6 +7,8 @@ yarn add react-native-progress-circle@^2.1.0
 yarn add react-native-textinput-effects@^0.6.1
 yarn add @react-native-community/datetimepicker@2.1.0
 
+yarn add --dev react-native-typescript-transformer
+yarn add babel-plugin-root-import
 
 # ignite_green_field
 

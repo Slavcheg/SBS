@@ -3,7 +3,7 @@ import { PageHeaderProps } from "./header-page.props"
 import { Badge } from 'react-native-elements'
 import { Image, View } from 'react-native';
 import { Icon } from 'react-native-elements'
-import { Icon as Iconn } from '../../icon/icon';
+import { Icon as Iconn } from '../../../components/icon/icon';
 import { imgs } from '../../../assets';
 import { CustomHeader } from "../header-custom/header-custom"
 import { color } from '../../../theme';
