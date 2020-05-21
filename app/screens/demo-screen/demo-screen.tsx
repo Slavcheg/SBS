@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { useEffect, useState } from 'react';
 import { Image, ImageStyle, Platform, TextStyle, View, ViewStyle } from "react-native"
 import { ParamListBase } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "react-native-screens/native-stack"
@@ -6,6 +6,17 @@ import { BulletItem, Button, Header, Text, Screen, Wallpaper } from "../../compo
 import { color, spacing } from "../../theme"
 import { Api } from "../../services/api"
 import { save } from "../../utils/storage"
+import firebase from '@react-native-firebase/app';
+// firebase.initializeApp({
+//   appId: '1:1077690630800:ios:28f217462d42a941f98e15',
+//   projectId: 'sbs1-8b65b',
+//   apiKey: 'AIzaSyDkZmpW5lTqloIJ7qcs6AwibzozvBi4Fr8',
+//   databaseURL: 'https://sbs1-8b65b.firebaseio.com',
+//   messagingSenderId: "1077690630800",
+//   storageBucket: "sbs1-8b65b.appspot.com"
+// })
+import firestore from '@react-native-firebase/firestore';
+import { add } from 'ramda';
 export const logoIgnite = require("./logo-ignite.png")
 export const heart = require("./heart.png")
 
@@ -123,6 +134,16 @@ export const DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
     },
     [],
   )
+  useEffect(() => {
+    
+      firestore()
+      .collection('users')
+      .doc('georgi.v.slavchev@gmail.com')
+      .onSnapshot(x => {
+        console.log(x.data())
+      })
+      
+  }, []);
 
   return (
     <View style={FULL}>
@@ -144,7 +165,8 @@ export const DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
             style={DEMO}
             textStyle={DEMO_TEXT}
             tx="demoScreen.reactotron"
-            onPress={demoReactotron}
+            // onPress={demoReactotron}
+            // onPress={() => addTodo()}
           />
           <Text style={HINT} tx={`demoScreen.${Platform.OS}ReactotronHint`} />
         </View>
