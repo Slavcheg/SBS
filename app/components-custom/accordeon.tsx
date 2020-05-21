@@ -12,7 +12,7 @@ import { Api } from '../services/api';
 import { fbAddCard} from '../services/firebase/firebase.service';
 import { Progress_Loader } from './progress-loader/progress-loader';
 import { ICardy, Cardy } from '../models';
-import { Icon } from 'react-native-elements'
+// import { Icon } from 'react-native-elements'
 
 const styles = StyleSheet.create({
     rowSpace: {
@@ -379,7 +379,7 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                         }
                         <TouchableOpacity
                             style={[
-                                // border_boxes().green,
+                                border_boxes().green,
                                 {
                                 width: '20%',
                                 justifyContent: 'center',
@@ -387,14 +387,14 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                                 // alignContent: 'center'
                             }]}
                         >
-                            <Icon
+                            {/* <Icon
                                 name='add-circle-outline'
                                 style={{
 
                                 }}
                                 size={50}    
                                 color={color.palette.green_sbs}
-                            />
+                            /> */}
                         </TouchableOpacity>
                     </View>
                     {this.state.requireds.showClientError? 

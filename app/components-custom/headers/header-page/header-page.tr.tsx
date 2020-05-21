@@ -7,6 +7,8 @@ import { Icon as Iconn } from '../../../components/icon/icon';
 import { imgs } from '../../../assets';
 import { CustomHeader } from "../header-custom/header-custom"
 import { color } from '../../../theme';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 
 export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => {
     const {navigation, style, title} = props
@@ -15,13 +17,13 @@ export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => 
         <CustomHeader 
             style={style}
             // titleStyle={{color: '#000000'}}
-            leftIcon={
-                <Icon
-                    name='chevron-left'
-                    size={40}    
-                    color={color.palette.blue_sbs}
-                />
-            }
+            // leftIcon={
+            //     <FontAwesomeIcon
+            //         icon='chevron-left'
+            //         size={40}    
+            //         color={color.palette.blue_sbs}
+            //     />
+            // }
             onLeftPress={() => navigation.goBack()}
             // headerLogo={<Image 
             //                 source={imgs.logo} 

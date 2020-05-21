@@ -15,13 +15,13 @@ export const PageHeader_Cl: React.FunctionComponent<PageHeaderProps> = props => 
         <CustomHeader 
             style={style}
             // titleStyle={{color: '#000000'}}
-            leftIcon={
-                <Icon
-                    name='chevron-left'
-                    size={40}    
-                    color={color.palette.green_sbs}
-                />
-            }
+            // leftIcon={
+                // <Icon
+                //     name='chevron-left'
+                //     size={40}    
+                //     color={color.palette.green_sbs}
+                // />
+            // }
             onLeftPress={() => navigation.goBack()}
             // headerLogo={<Image 
             //                 source={imgs.logo} 

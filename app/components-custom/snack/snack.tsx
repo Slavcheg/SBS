@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { View, Text} from "react-native"
 import { color } from "../../theme";
-import { Icon } from "react-native-elements";
+// import { Icon } from "react-native-elements";
 import { Button } from "../../components/button/button";
 import { globalStyles, device_width, device_height } from "../../global-helper";
 
@@ -41,11 +41,11 @@ export function Snack({onDismiss, message, duration = 1000}) {
                     alignItems: 'center',
                 }]}
             >
-                <Icon
+                {/* <Icon
                     name='check-circle'
                     color='white'
                     size={50}
-                />
+                /> */}
                 <Text
                     style={[{
                         color: 'white',

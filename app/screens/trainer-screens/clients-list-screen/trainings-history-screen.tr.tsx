@@ -4,7 +4,7 @@ import { spacing, color } from '../../../theme';
 import { Text, View } from 'react-native';
 import { Auth } from '../../../services/auth/auth.service';
 import { Api } from "../../../services/api"
-import { Icon } from "react-native-elements";
+// import { Icon } from "react-native-elements";
 
 export function TrainingsHistoryScreen({route, navigation}) {
     const [visits, setVisits] = useState([''])
