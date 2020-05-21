@@ -1,0 +1,31 @@
+[{
+    "iconLeft": "bl_trainings_today",
+    "title": "Трениращи днес",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "training_today"
+},
+{
+    "iconLeft": "bl_clients",
+    "title": "Клиенти",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "clients_list"
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "Плащания",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "payments"
+},
+{
+    "iconLeft": "bl_trainers_clients",
+    "title": "Треньор - трениращи",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "goSomewhere"
+},
+{
+    "iconLeft": "bl_stats",
+    "title": "Справки",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "goSomewhere"
+}
+]

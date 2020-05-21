@@ -3,6 +3,9 @@
 yarn add rn-progress-loader@^1.0.8
 yarn add react-native-elements@^1.2.7
 yarn add react-native-vector-icons
+yarn add react-native-progress-circle@^2.1.0
+yarn add react-native-textinput-effects@^0.6.1
+yarn add @react-native-community/datetimepicker@2.1.0
 
 
 # ignite_green_field

@@ -44,6 +44,76 @@ export class Api {
     })
   }
 
+// Start of Strong by science API calls
+
+async getPing() {
+  const response = await this.apisauce.get("/Ping")
+  return response;
+}
+
+async postCreateUser(email, password) {
+  const response = await this.apisauce.post("/CreateUser",
+    `{"email": "${email}", "password": "${password}"}`)
+  return response;
+}
+
+async postSignInUser(email, password) {
+  const response = await this.apisauce.post("/SignInUser",
+    `{"email": "${email}", "password": "${password}"}`)
+  return response;
+}
+
+async postSendResetPasswordEmail(email) {
+  const response = await this.apisauce.post("/SendResetPasswordEmail",
+    `{"email": "${email}"}`)
+  return response;
+}
+
+async postAddItem(collection, item) {
+  const response = await this.apisauce.post("/fbAddItem",
+    `{"collection": "${collection}", "item": ${item}}`)
+  return response;
+}
+
+async postGetAllItems(collection) {
+  const response = await this.apisauce.post("/fbGetItems",
+    `{"collection": "${collection}"}`)
+  return response;
+}
+
+async postGetConditionalItems(collection, field, condition, value) {
+  const response = await this.apisauce.post("/fbGetConditionalItems",
+    `{
+      "collection": "${collection}",
+      "field": "${field}",
+      "condition": "${condition}",
+      "value": "${value}"
+    }`)
+  return response;
+}
+
+async postDeleteItem(collection, itemId) {
+  const response = await this.apisauce.post("/fbDeleteItem",
+    `{
+      "collection": "${collection}",
+      "itemId": "${itemId}"
+    }`)
+  return response;
+}
+
+async postUpdateItem(collection, itemId, item) {
+  const response = await this.apisauce.post("/fbUpdateItem",
+    `{
+      "collection": "${collection}",
+      "itemId": "${itemId}",
+      "item": ${item}
+    }`)
+  return response;
+}
+
+// End of Strong by science API calls
+
+
   /**
    * Gets a list of users.
    */

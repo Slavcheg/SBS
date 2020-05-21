@@ -2,8 +2,8 @@ import * as React from "react"
 import { View, Image, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { ParamListBase } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "react-native-screens/native-stack"
-import { Button, Header, Screen, Text, Wallpaper } from "../../components"
-import { color, spacing } from "../../theme"
+import { Button, Header, Screen, Text, Wallpaper } from "../../../components"
+import { color, spacing } from "../../../theme"
 const bowserLogo = require("./bowser.png")
 
 const FULL: ViewStyle = { flex: 1 }
@@ -79,7 +79,7 @@ export interface WelcomeScreenProps {
   navigation: NativeStackNavigationProp<ParamListBase>
 }
 
-export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = props => {
+export const _WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = props => {
   const nextScreen = React.useMemo(() => () => props.navigation.navigate("demo"), [
     props.navigation,
   ])

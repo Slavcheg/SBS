@@ -1,0 +1,31 @@
+[{
+    "iconLeft": "gr_news",
+    "title": "Известия и новини",
+    "iconRight": "gr_arrow_forward",
+    "onClick": "goSomewhere"
+},
+{
+    "iconLeft": "gr_cards",
+    "title": "Презареди карта",
+    "iconRight": "gr_arrow_forward",
+    "onClick": "goSomewhere"
+},
+{
+    "iconLeft": "gr_trainings",
+    "title": "История на тренировките",
+    "iconRight": "gr_arrow_forward",
+    "onClick": "trainings_history_cl"
+},
+{
+    "iconLeft": "gr_paymnets",
+    "title": "История на плащанията",
+    "iconRight": "gr_arrow_forward",
+    "onClick": "cards_history_cl"
+},
+{
+    "iconLeft": "gr_contact_us",
+    "title": "Свържи се с нас",
+    "iconRight": "gr_arrow_forward",
+    "onClick": "contact_us"
+}
+]

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Image, ImageStyle, Platform, TextStyle, View, ViewStyle } from "react-native"
 import { ParamListBase } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "react-native-screens/native-stack"
-import { BulletItem, Button, Header, Text, Screen, Wallpaper } from "../../components"
-import { color, spacing } from "../../theme"
-import { Api } from "../../services/api"
-import { save } from "../../utils/storage"
+import { BulletItem, Button, Header, Text, Screen, Wallpaper } from "../../../components"
+import { color, spacing } from "../../../theme"
+import { Api } from "../../../services/api"
+import { save } from "../../../utils/storage"
 import firebase from '@react-native-firebase/app';
 // firebase.initializeApp({
 //   appId: '1:1077690630800:ios:28f217462d42a941f98e15',
@@ -92,7 +92,7 @@ export interface DemoScreenProps {
   navigation: NativeStackNavigationProp<ParamListBase>
 }
 
-export const DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
+export const _DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
   const goBack = React.useMemo(() => () => props.navigation.goBack(), [props.navigation])
 
   const demoReactotron = React.useMemo(

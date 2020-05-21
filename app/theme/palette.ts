@@ -8,6 +8,7 @@ export const palette = {
   lighterGrey: "#CDD4DA",
   angry: "#dd3333",
 
+  transparent: "transparent",
   blue_sbs: '#3ABBFE',
   green_sbs: '#02DF6C',
   grey_sbs: '#F4F8FB',

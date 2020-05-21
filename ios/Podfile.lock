@@ -499,6 +499,8 @@ PODS:
     - React
   - RNCMaskedView (0.1.5):
     - React
+  - RNDateTimePicker (2.1.0):
+    - React
   - RNFBAnalytics (7.0.1):
     - Firebase/Analytics (~> 6.13.0)
     - React
@@ -557,6 +559,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -649,6 +652,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNDateTimePicker:
+    :path: "../node_modules/@react-native-community/datetimepicker"
   RNFBAnalytics:
     :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
@@ -718,6 +723,7 @@ SPEC CHECKSUMS:
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   RNCAsyncStorage: 453cd7c335ec9ba3b877e27d02238956b76f3268
   RNCMaskedView: dd13f9f7b146a9ad82f9b7eb6c9b5548fcf6e990
+  RNDateTimePicker: 9db00606d689f5653f08aa601c81b9d3266a0a19
   RNFBAnalytics: 8a6e95050f3705269e96d1604bc224618ef8a979
   RNFBApp: 78294eaec65c393c599db5b691a64a4d5f5e5a8d
   RNFBFirestore: 5a9cc8dc4d069d070776d046b83c642a02e8bd23
