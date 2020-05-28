@@ -15,7 +15,11 @@ import { useBackButtonHandler } from "./navigation/use-back-button-handler"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models/root-store"
 import * as storage from "./utils/storage"
 import getActiveRouteName from "./navigation/get-active-routename"
+import Icon from 'react-native-vector-icons/FontAwesome'
+import * as Ic from 'react-native-vector-icons/MaterialIcons'
 
+Icon.loadFont();
+Ic.default.loadFont();
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
 // https://github.com/kmagiera/react-native-screens#using-native-stack-navigator
