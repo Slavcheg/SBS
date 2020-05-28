@@ -6,6 +6,7 @@ import { Button } from "../../../components/button/button"
 import { Text } from "../../../components/text/text"
 import { translate } from "../../../i18n"
 import { IconTypes } from "../../../components/icon/icons"
+import { border_boxes } from "../../../global-helper"
 
 // static styles
 const ROOT: ViewStyle = {
@@ -67,8 +68,8 @@ function makeIconClickable(icon: IconTypes | JSX.Element, onClick, style) {
 
   switch(typeof icon){
     case 'string': {
-      icon =  <Button preset="link" onPress={onClick}>
-                <Icon icon={icon} />
+      icon =  <Button preset="link" style={border_boxes().orange} onPress={onClick}>
+                {/* <Icon icon={icon} /> */}
               </Button>
       break;
     }

@@ -9,6 +9,7 @@ import { Snack } from '../../../components'
 import { globalStyles, return_yesterdays_date, return_todays_date, static_clients } from "../../../global-helper";
 import { ICardy, Cardy } from "../../../models";
 import { fbUpdateCard } from "../../../services/firebase/firebase.service";
+import firestore from '@react-native-firebase/firestore';
 
 class TDCardy {
     id: string = ''
@@ -59,20 +60,39 @@ export function TrainingTodayScreen({navigation}) {
     const [showSnack, setShowSnack] = useState(false);  
     
     useEffect(() => {
-        const API = new Api()
-        API.setup()
-        API.postGetConditionalItems('cards', 'trainer', '==', 'dobrev.jordan@gmail.com')
-        .then((res: any) => {
-                setClients_list(res.data.data.map((i, index) => {
-                    return {
-                        id: i.id,
-                        cardy: i.item,
-                        trainedToday: trainedToday(i.item.visits),
-                        trainedYesterday: trainedYesterday(i.item.visits)
-                    } as TDCardy           
-                }))
-                setShowLoader(false)
-        })
+        // const API = new Api()
+        // API.setup()
+        // API.postGetConditionalItems('cards', 'trainer', '==', 'dobrev.jordan@gmail.com')
+        // .then((res: any) => {
+                // setClients_list(res.data.data.map((i, index) => {
+                //     return {
+                //         id: i.id,
+                //         cardy: i.item,
+                //         trainedToday: trainedToday(i.item.visits),
+                //         trainedYesterday: trainedYesterday(i.item.visits)
+                //     } as TDCardy           
+                // }))
+                // setShowLoader(false)
+        // })
+
+        const some = firestore()
+            .collection('users')
+            .where('role', '==', "client")
+            .onSnapshot(x => {
+               x.forEach(y=> {
+                   console.log(y.data())
+                })
+              })
+
+        setClients_list(static_clients.map((i, index) => {
+            return {
+                id: i.client,
+                cardy: i,
+                trainedToday: trainedToday(i.visits),
+                trainedYesterday: trainedYesterday(i.visits)
+            } as TDCardy           
+        }))
+        setShowLoader(false)
 
     }, [])
 
@@ -131,7 +151,7 @@ export function TrainingTodayScreen({navigation}) {
                                 }]}
                             >
                                 <Text style={[{color: color.palette.blue_sbs, width: '23%', alignSelf: 'center'}]}>{item.cardy.client}</Text>
-                                {console.log(item)}
+                                {/* {console.log(item)} */}
                                 {checkBox(item.trainedYesterday, () => {
                                     if (item.trainedYesterday) {
                                         const pos = item.cardy.visits.indexOf(return_yesterdays_date(), 0)
