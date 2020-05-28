@@ -17,13 +17,13 @@ export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => 
         <CustomHeader 
             style={style}
             // titleStyle={{color: '#000000'}}
-            // leftIcon={
-            //     <FontAwesomeIcon
-            //         icon='chevron-left'
-            //         size={40}    
-            //         color={color.palette.blue_sbs}
-            //     />
-            // }
+            leftIcon={
+                <FontAwesomeIcon
+                    icon={faChevronLeft}
+                    size={30}    
+                    color={color.palette.blue_sbs}
+                />
+            }
             onLeftPress={() => navigation.goBack()}
             // headerLogo={<Image 
             //                 source={imgs.logo} 
