@@ -28,6 +28,9 @@
 		68129B172D964D148792277F /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC55A42E3FDF41AE880A3E97 /* Montserrat-Light.ttf */; };
 		6827C39B3F3745A0A5F7C188 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FFFE0D7CBFE84B9994C3B12F /* Montserrat-Bold.ttf */; };
 		7030B4BBEEE844199CBCBF3A /* Montserrat-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CA6930EC6CA342299CD4FC85 /* Montserrat-LightItalic.ttf */; };
+		72C6ACDD247FAE210025C2C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 72C994A02475ACA900FB4AEA /* GoogleService-Info.plist */; };
+		72C6ACDE247FAE210025C2C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 72C994A02475ACA900FB4AEA /* GoogleService-Info.plist */; };
+		72C6ACDF247FAE220025C2C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 72C994A02475ACA900FB4AEA /* GoogleService-Info.plist */; };
 		72C994A12475ACA900FB4AEA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 72C994A02475ACA900FB4AEA /* GoogleService-Info.plist */; };
 		734E567790B44660AF59CA1A /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1F08447B172840FB814CF5D7 /* Montserrat-Medium.ttf */; };
 		7A7FA4A3AF224940A6DF97CA /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9907987CE2E84D1C9DD0FA54 /* Montserrat-MediumItalic.ttf */; };
@@ -400,6 +403,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72C6ACDD247FAE210025C2C9 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +440,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */,
+				72C6ACDE247FAE210025C2C9 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +448,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72C6ACDF247FAE220025C2C9 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -560,6 +566,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ignite_green_field/Pods-ignite_green_field-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
@@ -580,6 +587,7 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",

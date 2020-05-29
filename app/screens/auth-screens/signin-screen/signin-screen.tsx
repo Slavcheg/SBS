@@ -8,6 +8,20 @@ import {auth_screens_styles as ass} from '../auth-screens-style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Api } from '../../../services/api';
 import ProgressLoader from 'rn-progress-loader';
+import { GoogleSignin } from '@react-native-community/google-signin';
+
+import auth from '@react-native-firebase/auth';
+
+async function onGoogleButtonPress() {
+  // Get the users ID token
+  const { idToken } = await GoogleSignin.signIn();
+
+  // Create a Google credential with the token
+  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+  // Sign-in the user with the credential
+  return auth().signInWithCredential(googleCredential);
+}
 
 export function SignInScreen({navigation}, {state}) {
   const [screenVisible, setScreenVisible] = useState(false); 
@@ -77,11 +91,12 @@ export function SignInScreen({navigation}, {state}) {
   }
 
   useEffect(() => {
-    // setScreenVisible(true)
-    // setInterval(() => {
-    //   setScreenVisible(false)
-    // }, 500)
-   
+    // console.log('loging')
+    GoogleSignin.configure({
+      iosClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
+      webClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
+      offlineAccess: false
+    });
   }, [])
 
   return (
@@ -129,7 +144,7 @@ export function SignInScreen({navigation}, {state}) {
             color: color.palette.green_sbs,
             marginBottom: spacing[8]
           }}
-        >{'ВХОД'}</Text>
+        >{'ВХОД v1'}</Text>
         <Input
           autoCapitalize='none'
           autoCompleteType="off"
@@ -187,6 +202,21 @@ export function SignInScreen({navigation}, {state}) {
             >{infoMessage}</Text>
           : null 
         }
+        <Button
+          style={{
+            width: '90%',
+            marginTop: spacing[8],
+            paddingVertical: spacing[4],
+            backgroundColor: color.palette.blue_sbs,
+            marginHorizontal: '5%'
+          }}
+          textStyle={{
+            color: 'white',
+            fontSize: 16
+          }}
+          tx={'welcomeScreen.entryBtn'}
+          onPress={() => onGoogleButtonPress().then((x) => console.log(x))}
+        />  
         <Button
           style={{
             width: '90%',
