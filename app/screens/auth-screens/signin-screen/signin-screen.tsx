@@ -8,20 +8,9 @@ import {auth_screens_styles as ass} from '../auth-screens-style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Api } from '../../../services/api';
 import ProgressLoader from 'rn-progress-loader';
-import { GoogleSignin } from '@react-native-community/google-signin';
+import { SocialIcon } from 'react-native-elements'
 
-import auth from '@react-native-firebase/auth';
 
-async function onGoogleButtonPress() {
-  // Get the users ID token
-  const { idToken } = await GoogleSignin.signIn();
-
-  // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(googleCredential);
-}
 
 export function SignInScreen({navigation}, {state}) {
   const [screenVisible, setScreenVisible] = useState(false); 
@@ -90,15 +79,6 @@ export function SignInScreen({navigation}, {state}) {
     })
   }
 
-  useEffect(() => {
-    // console.log('loging')
-    GoogleSignin.configure({
-      iosClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
-      webClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
-      offlineAccess: false
-    });
-  }, [])
-
   return (
     <Screen 
       preset="scroll"
@@ -144,13 +124,13 @@ export function SignInScreen({navigation}, {state}) {
             color: color.palette.green_sbs,
             marginBottom: spacing[8]
           }}
-        >{'ВХОД v1'}</Text>
+        >{'ВХОД'}</Text>
         <Input
           autoCapitalize='none'
           autoCompleteType="off"
           autoCorrect={false}
           onChangeText={val => setEmail(val)}
-          placeholder={'емайл'}
+          placeholder={'име'}
           placeholderTextColor={'#999999'}
           inputContainerStyle={ass.inputContainerStyle}          
           inputStyle={ass.inputTextStyle}
@@ -177,7 +157,7 @@ export function SignInScreen({navigation}, {state}) {
               >{serverError}</Text>
             : null 
           }
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => sendResetPasswordEmail()}
         >
           <Text
@@ -189,7 +169,7 @@ export function SignInScreen({navigation}, {state}) {
               alignSelf: 'flex-end'
             }}
           >{'забравена парола?'}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {
           isInfo?
             <Text
@@ -201,23 +181,8 @@ export function SignInScreen({navigation}, {state}) {
               ]}
             >{infoMessage}</Text>
           : null 
-        }
-        <Button
-          style={{
-            width: '90%',
-            marginTop: spacing[8],
-            paddingVertical: spacing[4],
-            backgroundColor: color.palette.blue_sbs,
-            marginHorizontal: '5%'
-          }}
-          textStyle={{
-            color: 'white',
-            fontSize: 16
-          }}
-          tx={'welcomeScreen.entryBtn'}
-          onPress={() => onGoogleButtonPress().then((x) => console.log(x))}
-        />  
-        <Button
+        }        
+         <Button
           style={{
             width: '90%',
             marginTop: spacing[8],
@@ -231,7 +196,7 @@ export function SignInScreen({navigation}, {state}) {
           }}
           tx={'welcomeScreen.entryBtn'}
           onPress={()=> signInUser()} 
-        />  
+        />               
       </View>
     </Screen>
   )

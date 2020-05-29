@@ -1,0 +1,14 @@
+[
+{
+    "iconLeft": "bl_payments",
+    "title": "Плащания",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "payments"
+},
+{
+    "iconLeft": "bl_stats",
+    "title": "Меню треньор",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "home_tr"
+}
+]

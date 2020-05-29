@@ -1,4 +1,25 @@
 import { Api } from '../api';
+import { GoogleSignin } from '@react-native-community/google-signin';
+import auth from '@react-native-firebase/auth';
+
+export function googleInitialize() {
+    GoogleSignin.configure({
+        iosClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
+        webClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
+        offlineAccess: false
+    });
+}
+
+export async function onGoogleButtonPress() {
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+  
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
 
 let user = {
     email: '',

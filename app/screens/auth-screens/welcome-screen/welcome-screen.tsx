@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, Text, View, ImageBackground, Image, SafeAreaView } from 'react-native';
-import { Input, CheckBox } from "react-native-elements"
+import React, { useEffect } from "react"
+import { View, ImageBackground } from 'react-native';
 import { spacing, color } from '../../../theme';
 import { imgs } from '../../../assets'
-import {Button, Screen} from '../../../components'
-import { Api } from '../../../services/api'
+import {Button, Screen, GoogleLogin} from '../../../components'
+import { googleInitialize } from "../../../services/auth/auth.service";
 
 export function WelcomeScreen({ navigation }, {state}) {
-    const { green_sbs, blue_sbs } = color.palette
-  // const goSomewhere = () => {
-  //   const API = new Api()
-  //   API.setup()
-  //   API.getPing()
-  //     .then((res: any) => {
-  //       console.log(res)
-  //       if (res.data === 'ok!') {
-  //         navigation.navigate('registration')
-  //       }               
-  //     })        
-  // }
+  const { green_sbs, blue_sbs } = color.palette
   
+  useEffect(() => {
+    googleInitialize()
+  }, [])
+
   return (
     <Screen 
       preset="scroll"
@@ -75,7 +67,7 @@ export function WelcomeScreen({ navigation }, {state}) {
         onPress={()=> { navigation.navigate('home_cl') }} 
         />
       </View>
-      <Button
+      {/* <Button
         style={{
           width: '90%',
           marginTop: spacing[8],
@@ -88,14 +80,13 @@ export function WelcomeScreen({ navigation }, {state}) {
         }}
         tx={'welcomeScreen.registrationBtn'}
         onPress={()=> navigation.navigate('registration')} 
-      />    
+      />     */}
       <Button
         style={{
           width: '90%',
           marginTop: spacing[6],
           paddingVertical: spacing[4],
           backgroundColor: green_sbs,
-          // marginBottom: '20%'
         }}
         textStyle={{
           color: 'white',
@@ -103,7 +94,8 @@ export function WelcomeScreen({ navigation }, {state}) {
         }}
         tx={'welcomeScreen.entryBtn'}
         onPress={()=> { navigation.navigate('signin') }} 
-      />   
+      />
+      <GoogleLogin navigation={navigation}/>
       <View style={{marginBottom: "10%"}}></View>
       </ImageBackground>
     </Screen>

@@ -12,20 +12,8 @@
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Плащания",
+    "title": "Админ",
     "iconRight": "bl_arrow_forward",
-    "onClick": "payments"
-},
-{
-    "iconLeft": "bl_trainers_clients",
-    "title": "Треньор - трениращи",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "goSomewhere"
-},
-{
-    "iconLeft": "bl_stats",
-    "title": "Справки",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "goSomewhere"
+    "onClick": "home_ad"
 }
 ]
