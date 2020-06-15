@@ -157,7 +157,7 @@ const {card, index} = props
                 size='medium'
                 source={{
                     uri:
-                    'https://previews.123rf.com/images/jemastock/jemastock1801/jemastock180101162/93346817-man-profile-cartoon-icon-vector-illustration-graphic-design.jpg',
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRIm1-e42u-cWzDcG4E-X-MiLTqYgDW-eJcdLY6CzPc-1yaniSt&usqp=CAU',
                 }}
             />
             <View

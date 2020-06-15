@@ -20,7 +20,8 @@ import {
   ContactUsScreen,
   TrainingsHistoryScreen_Cl,
   CardsHistoryScreen,
-  HomeScreenAdmin
+  HomeScreenAdmin,
+  TrainersListScreen
 
 } from "../screens"
 // import { PrimaryParamList } from "./types"
@@ -53,7 +54,8 @@ export function PrimaryNavigator() {
       <Stack.Screen name="contact_us" component={ContactUsScreen} />     
       <Stack.Screen name="trainings_history_cl" component={TrainingsHistoryScreen_Cl} />  
       <Stack.Screen name="cards_history_cl" component={CardsHistoryScreen} />
-      <Stack.Screen name="home_ad" component={HomeScreenAdmin} />       
+      <Stack.Screen name="home_ad" component={HomeScreenAdmin} /> 
+      <Stack.Screen name="trainers_list" component={TrainersListScreen} />        
     </Stack.Navigator>
   )
 }

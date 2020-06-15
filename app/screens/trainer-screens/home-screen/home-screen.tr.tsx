@@ -25,16 +25,18 @@ export function HomeScreenTrainer({navigation}) {
 
     useEffect(() => {
     //    Auth.login('dobrev.jordan@gmail.com')
-       const API = new Api()
-        API.setup()
-        API.postGetConditionalItems('cards', 'trainer', '==', 'dobrev.jordan@gmail.com')
-        .then((res: any) => {
-            let counter = 0;
-            res.data.data.map(i => {
-                counter += i.item.visits.length
-            })
-            setNumberOfTrainings(counter)
-        })
+    //    const API = new Api()
+    //     API.setup()
+    //     API.postGetConditionalItems('cards', 'trainer', '==', 'dobrev.jordan@gmail.com')
+    //     .then((res: any) => {
+    //         let counter = 0;
+    //         try{
+    //             res.data.data.map(i => {
+    //                 counter += i.item.visits.length
+    //             })
+    //         } catch(e) {console.log(e)}                        
+    //         setNumberOfTrainings(counter)
+    //     })
       }, [])
 
     return (

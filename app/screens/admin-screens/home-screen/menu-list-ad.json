@@ -6,6 +6,12 @@
     "onClick": "payments"
 },
 {
+    "iconLeft": "bl_payments",
+    "title": "Треньори",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "trainers_list"
+},
+{
     "iconLeft": "bl_stats",
     "title": "Меню треньор",
     "iconRight": "bl_arrow_forward",

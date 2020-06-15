@@ -20,7 +20,7 @@ import { add } from 'ramda';
 export const logoIgnite = require("./logo-ignite.png")
 export const heart = require("./heart.png")
 
-const FULL: ViewStyle = { flex: 1 }
+const FULL: ViewStyle = { flexGrow: 1 }
 const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
   paddingHorizontal: spacing[4],
@@ -134,28 +134,28 @@ export const _DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
     },
     [],
   )
-  useEffect(() => {
+  // useEffect(() => {
     
-      firestore()
-      .collection('users')
-      .doc('georgi.v.slavchev@gmail.com')
-      .onSnapshot(x => {
-        console.log(x.data())
-      })
+  //     firestore()
+  //     .collection('users')
+  //     .doc('georgi.v.slavchev@gmail.com')
+  //     .onSnapshot(x => {
+  //       console.log(x.data())
+  //     })
       
-  }, []);
+  // }, []);
 
   return (
     <View style={FULL}>
       <Wallpaper />
       <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
-        <Header
+        {/* <Header
           headerTx="demoScreen.howTo"
           leftIcon="back"
           onLeftPress={goBack}
           style={HEADER}
           titleStyle={HEADER_TITLE}
-        />
+        /> */}
         <Text style={TITLE} preset="header" tx="demoScreen.title" />
         <Text style={TAGLINE} tx="demoScreen.tagLine" />
         <BulletItem text="Load up Reactotron!  You can inspect your app, view the events, interact, and so much more!" />
@@ -166,7 +166,7 @@ export const _DemoScreen: React.FunctionComponent<DemoScreenProps> = props => {
             textStyle={DEMO_TEXT}
             tx="demoScreen.reactotron"
             // onPress={demoReactotron}
-            // onPress={() => addTodo()}
+            onPress={() => goBack()}
           />
           <Text style={HINT} tx={`demoScreen.${Platform.OS}ReactotronHint`} />
         </View>

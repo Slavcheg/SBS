@@ -28,6 +28,7 @@ let user = {
 }
 
 export class Auth {
+    user$: Promise<{}>;
     static login(u) {
         user.email = u;
         user.logged = true;

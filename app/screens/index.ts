@@ -19,3 +19,4 @@ export * from './trainer-screens/clients-list-screen/trainings-history-screen.tr
 export * from './trainer-screens/training-today-screen/training-today-screen.tr'
 
 export * from './admin-screens/home-screen/home-screen.ad'
+export * from './admin-screens/trainers-list-screen/trainers-list-screen'
