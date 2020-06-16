@@ -7,7 +7,7 @@
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Треньори",
+    "title": "Trainers",
     "iconRight": "bl_arrow_forward",
     "onClick": "trainers_list"
 },

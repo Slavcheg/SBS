@@ -93,7 +93,7 @@ export function TrainersListScreen({navigation}) {
             }
             
             
-            <Button text={'See Dialog'} onPress={() => {setSeeDialog(true)}}/>
+            <Button text={'Add trainer email'} onPress={() => {setSeeDialog(true)}}/>
         </Screen>
     )
 }

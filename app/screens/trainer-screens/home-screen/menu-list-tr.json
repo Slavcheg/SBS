@@ -12,7 +12,7 @@
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Админ",
+    "title": "Admin",
     "iconRight": "bl_arrow_forward",
     "onClick": "home_ad"
 }
