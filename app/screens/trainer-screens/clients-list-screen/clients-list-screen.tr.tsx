@@ -6,10 +6,11 @@ import { Auth } from '../../../services/auth/auth.service';
 import { Api } from "../../../services/api"
 import { Icon } from "react-native-elements";
 import { static_clients } from "../../../global-helper";
+import {useStores } from "../../../models/root-store"
 
-export function ClientsListScreen({navigation}) {
+export function ClientsListScreen({navigation} ) {
     const [clients_list, set_clients_list] = useState([]);  
-
+    const rootStore = useStores()
     const getDelimiter = () => {
         return (
             <View   
@@ -25,15 +26,61 @@ export function ClientsListScreen({navigation}) {
     }
 
     useEffect(() => {
+        
+        rootStore.getCards();
+        //test add card function
+        // rootStore.addCard({
+        //     trainer: '',
+        //     client: 'Дани',
+        //     datePayment: "Apr-4-2020",
+        //     dateStart: "Apr-4-2020",
+        //     type: '',
+        //     card_limit: '8',
+        //     price: '',
+        //     rate: '',
+        //     whoPays: '',
+        //     comment: '',
+        //     visits: [
+        //         'Apr-4-2020',
+        //         'Apr-5-2020',
+        //         'Apr-29-2020'
+        //     ]
+        // });
+
+        //test update card function
+        // rootStore.updateCard("2joCNc4wi6hpupkaF1cT", {
+        //     trainer: '',
+        //     client: 'Дани',
+        //     datePayment: "Apr-4-2020",
+        //     dateStart: "Apr-4-2020",
+        //     type: '',
+        //     card_limit: '5',
+        //     price: '',
+        //     rate: '',
+        //     whoPays: '',
+        //     comment: '',
+        //     visits: [
+        //         'Jun-4-2020',
+        //         'Jun-5-2020',
+        //         'Jun-29-2020'
+        //     ]
+        // })
+        //test delete card function
+        //rootStore.deleteCard("2joCNc4wi6hpupkaF1cT");
+
+        
+
+        //console.log(rootStore);
+        //props.store.getCards();
         // const API = new Api()
         // API.setup()
         // API.postGetConditionalItems('cards', 'trainer', '==', Auth.getUserEmail())
         // .then((res: any) => {
-            set_clients_list(static_clients.map((i, index) => {
+            set_clients_list(rootStore.cards.map((i, index) => {
                 return {
-                    name: i.client,
-                    card_limit: i.card_limit,
-                    visits: i.visits
+                    name: i.item.client,
+                    card_limit: i.item.card_limit,
+                    visits: i.item.visits
                 }
             }))
         // })
