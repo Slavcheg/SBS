@@ -1,7 +1,6 @@
 import { Instance, SnapshotOut, types, getRoot } from "mobx-state-tree"
 import {MCardy, MItem} from "../cardy.model"
-import {fbAddCard, fbUpdateCard, fbGetAllCards, fbDeleteCard} from "../../services/firebase/firebase.service"
-import { type } from "ramda";
+import {addItem, updateItem, getItems, deleteItem} from "../../services/firebase/firebase.service"
 
 /**
  * A RootStore model.
@@ -12,21 +11,19 @@ export const RootStoreModel = types.model("RootStore").props({
 })
 .actions(self=>({
     async addCard(newCard){
-        await fbAddCard(newCard);
-        //self.cards.push(MCardy.create(newCard));
-        //self.cards.push(MCardy.create({id:newCard.id,item: MItem.create(newCard.data()) }));
+        await addItem(newCard, 'cards');
     },
     async updateCard(id, newCard){
-        await fbUpdateCard(id, newCard);
+        await updateItem(id, newCard, 'cards');
     },
     refreshCards(cards){
         self.cards = cards
     },
     async deleteCard(id){
-        await fbDeleteCard(id);
+        await deleteItem(id, 'cards');
     },
     async getCards(){
-        let cards = await fbGetAllCards();
+        let cards = await getItems('cards');
         let newCards = [];
         cards.forEach(card=>{
             newCards.push(MCardy.create({id:card.id,item: MItem.create(card.data()) }));
