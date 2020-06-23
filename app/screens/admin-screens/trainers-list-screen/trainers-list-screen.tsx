@@ -4,58 +4,34 @@ import { color } from "../../../theme"
 import firestore from '@react-native-firebase/firestore';
 import { View, Text } from "react-native";
 import { border_boxes } from "../../../global-helper";
+import {useStores } from "../../../models/root-store"
+import { MUSer, MUserItem } from "../../../models/user.model";
 
 export function TrainersListScreen({navigation}) {
-    const [d, setD] = useState(['asd'])
-    // const [email, setEmail] = useState()
-    // const [first, setFirst] = useState()
-    // const [last, setLast] = useState()
+    
     const [seeDialog, setSeeDialog] = useState(false)
-    
-    const onResult = (qSnap) => {
-        // console.log('Got Users collection result.');
-        let temp = []
-        qSnap.forEach(docSnap => {
-            // console.log('User ID: ', docSnap.id, docSnap.data().email);
-            temp.push(docSnap.data().email)
-        })
-        setD(temp)
-      }
-      
-      const onError = (error) => {
-        console.error(error);
-      }
-      
-      firestore()
-        .collection('google-login-pass')
-        .onSnapshot(onResult, onError);
-    
+    const userStore = useStores().userStore
+    const [data, setData] = useState([])
 
-    // useEffect(() => {
-        // let temp = []
-        // firestore()
-        //     .collection('google-login-pass')
-        //     .get()
-        //     .then(qSnap => {
-        //         qSnap.forEach(docSnap => {
-        //             // console.log('User ID: ', docSnap.id, docSnap.data().email);
-        //             temp.push(docSnap.data().email)
-        //         })
-        // })
-        // setD(temp)
-    // }, []);
+    useEffect(() => {
+        userStore.ggetItems()
+        userStore.users.map(i => {
+            console.log(i)
+        })
+    }, [])
 
     const loadEmails = () => {
         try {
             return (
-                d.map((item, key) => {
+                data.map((item, key) => {
+                    console.log('lister')
                     return  <View 
                                 key={key}
                             >
                                 <Text 
                                     key={key} 
                                     style={[{color: 'black'}]}
-                                >{item}</Text>
+                                >{item.item.email}</Text>
                             </View>
                 })
             )
@@ -93,7 +69,20 @@ export function TrainersListScreen({navigation}) {
             }
             
             
-            <Button text={'Add trainer email'} onPress={() => {setSeeDialog(true)}}/>
+            <Button text={'Add trainer email'} onPress={() => {userStore.aaddItem({
+
+                email :'someone',
+                picture : '',
+                generic_number : 0,
+                password : '',
+                first : '',
+                last : '',
+                referral : '',
+                isAdmin : false,
+                isTrainer : false,
+                isClient : false
+            
+            })}}/>
         </Screen>
     )
 }

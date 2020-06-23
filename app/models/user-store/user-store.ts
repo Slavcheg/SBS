@@ -2,32 +2,45 @@ import { types } from "mobx-state-tree"
 import {MUSer, MUserItem} from "../user.model"
 import {addItem, updateItem, getItems, deleteItem} from "../../services/firebase/firebase.service"
 
+const UserStoreModel = {
+    users: types.array(MUSer),
+    collection: 'users'
+}
 
-// prettier-ignore
-export const UserStoreModel = types.model("RootStore").props({
-    users: types.array(MUSer)
-})
-.actions(self=>({
-    async addItem(newItem){
-        await addItem(newItem, 'users');
-    },
-    async updateItem(id, newItem){
-        await updateItem(id, newItem, 'users');
-    },
-    refreshItems(items){
+export const FirebaseActions = self => {
+
+    async function aaddItem(newItem){
+        await addItem(newItem, self.collection);
+    }
+    async function uupdateItem(id, newItem){
+        await updateItem(id, newItem, self.collection);
+    }
+
+    function refreshItems(items){
         self.users = items
-    },
-    async deleteItem(id){
-        await deleteItem(id, 'users');
-    },
-    async getItems(){
-        let items = await getItems('users');
+    }
+
+    async function ddeleteItem(id){
+        await deleteItem(id, self.collection);
+    }
+
+    async function ggetItems(){
+        let items = await getItems(self.collection);
         let newItems = [];
         items.forEach(item=>{
             newItems.push(MUSer.create({id:item.id,item: MUserItem.create(item.data()) }));
         })
-        this.refreshItems(newItems);        
+        refreshItems(newItems);        
     }
-    
-}))
 
+    return {
+        aaddItem, uupdateItem, refreshItems, ddeleteItem, ggetItems
+    }
+}
+
+export const UserStore = types
+    .model(
+        'UserStore',
+        UserStoreModel
+    )
+    .actions(FirebaseActions)

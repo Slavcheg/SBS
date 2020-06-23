@@ -2,11 +2,57 @@ import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr, Button,  } from '../../../components'
 import { spacing, color } from '../../../theme';
 import { Text, View } from 'react-native';
-import { Auth } from '../../../services/auth/auth.service';
-import { Api } from "../../../services/api"
 import { Icon } from "react-native-elements";
-import { static_clients } from "../../../global-helper";
 import {useStores } from "../../../models/root-store"
+import { observer } from "mobx-react-lite";
+
+export const GetCards: React.FunctionComponent<{}> = observer(props => {
+    const cardStore = useStores().cardStore
+    
+    useEffect(() => {
+        cardStore.getCards()
+    }, [])
+    return (
+        <View
+            style={[{
+                width: '100%'
+            }]}
+        >
+            {
+               cardStore.cards.map( (card, index) => {
+                   const item = card.item
+                    console.log('from page: ', item)
+                    return (
+                        <View key={index}
+                            style={[{
+                                paddingVertical: 5,
+                                width: '100%',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                backgroundColor: index % 2 !== 1 ? 'white': color.palette.grey_sbs
+                            }]}
+                        >
+                            {/* <Text style={[{color: color.palette.blue_sbs, width: '23%', alignSelf: 'center'}]}>{item.name}</Text> */}
+                            <Text style={[{color: '#666666', width: '20%', alignSelf: 'center'}]}>{item.card_limit}</Text>
+                            {/* <Text style={[{color: color.palette.blue_sbs, width: '15%', alignSelf: 'center'}]}>{item.card_limit - item.visits.length}</Text> */}
+                            <Button 
+                            onPress={() => {
+                                // navigation.navigate('trainings_history', {name: item.name, visits: item.visits})
+                            }}
+                                style={[{
+                                    backgroundColor: index % 2 == 1 ? 'white': color.palette.grey_sbs,
+                                    // width: '20%'
+                                }]}
+                            >
+                               <Icon name='chevron-right' size={15}/>
+                            </Button>
+                        </View>
+                    )
+                })
+            }
+        </View>
+    )
+})
 
 export function ClientsListScreen({navigation} ) {
     const [clients_list, set_clients_list] = useState([]);  
@@ -27,7 +73,7 @@ export function ClientsListScreen({navigation} ) {
 
     useEffect(() => {
         
-        rootStore.cardStore.getCards();
+        // rootStore.cardStore.getCards();
         //test add card function
         // rootStore.addCard({
         //     trainer: '',
@@ -76,13 +122,13 @@ export function ClientsListScreen({navigation} ) {
         // API.setup()
         // API.postGetConditionalItems('cards', 'trainer', '==', Auth.getUserEmail())
         // .then((res: any) => {
-            set_clients_list(rootStore.cardStore.cards.map((i, index) => {
-                return {
-                    name: i.item.client,
-                    card_limit: i.item.card_limit,
-                    visits: i.item.visits
-                }
-            }))
+            // set_clients_list(rootStore.cardStore.cards.map((i, index) => {
+            //     return {
+            //         name: i.item.client,
+            //         card_limit: i.item.card_limit,
+            //         visits: i.item.visits
+            //     }
+            // }))
         // })
     }, [])
 
@@ -99,63 +145,28 @@ export function ClientsListScreen({navigation} ) {
                 // paddingHorizontal: 20
             }}
         >
-        <PageHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}} title='КЛИЕНТИ'/>
-        <View
-            style={[
-                {
-                    backgroundColor: color.palette.grey_sbs,
-                    width: '100%',
-                    paddingVertical: 30,
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }
-            ]}
-        >
-            <Text>{'Клиенти'}</Text>
-            {getDelimiter()}
-            <Text>{'Трен'}</Text>
-            {getDelimiter()}
-            <Text>{'Ост'}</Text>
-            {getDelimiter()}
-            <Text>{'Ист'}</Text>
-        </View>
-        <View
-            style={[{
-                width: '100%'
-            }]}
-        >
-            {
-                clients_list.map( (item, index) => {
-                    return (
-                        <View key={index}
-                            style={[{
-                                paddingVertical: 5,
-                                width: '100%',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                backgroundColor: index % 2 !== 1 ? 'white': color.palette.grey_sbs
-                            }]}
-                        >
-                            <Text style={[{color: color.palette.blue_sbs, width: '23%', alignSelf: 'center'}]}>{item.name}</Text>
-                            <Text style={[{color: '#666666', width: '20%', alignSelf: 'center'}]}>{item.card_limit}</Text>
-                            <Text style={[{color: color.palette.blue_sbs, width: '15%', alignSelf: 'center'}]}>{item.card_limit - item.visits.length}</Text>
-                            <Button 
-                            onPress={() => {
-                                navigation.navigate('trainings_history', {name: item.name, visits: item.visits})
-                            }}
-                                style={[{
-                                    backgroundColor: index % 2 == 1 ? 'white': color.palette.grey_sbs,
-                                    // width: '20%'
-                                }]}
-                            >
-                               <Icon name='chevron-right' size={15}/>
-                            </Button>
-                        </View>
-                    )
-                })
-            }
-        </View>
+            <PageHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}} title='КЛИЕНТИ'/>
+            <View
+                style={[
+                    {
+                        backgroundColor: color.palette.grey_sbs,
+                        width: '100%',
+                        paddingVertical: 30,
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }
+                ]}
+            >
+                <Text>{'Клиенти'}</Text>
+                {getDelimiter()}
+                <Text>{'Трен'}</Text>
+                {getDelimiter()}
+                <Text>{'Ост'}</Text>
+                {getDelimiter()}
+                <Text>{'Ист'}</Text>
+            </View>
+            <GetCards />
         </Screen>
     )
 }
