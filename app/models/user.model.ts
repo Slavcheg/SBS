@@ -1,3 +1,4 @@
+import { types } from "mobx-state-tree"
 export interface IUser {
     email: string,
     picture: string,
@@ -23,3 +24,21 @@ export class User implements IUser {
     isTrainer = false
     isClient = false
 }
+
+export const MUserItem = types.model({
+    email :'',
+    picture : '',
+    generic_number : 0,
+    password : '',
+    first : '',
+    last : '',
+    referral : '',
+    isAdmin : false,
+    isTrainer : false,
+    isClient : false
+}
+)
+export const MUSer = types.model({
+    id: "",
+    item: MUserItem
+})

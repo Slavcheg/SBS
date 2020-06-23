@@ -30,27 +30,8 @@ export class Cardy implements ICardy {
     visits = []    
 }
 
-export interface IMItem {
-    trainer: string,
-    client: string,
-    datePayment: string,
-    dateStart: string,
-    type: string,
-    card_limit: string,
-    price: string,
-    rate: string,
-    whoPays: string,
-    comment: string,
-    visits: string[]
-    active?: boolean
-}
-export interface IMCardy {
-    id: string,
-    item: IMItem
-}
 
-
-export const MItem = types.model({
+export const MCardItem = types.model({
     active : true,
     trainer : '',
     client : '',
@@ -67,7 +48,7 @@ export const MItem = types.model({
 )
 export const MCardy = types.model({
     id: "",
-    item: MItem
+    item: MCardItem
 })
 
 

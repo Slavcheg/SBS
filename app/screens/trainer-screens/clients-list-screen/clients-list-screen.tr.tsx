@@ -27,7 +27,7 @@ export function ClientsListScreen({navigation} ) {
 
     useEffect(() => {
         
-        rootStore.getCards();
+        rootStore.cardStore.getCards();
         //test add card function
         // rootStore.addCard({
         //     trainer: '',
@@ -76,7 +76,7 @@ export function ClientsListScreen({navigation} ) {
         // API.setup()
         // API.postGetConditionalItems('cards', 'trainer', '==', Auth.getUserEmail())
         // .then((res: any) => {
-            set_clients_list(rootStore.cards.map((i, index) => {
+            set_clients_list(rootStore.cardStore.cards.map((i, index) => {
                 return {
                     name: i.item.client,
                     card_limit: i.item.card_limit,
