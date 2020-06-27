@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree"
 import {MUSer, MUserItem} from "../user.model"
-import {addItem, updateItem, getItems, deleteItem} from "../../services/firebase/firebase.service"
-
+import {addItem, updateItem, getItems, deleteItem, firebaseSnapShot} from "../../services/firebase/firebase.service"
+import firestore from '@react-native-firebase/firestore';
 const UserStoreModel = {
     users: types.array(MUSer),
     collection: 'users'
@@ -25,12 +25,7 @@ export const FirebaseActions = self => {
     }
 
     async function ggetItems(){
-        let items = await getItems(self.collection);
-        let newItems = [];
-        items.forEach(item=>{
-            newItems.push(MUSer.create({id:item.id,item: MUserItem.create(item.data()) }));
-        })
-        refreshItems(newItems);        
+        firebaseSnapShot({Type: 'users', RefreshHandler: refreshItems});  
     }
 
     return {

@@ -1,6 +1,6 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import {MCardy, MCardItem} from "../cardy.model"
-import {addItem, updateItem, getItems, deleteItem} from "../../services/firebase/firebase.service"
+import {addItem, updateItem, getItems, deleteItem, firebaseSnapShot} from "../../services/firebase/firebase.service"
 import firestore from '@react-native-firebase/firestore';
 import { values } from "mobx";
 import { ObservableArray } from "mobx/lib/internal";
@@ -23,14 +23,7 @@ export const CardStoreModel = types.model("RootStore").props({
         await deleteItem(id, 'cards');
     },
     async getCards(){
-        const ref = firestore().collection('cards');
-        ref.onSnapshot((cards) => {
-            let newCards = [];
-            cards.forEach(card=>{
-                newCards.push(MCardy.create({id:card.id,item: MCardItem.create(card.data()) }));
-            })
-            this.refreshCards(newCards); 
-        })      
+        firebaseSnapShot({Type: 'cards', RefreshHandler: this.refreshCards});
     },
     
 }))
