@@ -1,9 +1,6 @@
-import { Instance, SnapshotOut, types } from "mobx-state-tree"
-import {MCardy, MCardItem} from "../cardy.model"
-import {addItem, updateItem, getItems, deleteItem, firebaseSnapShot} from "../../services/firebase/firebase.service"
-import firestore from '@react-native-firebase/firestore';
-import { values } from "mobx";
-import { ObservableArray } from "mobx/lib/internal";
+import { types } from "mobx-state-tree"
+import { MCardy } from "../cardy.model"
+import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
 
 // prettier-ignore
 export const CardStoreModel = types.model("RootStore").props({

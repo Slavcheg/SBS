@@ -1,47 +1,55 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, Input_Hoshi, AddTrainerDialog } from '../../../components'
-import { color } from "../../../theme"
-import firestore from '@react-native-firebase/firestore';
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog } from '../../../components'
+import { color, spacing } from "../../../theme"
 import { View, Text } from "react-native";
-import { border_boxes } from "../../../global-helper";
 import {useStores } from "../../../models/root-store"
-import { MUSer, MUserItem } from "../../../models/user.model";
+import { observer } from "mobx-react-lite";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
 
-export function TrainersListScreen({navigation}) {
-    
-    const [seeDialog, setSeeDialog] = useState(false)
+export const GetTrainers: React.FunctionComponent<{}> = observer(props => {
     const userStore = useStores().userStore
-    const [data, setData] = useState([])
-
     useEffect(() => {
         userStore.ggetItems()
-        userStore.users.map(i => {
-            console.log(i)
-        })
     }, [])
 
-    const loadEmails = () => {
-        try {
-            return (
-                data.map((item, key) => {
-                    console.log('lister')
+    return (
+        <View
+            style={[{
+                width: '100%'
+            }]}
+        >
+            {
+                userStore.trainers.map((user, key) => {
+                    const item = user.item
                     return  <View 
                                 key={key}
+                                style={[{
+                                    paddingVertical: 5,
+                                    width: '100%',
+                                    flexDirection: 'row',
+                                    justifyContent: 'center',
+                                    backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
+                                }]}
                             >
                                 <Text 
                                     key={key} 
                                     style={[{color: 'black'}]}
-                                >{item.item.email}</Text>
+                                >{item.email}</Text>
                             </View>
                 })
-            )
-        } catch(e) {
-            console.log('traners list screen error')
-            console.log(e)
-            console.log('end of trainers list error')
-        }            
-        return null
-    }
+            }
+        </View>
+    )
+})
+interface TrainersListProps extends NavigationProps {}
+
+export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = observer(props => {
+    const { navigation} = props
+    const [seeDialog, setSeeDialog] = useState(false)
+    
+    const [data, setData] = useState([])
+
+    
 
     return (
         <Screen
@@ -58,10 +66,19 @@ export function TrainersListScreen({navigation}) {
             }}
         >
             <PageHeader_Tr navigation={navigation} style={{backgroundColor: 'white'}} title='Списък треньори'/>
-            {
-                loadEmails()
-            }
-
+            <View
+                style={[
+                    {
+                        backgroundColor: color.palette.grey_sbs,
+                        width: '100%',
+                        paddingVertical: 30,
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }
+                ]}
+            ></View>
+            <GetTrainers />
             {
                 seeDialog ?
                     <AddTrainerDialog onDismiss={() => {setSeeDialog(false)}} />
@@ -69,20 +86,21 @@ export function TrainersListScreen({navigation}) {
             }
             
             
-            <Button text={'Add trainer email'} onPress={() => {userStore.aaddItem({
-
-                email :'someone',
-                picture : '',
-                generic_number : 0,
-                password : '',
-                first : '',
-                last : '',
-                referral : '',
-                isAdmin : false,
-                isTrainer : false,
-                isClient : false
-            
-            })}}/>
+            <Button 
+                text={'Add trainer'} 
+                style={{
+                    width: '90%',
+                    marginTop: spacing[8],
+                    paddingVertical: spacing[4],
+                    backgroundColor: color.palette.blue_sbs,
+                    marginHorizontal: '5%'
+                  }}
+                  textStyle={{
+                    color: 'white',
+                    fontSize: 16
+                  }}
+                onPress={() => setSeeDialog(true)}
+            />
         </Screen>
     )
-}
+})

@@ -1,18 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState  } from 'react';
 import { Platform, LayoutAnimation, View, Text, UIManager, TouchableOpacity, StyleSheet } from 'react-native';
-import { Avatar } from 'react-native-elements';
+import { Avatar, Icon } from 'react-native-elements';
 import { color, spacing } from '../theme';
-import { Input } from "react-native-elements";
 import { Button } from '../components/button/button'
 import { DatePicker } from './date-picker/date-picker'
-import { return_todays_date, return_date_formated, border_boxes, globalStyles } from '../global-helper';
+import { return_date_formated, border_boxes, globalStyles } from '../global-helper';
 import { Hoshi } from 'react-native-textinput-effects';
 import { Snack } from './snack/snack';
 import { Api } from '../services/api';
-import { fbAddCard} from '../services/firebase/firebase.service';
 import { Progress_Loader } from './progress-loader/progress-loader';
 import { ICardy, Cardy } from '../models';
-// import { Icon } from 'react-native-elements'
+import { addItem} from '../services/firebase/firebase.service';
+import { observer } from "mobx-react-lite";
+import {useStores } from "../models/root-store"
+import { AddClientDialog } from '../components';
 
 const styles = StyleSheet.create({
     rowSpace: {
@@ -43,30 +44,50 @@ const price_btns_array_m = [
     { title: "3м 450лв", price: '450', type: 'month', rate: '150', card_limit: '3'},
 ];
 
-const getOptions = (list, func) => {
-    return list.map((item, index) => {
-        return  <TouchableOpacity
-                    style={[
-                        styles.inputContainerStyle,
-                        {
-                            marginVertical: 2,
-                            paddingVertical: 10
-                        }
-                    ]}
-                    key={index}
-                    onPress={() => func(item)}
-                >
-                    <Text
-                        style={[
-                            styles.inputTextStyle
-                        ]}
-                    >{item}</Text>
-                </TouchableOpacity>
-    })
+interface GetClientSuggestions {
+    func: any
 }
 
+const GetClientSuggestions: React.FunctionComponent<GetClientSuggestions> = observer(props => {
+    const userStore = useStores().userStore
+    const { func } = props
+    useEffect(() => {
+        userStore.ggetItems()
+    }, [])
+    return (
+        <View
+            style={[{
+                width: '100%'
+            }]}
+        >
+            {
+                userStore.clients?.map((client, index) => {
+                    return  <TouchableOpacity
+                                style={[
+                                    styles.inputContainerStyle,
+                                    {
+                                        marginVertical: 2,
+                                        paddingVertical: 10
+                                    }
+                                ]}
+                                key={index}
+                                onPress={() => func(client.item.email)}
+                            >
+                                <Text
+                                    style={[
+                                        styles.inputTextStyle
+                                    ]}
+                                >{client.item.email}</Text>
+                            </TouchableOpacity>
+                    
+                })
+            }
+            </View>
+        )
+})
+
 const getPriceButtons = (array: any[], func) => {
-    return array.map((item, index) => {
+    return array?.map((item, index) => {
         return (
             <Button
             key={index}
@@ -156,7 +177,7 @@ const resState = {
     seeDateStartPicker: false,
 }
 
-class Accordion_Panel extends Component<{item: any, onClickFunction, activateSnack}, State> {
+class Accordion_Panel extends Component<{item: any, onClickFunction, activateSnack, seeClientDialog}, State> {
 
   constructor(props) {
     super(props);
@@ -169,7 +190,7 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
         API.setup()
         API.postGetConditionalItems('users', 'role', '==', 'client')
         .then((res: any) => {
-            res.data.data.map(item => {
+            res.data.data?.map(item => {
                 this.setState(prevSt => ({...prevSt, clientsList: [...prevSt.clientsList, item.item.email]}))
             })
         })
@@ -207,11 +228,12 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
   }
 
   render() {
-    const { clientsList } = this.state;
     const { client, type, card_limit, rate, price } = this.state.cardy
     return (
         <View
-            style={[{
+            style={[
+                // border_boxes().black,
+                {
                 borderRadius: 20,
                 width: '90%',
                 marginVertical: 10,
@@ -351,11 +373,12 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                     }]}
                 >
                     { this.state.seeSuggestions ? 
-                        getOptions(clientsList, (x) => {
+                        <GetClientSuggestions 
+                            func={(x) => {
                             this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, client: x}}));
                             this.setState({seeSuggestions: false})
                             this.setState(prevState => ({...prevState, requireds: {...prevState.requireds,  showClientError: false }}))
-                        })
+                        }} />
                     : null}
 
                     <View
@@ -378,8 +401,9 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                             )
                         }
                         <TouchableOpacity
+                            onPress={() => this.props.seeClientDialog()}
                             style={[
-                                border_boxes().green,
+                                // border_boxes().green,
                                 {
                                 width: '20%',
                                 justifyContent: 'center',
@@ -387,14 +411,14 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                                 // alignContent: 'center'
                             }]}
                         >
-                            {/* <Icon
+                            <Icon
                                 name='add-circle-outline'
                                 style={{
 
                                 }}
-                                size={50}    
+                                size={60}    
                                 color={color.palette.green_sbs}
-                            /> */}
+                            />
                         </TouchableOpacity>
                     </View>
                     {this.state.requireds.showClientError? 
@@ -605,7 +629,7 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                                 if (client !== '' && type !== '' &&
                                     card_limit !== '' && rate !== '' && price !== '') 
                                     {
-                                        fbAddCard(this.state.cardy);
+                                        addItem(this.state.cardy, 'cards');
                                         this.props.activateSnack()
                                         this.props.onClickFunction()
                                         this.setState(resState)
@@ -640,7 +664,7 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
   }
 }
 
-export class Accordeon extends Component<{array}, {AccordionData, showSnack, showLoader}> {
+export class Accordeon extends Component<{trainers}, {AccordionData, showSnack, showLoader, seeClDialog}> {
 
     componentDidMount() {
         const API = new Api()
@@ -665,12 +689,10 @@ export class Accordeon extends Component<{array}, {AccordionData, showSnack, sho
     }
 
     this.state = { 
-        AccordionData: [{
-            expanded: false, 
-            title: 'Без треньор',
-        }],
+        AccordionData: props.trainers,
         showLoader: true,
-        showSnack: false
+        showSnack: false,
+        seeClDialog: false
     }
   }
 
@@ -678,7 +700,7 @@ export class Accordeon extends Component<{array}, {AccordionData, showSnack, sho
 
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
-    const array = this.state.AccordionData.map((item) => {
+    const array = this.state.AccordionData?.map((item) => {
 
         const newItem = Object.assign({}, item);
 
@@ -697,7 +719,7 @@ export class Accordeon extends Component<{array}, {AccordionData, showSnack, sho
   }
 
   render() {
-      const {showSnack} = this.state
+      const {showSnack, seeClDialog} = this.state
     return (
         <View
             style={[{
@@ -709,15 +731,19 @@ export class Accordeon extends Component<{array}, {AccordionData, showSnack, sho
             {showSnack ? 
                 <Snack message={'Saved !'} onDismiss={() => {this.setState({showSnack: false})}}/>
             : null}
+            {seeClDialog ? 
+                <AddClientDialog onDismiss={() => {this.setState({seeClDialog: false})}}/>
+            : null}
         </View>
         <Progress_Loader flag={this.state.showLoader} />
-        {this.state.AccordionData.map((item, key) => {
+        {this.state.AccordionData?.map((item, key) => {
             return (
                 <Accordion_Panel 
                     key={key} 
                     onClickFunction={this.update_Layout.bind(this, key, item)} 
                     item={item} 
                     activateSnack={() => {this.setState({showSnack: true})}}
+                    seeClientDialog={() => {this.setState({seeClDialog: true})}}
                 />   
             )  
         })}

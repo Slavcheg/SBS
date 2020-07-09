@@ -41,6 +41,7 @@ function ScreenWithScrolling(props: ScreenProps) {
       <StatusBar barStyle={props.statusBar || "light-content"} />
       <View style={[preset.outer, backgroundStyle, insetStyle]}>
         <ScrollView
+          keyboardShouldPersistTaps={'handled'}
           style={[preset.outer, backgroundStyle]}
           contentContainerStyle={[preset.inner, style]}
         >

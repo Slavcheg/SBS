@@ -9,10 +9,15 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Api } from '../../../services/api';
 import ProgressLoader from 'rn-progress-loader';
 import { SocialIcon } from 'react-native-elements'
+import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { observer } from "mobx-react-lite";
+import {useStores } from "../../../models/root-store"
 
+interface SignInScreenProps extends NavigationProps {
+}
 
-
-export function SignInScreen({navigation}, {state}) {
+export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer(props => {
+  const { navigation } = props
   const [screenVisible, setScreenVisible] = useState(false); 
   const [email, setEmail] = useState('');  
   const [pass, setPass] = useState('');  
@@ -25,28 +30,22 @@ export function SignInScreen({navigation}, {state}) {
 
   const [submitBtnClicked, setSubmitBtnClicked] = useState(false);   
 
+  const userStore = useStores().userStore
+  useEffect(() => {
+    userStore.ggetItems()
+  }, [])
+
   const signInUser = () => {
     setScreenVisible(true)
-    const API = new Api()
-    API.setup();
-    API.postSignInUser(email.toLocaleLowerCase(), pass)
-      .then( (res: any) => {
-        
-        // console.log(res)
-        if (res.data.message !== 'ok!') {
-          setServerError(res.data.message)
-          setInfoMessage('')
-        } else {
-          navigation.navigate('home_cl')
-        }      
-        setScreenVisible(false)
-      })
-      .catch(err => {
-        setScreenVisible(false)
-        console.log(err)
-        setServerError("Something went wrong! Please try agasin later!")
-        setInfoMessage('')
-      })
+
+    if (userStore.clientLogIn(email.toLocaleLowerCase(), pass) == undefined) {
+      setServerError('Непознат потребител. Моля свържете се с вашия треньор.')
+      setInfoMessage('')
+    } else {
+      navigation.navigate('home_cl')
+    }      
+    setScreenVisible(false)
+
   }       
   
   const sendResetPasswordEmail = () => {
@@ -200,4 +199,4 @@ export function SignInScreen({navigation}, {state}) {
       </View>
     </Screen>
   )
-}
+})

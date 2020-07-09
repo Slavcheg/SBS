@@ -4,20 +4,12 @@ import { spacing, color } from "../../theme"
 import { onGoogleButtonPress } from "../../services/auth/auth.service"
 import { View, Text } from "react-native"
 import { SocialIcon } from "react-native-elements"
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import {useStores } from "../../models/root-store"
 
 export function GoogleLogin({navigation}) {
-    let google_pass_collection: Promise<FirebaseFirestoreTypes.QuerySnapshot>;
-        
+  const userStore = useStores().userStore
     useEffect(() => {
-        google_pass_collection = 
-            firestore()
-                .collection('google-login-pass')
-                .get()
-                .then(x => {
-                    console.log('coll came')
-                    return x
-                })
+      userStore.ggetItems()
     }, [])
 
     return (
@@ -33,22 +25,19 @@ export function GoogleLogin({navigation}) {
                 marginHorizontal: '5%'
             }}
             onPress={() => onGoogleButtonPress().then((x) => {
-            // TODO do a loader until auth comes in
-            google_pass_collection
-                .then(snap => {
-                   if( 
-                        snap
-                            .docs
-                            .find(y => y.id == x.additionalUserInfo.profile.email)
-                            .exists 
-                    ) {
-// Do after login successful
-                        navigation.navigate('home_tr')
-                   } else {
-// Do after login unsuccessful
-                    // TODO:    Отказан достъп. Моля свържете се с вашият треньор за информация как да използвате Гугъл акаунта си
-                   }
-                })
+              // TODO do a loader until auth comes in
+              if(
+                userStore.users
+                  .find(user => user.item.email == x.additionalUserInfo.profile.email)
+              ) {
+                // Do after login successful
+                console.log('google found!')
+                navigation.navigate('home_tr')
+              } else {
+                // Do after login unsuccessful
+                console.log('google not found!')
+                // TODO:    Отказан достъп. Моля свържете се с вашият треньор за информация как да използвате Гугъл акаунта си
+              }
             })}
         >
           <View

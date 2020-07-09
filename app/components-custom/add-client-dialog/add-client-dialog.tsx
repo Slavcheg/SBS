@@ -7,12 +7,14 @@ import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
 
-export function AddTrainerDialog({onDismiss}) {
-    const [user, setUser] = useState(new User())
+export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
     const userStore = useStores().userStore
+    const [user, setUser] = useState(new User())
+    const { onDismiss } = props
 
     useEffect(() => {
-        // userStore.ggetItems()
+        userStore.ggetItems()
+        setUser(prevState => ({...prevState, generic_number: 1000 + userStore.clientsCount + 1, password: 'admin123'}))        
     }, [])
 
     return (
@@ -50,9 +52,16 @@ export function AddTrainerDialog({onDismiss}) {
             >
                 <Input_Hoshi    
                     width='80%'      
+                    placeholder={'генериран номер'} 
+                    variable={user.generic_number.toString()}
+                    setVariable={val => setUser(prevState => ({...prevState, generic_number: val}))}
+                    
+                />
+                <Input_Hoshi    
+                    width='80%'      
                     placeholder={'емайл'} 
                     variable={user.email}
-                    setVariable={val => setUser(prevState => ({...prevState, email: val, isTrainer: true}))}
+                    setVariable={val => setUser(prevState => ({...prevState, email: val, isClient: true}))}
                     
                 />
                 <Input_Hoshi 
@@ -66,6 +75,12 @@ export function AddTrainerDialog({onDismiss}) {
                     placeholder={'фамилия'} 
                     variable={user.last}
                     setVariable={val => setUser(prevState => ({...prevState, last: val}))}
+                />
+                <Input_Hoshi 
+                    width='80%'   
+                    placeholder={'препоръчан'} 
+                    variable={user.referral}
+                    setVariable={val => setUser(prevState => ({...prevState, referral: val}))}
                 />
                 
                 <View

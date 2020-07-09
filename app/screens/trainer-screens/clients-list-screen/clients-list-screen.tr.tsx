@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import {Screen, PageHeader_Tr, Button,  } from '../../../components'
-import { spacing, color } from '../../../theme';
+import { color } from '../../../theme';
 import { Text, View } from 'react-native';
 import { Icon } from "react-native-elements";
 import {useStores } from "../../../models/root-store"
@@ -21,9 +21,9 @@ export const GetCards: React.FunctionComponent<{}> = observer(props => {
             {
                cardStore.cards.map( (card, index) => {
                    const item = card.item
-                    console.log('from page: ', item)
                     return (
-                        <View key={index}
+                        <View 
+                            key={index}
                             style={[{
                                 paddingVertical: 5,
                                 width: '100%',
@@ -55,8 +55,6 @@ export const GetCards: React.FunctionComponent<{}> = observer(props => {
 })
 
 export function ClientsListScreen({navigation} ) {
-    const [clients_list, set_clients_list] = useState([]);  
-    const rootStore = useStores()
     const getDelimiter = () => {
         return (
             <View   
@@ -70,67 +68,6 @@ export function ClientsListScreen({navigation} ) {
             ></View>
         )
     }
-
-    useEffect(() => {
-        
-        // rootStore.cardStore.getCards();
-        //test add card function
-        // rootStore.addCard({
-        //     trainer: '',
-        //     client: 'Дани',
-        //     datePayment: "Apr-4-2020",
-        //     dateStart: "Apr-4-2020",
-        //     type: '',
-        //     card_limit: '8',
-        //     price: '',
-        //     rate: '',
-        //     whoPays: '',
-        //     comment: '',
-        //     visits: [
-        //         'Apr-4-2020',
-        //         'Apr-5-2020',
-        //         'Apr-29-2020'
-        //     ]
-        // });
-
-        //test update card function
-        // rootStore.updateCard("2joCNc4wi6hpupkaF1cT", {
-        //     trainer: '',
-        //     client: 'Дани',
-        //     datePayment: "Apr-4-2020",
-        //     dateStart: "Apr-4-2020",
-        //     type: '',
-        //     card_limit: '5',
-        //     price: '',
-        //     rate: '',
-        //     whoPays: '',
-        //     comment: '',
-        //     visits: [
-        //         'Jun-4-2020',
-        //         'Jun-5-2020',
-        //         'Jun-29-2020'
-        //     ]
-        // })
-        //test delete card function
-        //rootStore.deleteCard("2joCNc4wi6hpupkaF1cT");
-
-        
-
-        //console.log(rootStore);
-        //props.store.getCards();
-        // const API = new Api()
-        // API.setup()
-        // API.postGetConditionalItems('cards', 'trainer', '==', Auth.getUserEmail())
-        // .then((res: any) => {
-            // set_clients_list(rootStore.cardStore.cards.map((i, index) => {
-            //     return {
-            //         name: i.item.client,
-            //         card_limit: i.item.card_limit,
-            //         visits: i.item.visits
-            //     }
-            // }))
-        // })
-    }, [])
 
     return (
         <Screen

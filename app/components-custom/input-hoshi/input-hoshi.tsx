@@ -24,7 +24,7 @@ export function Input_Hoshi ({
                     // placeholder={placeholder}
                     placeholderTextColor={'#999999'}
                     // containerStyle={{paddingHorizontal: 0}}
-                    // inputContainerStyle={styles.inputContainerStyle}          
+                    style={styles.inputContainerStyle}          
                     inputStyle={{fontSize: 16}}
 
                     // onFocus={() => onF()}
@@ -41,7 +41,8 @@ export function Input_Hoshi ({
 
 const styles = StyleSheet.create({
     inputContainerStyle: {
-        backgroundColor: color.palette.grey_sbs,
+        // backgroundColor: color.palette.grey_sbs,
+        width: '100%',
         paddingLeft: spacing[4],
         borderBottomColor: color.palette.grey_sbs,
         borderRadius: 4,

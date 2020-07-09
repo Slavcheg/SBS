@@ -1,14 +1,14 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 
-import {CardStoreModel} from "../card-store"
-import {UserStore} from "../user-store"
+import {CardStoreModel, UserStoreModel} from "../sub-stores"
+
 /**
  * A RootStore model.
  */
 // prettier-ignore
 export const RootStoreModel = types.model("RootStore").props({
     cardStore: types.optional(CardStoreModel,{}),
-    userStore: types.optional(UserStore,{})
+    userStore: types.optional(UserStoreModel,{})
 })
 // .actions(self=>({
 //     async addCard(newCard){
