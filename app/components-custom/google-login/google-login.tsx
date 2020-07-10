@@ -5,6 +5,9 @@ import { onGoogleButtonPress } from "../../services/auth/auth.service"
 import { View, Text } from "react-native"
 import { SocialIcon } from "react-native-elements"
 import {useStores } from "../../models/root-store"
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { border_boxes } from "../../global-helper"
 
 export function GoogleLogin({navigation}) {
   const userStore = useStores().userStore
@@ -17,7 +20,7 @@ export function GoogleLogin({navigation}) {
             style={{
                 width: '90%',
                 marginTop: spacing[4],
-                paddingVertical: spacing[1],
+                paddingVertical: spacing[2],
                 backgroundColor: color.palette.white,
                 borderColor: '#dd4b39',
                 borderWidth: 1,
@@ -41,16 +44,21 @@ export function GoogleLogin({navigation}) {
             })}
         >
           <View
-            style={[{
+            style={[
+              // border_boxes().orange,
+              {
               flexDirection: 'row',
               alignItems: 'center'
             }]}
           >
-            <SocialIcon
-              raised={false}
-              light
-              type='google'
-            />
+            <FontAwesomeIcon 
+                  style={[{
+                    marginRight: 10
+                  }]}
+                  icon={ faGoogle }
+                  color={'#dd4b39'}
+                  size={30}
+              />
             <Text style={[{color: '#dd4b39'}]}>{'Sign-in with Google'}</Text>
           </View>          
         </Button>    

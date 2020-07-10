@@ -14,6 +14,8 @@ import { addItem} from '../services/firebase/firebase.service';
 import { observer } from "mobx-react-lite";
 import {useStores } from "../models/root-store"
 import { AddClientDialog } from '../components';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 
 const styles = StyleSheet.create({
     rowSpace: {
@@ -411,13 +413,10 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                                 // alignContent: 'center'
                             }]}
                         >
-                            <Icon
-                                name='add-circle-outline'
-                                style={{
-
-                                }}
-                                size={60}    
+                            <FontAwesomeIcon 
+                                icon={ faPlusCircle }
                                 color={color.palette.green_sbs}
+                                size={60}
                             />
                         </TouchableOpacity>
                     </View>
