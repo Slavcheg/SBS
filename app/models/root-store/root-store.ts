@@ -38,6 +38,20 @@ export const RootStoreModel = types.model("RootStore").props({
                 counter += card.item.visits.filter(visit => visit.indexOf(moment().format('MMM').toString()) > -1).length
             })
         return counter
+    },
+
+    get numberOfTrainingsForLoggedClientForActiveCards(){
+        let counterDone = 0
+        let counterTotal = 0
+
+        self.cardStore.cards
+            .filter(card => card.item.client === self.sessionStore.userEmail)
+            // .filter(card => {card.item.active})
+            .forEach(card => {
+                counterDone += card.item.visits.length
+                counterTotal += +card.item.card_limit
+            })
+        return {counterDone, counterTotal}
     }
 }))
 

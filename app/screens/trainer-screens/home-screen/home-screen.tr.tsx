@@ -3,8 +3,6 @@ import { Text, View } from 'react-native';
 import { spacing, color } from '../../../theme';
 import {Screen, MainHeader_Tr, ButtonSquare } from '../../../components'
 import ProgressCircle from 'react-native-progress-circle'
-import { Auth } from '../../../services/auth/auth.service';
-import { Api } from "../../../services/api";
 import { return_todays_date, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
@@ -13,7 +11,6 @@ import {useStores } from "../../../models/root-store"
 interface HomeScreenTrainerProps extends NavigationProps {}
 
 export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> = observer(props => {
-    const [numberOfTrainings, setNumberOfTrainings] = useState(0);  
     const { navigation } = props
     const menuList = require('./menu-list-tr.json');
     const menu = menuList.map((el, i) => {

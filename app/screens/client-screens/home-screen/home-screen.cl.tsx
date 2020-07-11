@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from "react"
-import { Text, View } from 'react-native';
+import { Text, View, Linking } from 'react-native';
 import { spacing, color } from '../../../theme';
 import {Screen, MainHeader_Cl, ButtonSquare } from '../../../components'
 import ProgressCircle from 'react-native-progress-circle'
-import { Auth } from '../../../services/auth/auth.service';
 import { border_boxes } from "../../../global-helper";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { observer } from "mobx-react-lite";
+import {useStores } from "../../../models/root-store"
 
-let number = 6
+interface HomeScreenClientProps extends NavigationProps {}
 
-export function HomeScreenClient({navigation}) {
+export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = observer(props => {
+    const { navigation } = props
+    const rootStore = useStores()    
+    
     const menuList = require('./menu-list-cl.json');
     const menu = menuList.map((el, i) => {
-        const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
+        let onPress = null;
+        if (el.onClick !== "goSomewhere"){
+            onPress = () => navigation.navigate(el.onClick) ;
+        }
+        if (el.onClick === "link"){
+            onPress = ()=>{ Linking.openURL('https://strongby.science/more_info_mitko')}
+        }
+        
         return  <ButtonSquare 
                     style={{marginTop: 0}} 
                     key={i} 
@@ -23,10 +35,9 @@ export function HomeScreenClient({navigation}) {
     })
 
     useEffect(() => {
-        Auth.login('georgi.v.slavchev@gmail.com')
-        // console.log(Auth.getUserRole())
-       }, [])
 
+    }, [])
+    // const {counterDone, counterTotal} = rootStore.numberOfTrainingsForLoggedClientForActiveCards
     return (
         <Screen
             preset="scroll"
@@ -49,7 +60,10 @@ export function HomeScreenClient({navigation}) {
                 }]}
             >
                 <ProgressCircle
-                    percent={(number/8)*100}
+                    percent={
+                        (rootStore.numberOfTrainingsForLoggedClientForActiveCards.counterDone /
+                        rootStore.numberOfTrainingsForLoggedClientForActiveCards.counterTotal) * 100
+                    }
                     radius={100}
                     borderWidth={15}
                     color={color.palette.green_sbs}
@@ -67,7 +81,7 @@ export function HomeScreenClient({navigation}) {
                                 fontWeight: 'bold',
                                 color: color.palette.green_sbs
                             }}
-                        >{number}</Text>
+                        >{rootStore.numberOfTrainingsForLoggedClientForActiveCards.counterDone}</Text>
                         <Text
                             style={{
                                 color: '#666666'
@@ -77,7 +91,7 @@ export function HomeScreenClient({navigation}) {
                             style={{
                                 color: '#666666'
                             }}
-                        >{'до 16.10.2020'}</Text>
+                        >{'от карта ХХХ'}</Text>
                     </View>            
                 </ProgressCircle>
             </View>
@@ -100,4 +114,4 @@ export function HomeScreenClient({navigation}) {
             </View>
         </Screen>     
     )
-}
+})

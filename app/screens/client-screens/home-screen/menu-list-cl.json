@@ -8,7 +8,7 @@
     "iconLeft": "gr_cards",
     "title": "Презареди карта",
     "iconRight": "gr_arrow_forward",
-    "onClick": "goSomewhere"
+    "onClick": "link"
 },
 {
     "iconLeft": "gr_trainings",
