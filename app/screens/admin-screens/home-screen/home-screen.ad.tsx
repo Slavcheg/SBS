@@ -6,8 +6,13 @@ import ProgressCircle from 'react-native-progress-circle'
 import { Auth } from '../../../services/auth/auth.service';
 import { Api } from "../../../services/api";
 import { return_todays_date, today_vs_last_day } from "../../../global-helper";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { observer } from "mobx-react-lite";
+import {useStores } from "../../../models/root-store"
 
-export function HomeScreenAdmin({navigation}) {
+interface HomeScreenAdminProps extends NavigationProps {}
+
+export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = observer(props => {
     const [numberOfTrainings, setNumberOfTrainings] = useState(0);  
     
     const menuList = require('./menu-list-ad.json');
@@ -22,7 +27,8 @@ export function HomeScreenAdmin({navigation}) {
                     rightIcon={el.iconRight}
                 ></ButtonSquare>
     })
-
+    const { navigation } = props
+    const rootStore = useStores()
     useEffect(() => {
     //    Auth.login('dobrev.jordan@gmail.com')
        
@@ -68,7 +74,7 @@ export function HomeScreenAdmin({navigation}) {
                                 fontWeight: 'bold',
                                 color: color.palette.blue_sbs
                             }}
-                        >{numberOfTrainings}</Text>
+                        >{rootStore.numberOfTrainingsForLoggedTrainerThisMonth}</Text>
                         <Text
                             style={{
                                 color: '#666666'
@@ -103,4 +109,4 @@ export function HomeScreenAdmin({navigation}) {
             </View>
         </Screen>     
     )
-}
+})

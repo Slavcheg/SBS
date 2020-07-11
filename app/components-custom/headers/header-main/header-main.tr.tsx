@@ -1,14 +1,16 @@
 import React from 'react';
 import { MainHeaderProps } from "./header-main.props"
-import { Badge } from 'react-native-elements'
+import { Avatar } from 'react-native-elements'
 import { Image, View } from 'react-native';
 import { Icon } from '../../../components/icon/icon';
 import { imgs } from '../../../assets';
 import { CustomHeader } from "../header-custom/header-custom"
 import { color } from '../../../theme';
+import {useStores } from "../../../models/root-store"
 
 export const MainHeader_Tr: React.FunctionComponent<MainHeaderProps> = props => {
 const {navigation, style} = props
+const rootStore = useStores()
 return (
     <CustomHeader 
         style={style}
@@ -28,17 +30,18 @@ return (
                     />}
         // headerText={'asdasd'}
         rightIcon={
-            <View>
-                <Icon 
-                    icon={'bl_bell'}
-                    // style={{width: 34, height: 34}} 
-                />
-                <Badge
-                    status="primary"
-                    value='2'
-                    containerStyle={{ position: 'absolute', top: 1, right: 1 }}
-                />
-            </View>
+            <Avatar                
+                rounded
+                containerStyle={[{
+                    borderColor: color.palette.blue_sbs,
+                    borderWidth: 1
+                }]}
+                size='small'
+                source={{
+                    uri:
+                    rootStore.getProfilePicture
+                   }}
+            />
         } 
         onRightPress={() => navigation.navigate('play')}
     />

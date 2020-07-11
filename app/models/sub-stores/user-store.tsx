@@ -1,3 +1,4 @@
+import React, { useState } from "react"
 import { types } from "mobx-state-tree"
 import { MUSer } from "../user.model"
 import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
@@ -33,11 +34,26 @@ export const UserStoreModel = types.model("RootStore").props({
     clientLogIn(gen_num, password) {        
         return self.users
                 .filter(x => x.item.isClient == true)
-                .find(user => {
+                .find(user => 
                     user.item.generic_number == gen_num &&
                     user.item.password == password
-                })
-}
+                ).item.email
+    },
+
+    async updatePic(user, newPic){        
+        user.item.picture = newPic
+        this.uupdateItem(user.id, user.item)
+    },
+    
+    isUserExistend(googleProfile: any): boolean {
+        let u = self.users
+                .find(user => user.item.email == googleProfile.email)
+        if(u){
+            this.updatePic(u, googleProfile.picture)
+            return true
+        }
+        return false
+    }
 }))
 .views(self => ({
     get trainers() {

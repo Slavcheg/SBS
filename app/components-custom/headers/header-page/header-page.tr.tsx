@@ -1,16 +1,18 @@
 import React from 'react';
 import { PageHeaderProps } from "./header-page.props"
-import { Badge } from 'react-native-elements'
+import { Avatar } from 'react-native-elements'
 import { View } from 'react-native';
 import { Icon as Iconn } from '../../../components/icon/icon';
 import { CustomHeader } from "../header-custom/header-custom"
 import { color } from '../../../theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import {useStores } from "../../../models/root-store"
 
 export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => {
     const {navigation, style, title} = props
-
+    const rootStore = useStores()
+    
     return (
         <CustomHeader 
             style={style}
@@ -28,16 +30,18 @@ export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => 
                 fontSize: 20
             }}
             rightIcon={
-                <View>
-                    <Iconn 
-                        icon={'bl_bell'}
-                    />
-                    <Badge
-                        status="primary"
-                        value='2'
-                        containerStyle={{ position: 'absolute', top: 1, right: 1 }}
-                    />
-                </View>
+                <Avatar                
+                    rounded
+                    containerStyle={[{
+                        borderColor: color.palette.blue_sbs,
+                        borderWidth: 1
+                    }]}
+                    size='small'
+                    source={{
+                        uri:
+                        rootStore.getProfilePicture
+                    }}
+                />
             } 
             onRightPress={() => navigation.navigate('_demo')}
         />

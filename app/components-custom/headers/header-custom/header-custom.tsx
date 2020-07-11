@@ -13,7 +13,8 @@ const ROOT: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "flex-start",
-  width: '100%'
+  width: '100%',
+  paddingBottom: 10
 }
 const TITLE: TextStyle = { textAlign: "center" }
 const TITLE_MIDDLE: ViewStyle = { flex: 1, justifyContent: "center", alignItems: 'center' }

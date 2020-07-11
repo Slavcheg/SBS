@@ -12,7 +12,7 @@ export interface ICardy {
     rate: string,
     whoPays: string,
     comment: string,
-    visits: string[]
+    visits: any,
     active?: boolean
 }
 export class Cardy implements ICardy {  
@@ -27,7 +27,7 @@ export class Cardy implements ICardy {
     rate = ''
     whoPays = ''
     comment = ''
-    visits = []    
+    visits = []
 }
 
 
@@ -43,9 +43,9 @@ export const MCardItem = types.model({
     rate : '',
     whoPays : '',
     comment : '',
-    visits : types.array(types.optional(types.string, ""))
-}
-)
+    visits : types.optional(types.array(types.string), []),
+})
+
 export const MCardy = types.model({
     id: "",
     item: MCardItem

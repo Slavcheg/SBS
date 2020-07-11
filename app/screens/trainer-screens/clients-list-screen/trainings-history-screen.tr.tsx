@@ -5,16 +5,18 @@ import { Text, View } from 'react-native';
 import { Auth } from '../../../services/auth/auth.service';
 import { Api } from "../../../services/api"
 // import { Icon } from "react-native-elements";
+import { observer } from "mobx-react-lite";
+import { CommonNavigationProps } from "../../../models/commomn-navigation-props";
 
-export function TrainingsHistoryScreen({route, navigation}) {
+interface TrainingsHistoryScreenProps extends CommonNavigationProps {}
+
+export const  TrainingsHistoryScreen: React.FunctionComponent<TrainingsHistoryScreenProps> = observer(props => {
     const [visits, setVisits] = useState([''])
     const [name, setName] = useState('- -')
-
+    const { navigation, route } = props
     useEffect(() => {
-        let vs: any[] = route.params.visits;
-        vs.push([''])
-        setVisits(vs)
-        setName(' ' + route.params.name.toUpperCase())
+        setVisits(route.params["visits"] as any[] || [""])
+        setName(' ' + route.params["name"].toUpperCase())
     }, [])
 
     return (
@@ -30,7 +32,7 @@ export function TrainingsHistoryScreen({route, navigation}) {
                 // paddingHorizontal: 20
             }}
         >
-        <PageHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}} title={'ТРЕНИРОВКИ НА' + name}/>
+        <PageHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}} title={'ТРЕНИРОВКИ НА' + name.split('@', 1)}/>
         <View
             style={[
                 {
@@ -64,4 +66,4 @@ export function TrainingsHistoryScreen({route, navigation}) {
 
         </Screen>
     )
-}
+})

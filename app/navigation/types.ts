@@ -5,4 +5,5 @@ export type RootParamList = {
 export type PrimaryParamList = {
   welcome: undefined
   demo: undefined
+  trainings_history: undefined
 }

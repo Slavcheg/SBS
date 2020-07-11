@@ -37,36 +37,7 @@ export function WelcomeScreen({ navigation }, {state}) {
             flex:1
         }}
       ></View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          width: '80%',
-        }}
-      >
-        <Button
-        style={{
-          backgroundColor: blue_sbs
-        }}
-        textStyle={{
-          color: 'white',
-          fontSize: 16
-        }}
-        text={'trainer'}
-        onPress={()=> navigation.navigate('home_tr')} 
-        />
-        <Button
-        style={{
-          backgroundColor: green_sbs
-        }}
-        textStyle={{
-          color: 'white',
-          fontSize: 16
-        }}
-        text={'client'}
-        onPress={()=> { navigation.navigate('home_cl') }} 
-        />
-      </View>
+
       {/* <Button
         style={{
           width: '90%',

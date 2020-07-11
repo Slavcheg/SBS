@@ -1,6 +1,9 @@
 import { types } from "mobx-state-tree"
-import { MCardy } from "../cardy.model"
+import { MCardy, Cardy } from "../cardy.model"
 import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
+import moment from "moment"
+import { values } from "mobx";
+import { cast, getSnapshot } from "mobx-state-tree"
 
 // prettier-ignore
 export const CardStoreModel = types.model("RootStore").props({
@@ -22,6 +25,32 @@ export const CardStoreModel = types.model("RootStore").props({
     async getCards(){
         firebaseSnapShot({Type: 'cards', RefreshHandler: this.refreshCards});
     },
+
+    async addTrainingYesterday(cardy){
+        cardy.item.visits
+            .push(moment().subtract(1, 'days').format('MMM DD[,] YY').toString())
+
+        this.updateCard(cardy.id, getSnapshot(cardy.item))         
+    },
+
+    async removeTrainingYesterday(card){
+        const pos = card.item.visits.indexOf(moment().subtract(1, 'days').format('MMM DD[,] YY').toString())
+        pos > -1 ? card.item.visits.splice(pos, 1) : console.log('Client trained yesterday, but date is not in visits');
+        await this.updateCard(card.id, getSnapshot(card.item))
+    },
+
+    async addTrainingToday(cardy){
+        cardy.item.visits
+            .push(moment().format('MMM DD[,] YY').toString())
+
+        this.updateCard(cardy.id, getSnapshot(cardy.item))         
+    },
+
+    async removeTrainingToday(card){
+        const pos = card.item.visits.indexOf(moment().format('MMM DD[,] YY').toString())
+        pos > -1 ? card.item.visits.splice(pos, 1) : console.log('Client trained yesterday, but date is not in visits');
+        await this.updateCard(card.id, getSnapshot(card.item))
+    }
     
 }))
 

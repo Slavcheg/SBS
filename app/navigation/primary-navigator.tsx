@@ -35,6 +35,7 @@ export function PrimaryNavigator() {
         headerShown: false,
         gestureEnabled: true,
       }}
+      initialRouteName="welcome"
     >
       <Stack.Screen name="_welcome" component={_WelcomeScreen} />
       <Stack.Screen name="_demo" component={_DemoScreen} />

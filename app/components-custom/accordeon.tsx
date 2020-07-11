@@ -46,6 +46,45 @@ const price_btns_array_m = [
     { title: "3м 450лв", price: '450', type: 'month', rate: '150', card_limit: '3'},
 ];
 
+const TrainerAvatar: React.FunctionComponent<{title}> = observer(props => {
+    const userStore = useStores().userStore
+    const { title } = props
+    return (
+        <View
+        style={[{
+            width: '90%',
+            paddingVertical: 20,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+
+        }]}
+    >
+        <Avatar                
+            rounded
+            containerStyle={[{
+                borderColor: color.palette.blue_sbs,
+                borderWidth: 1
+            }]}
+            size='medium'
+            source={{
+                uri:
+                userStore.users
+                    .find(user => user.item.email === title)
+                    .item.picture ||
+                    'https://images.assetsdelivery.com/compings_v2/4zevar/4zevar1604/4zevar160400009.jpg',
+            }}
+        />
+        <Text
+            style={[{
+                marginLeft: '5%'
+            
+            }]}
+        >{props.title}</Text>
+    </View>
+    )
+})
+
 interface GetClientSuggestions {
     func: any
 }
@@ -251,36 +290,7 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                 width: '100%'
             }]}
         >
-            <View
-                style={[{
-                    width: '90%',
-                    paddingVertical: 20,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-
-                }]}
-            >
-                <Avatar                
-                    rounded
-                    containerStyle={[{
-                        borderColor: color.palette.blue_sbs,
-                        borderWidth: 1
-                    }]}
-                    size='medium'
-                    source={{
-                        uri:
-                        'https://images.assetsdelivery.com/compings_v2/4zevar/4zevar1604/4zevar160400009.jpg',
-                    }}
-                />
-                <Text
-                    style={[{
-                        marginLeft: '5%'
-                    
-                    }]}
-                >{this.props.item.title}</Text>
-            </View>
-
+            <TrainerAvatar title={this.props.item.title} />           
         </TouchableOpacity>
 
         <View 

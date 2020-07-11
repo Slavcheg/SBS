@@ -5,9 +5,13 @@ import { Text, View } from 'react-native';
 import { Icon } from "react-native-elements";
 import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
 
-export const GetCards: React.FunctionComponent<{}> = observer(props => {
+interface GetCardsProps extends NavigationProps {}
+
+export const GetCards: React.FunctionComponent<GetCardsProps> = observer(props => {
     const cardStore = useStores().cardStore
+    const { navigation } = props
     
     useEffect(() => {
         cardStore.getCards()
@@ -32,12 +36,12 @@ export const GetCards: React.FunctionComponent<{}> = observer(props => {
                                 backgroundColor: index % 2 !== 1 ? 'white': color.palette.grey_sbs
                             }]}
                         >
-                            {/* <Text style={[{color: color.palette.blue_sbs, width: '23%', alignSelf: 'center'}]}>{item.name}</Text> */}
+                            <Text style={[{color: color.palette.blue_sbs, width: '23%', alignSelf: 'center'}]}>{item.client.split('@', 1)}</Text>
                             <Text style={[{color: '#666666', width: '20%', alignSelf: 'center'}]}>{item.card_limit}</Text>
-                            {/* <Text style={[{color: color.palette.blue_sbs, width: '15%', alignSelf: 'center'}]}>{item.card_limit - item.visits.length}</Text> */}
+                            <Text style={[{color: color.palette.blue_sbs, width: '15%', alignSelf: 'center'}]}>{+item.card_limit - item.visits.length}</Text>
                             <Button 
                             onPress={() => {
-                                // navigation.navigate('trainings_history', {name: item.name, visits: item.visits})
+                                navigation.navigate('trainings_history', {name: item.client, visits: item.visits})
                             }}
                                 style={[{
                                     backgroundColor: index % 2 == 1 ? 'white': color.palette.grey_sbs,
@@ -103,7 +107,7 @@ export function ClientsListScreen({navigation} ) {
                 {getDelimiter()}
                 <Text>{'Ист'}</Text>
             </View>
-            <GetCards />
+            <GetCards navigation={navigation}/>
         </Screen>
     )
 }

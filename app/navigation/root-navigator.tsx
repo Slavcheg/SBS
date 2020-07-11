@@ -16,6 +16,7 @@ const RootStack = () => {
 
         stackPresentation: "modal",
       }}
+      initialRouteName="primaryStack"
     >
       <Stack.Screen
         name="primaryStack"

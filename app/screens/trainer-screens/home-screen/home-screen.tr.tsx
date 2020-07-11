@@ -6,10 +6,15 @@ import ProgressCircle from 'react-native-progress-circle'
 import { Auth } from '../../../services/auth/auth.service';
 import { Api } from "../../../services/api";
 import { return_todays_date, today_vs_last_day } from "../../../global-helper";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { observer } from "mobx-react-lite";
+import {useStores } from "../../../models/root-store"
 
-export function HomeScreenTrainer({navigation}) {
+interface HomeScreenTrainerProps extends NavigationProps {}
+
+export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> = observer(props => {
     const [numberOfTrainings, setNumberOfTrainings] = useState(0);  
-    
+    const { navigation } = props
     const menuList = require('./menu-list-tr.json');
     const menu = menuList.map((el, i) => {
     const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
@@ -22,22 +27,11 @@ export function HomeScreenTrainer({navigation}) {
                     rightIcon={el.iconRight}
                 ></ButtonSquare>
     })
+    const rootStore = useStores()
 
-    useEffect(() => {
-    //    Auth.login('dobrev.jordan@gmail.com')
-    //    const API = new Api()
-    //     API.setup()
-    //     API.postGetConditionalItems('cards', 'trainer', '==', 'dobrev.jordan@gmail.com')
-    //     .then((res: any) => {
-    //         let counter = 0;
-    //         try{
-    //             res.data.data.map(i => {
-    //                 counter += i.item.visits.length
-    //             })
-    //         } catch(e) {console.log(e)}                        
-    //         setNumberOfTrainings(counter)
-    //     })
-      }, [])
+    // useEffect(() => {
+
+    // }, [])
 
     return (
         <Screen
@@ -79,7 +73,7 @@ export function HomeScreenTrainer({navigation}) {
                                 fontWeight: 'bold',
                                 color: color.palette.blue_sbs
                             }}
-                        >{numberOfTrainings}</Text>
+                        >{rootStore.numberOfTrainingsForLoggedTrainerThisMonth}</Text>
                         <Text
                             style={{
                                 color: '#666666'
@@ -114,4 +108,4 @@ export function HomeScreenTrainer({navigation}) {
             </View>
         </Screen>     
     )
-}
+})

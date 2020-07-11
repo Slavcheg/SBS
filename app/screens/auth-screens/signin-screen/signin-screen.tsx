@@ -30,19 +30,21 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
 
   const [submitBtnClicked, setSubmitBtnClicked] = useState(false);   
 
-  const userStore = useStores().userStore
+  const { userStore, sessionStore } = useStores()
   useEffect(() => {
     userStore.ggetItems()
   }, [])
 
   const signInUser = () => {
     setScreenVisible(true)
-
-    if (userStore.clientLogIn(email.toLocaleLowerCase(), pass) == undefined) {
+    let userEmail = userStore.clientLogIn(email.toLocaleLowerCase(), pass)
+    if (userEmail) {
+      sessionStore.logIn(userEmail)
+      navigation.navigate('home_cl')
+     
+    } else {
       setServerError('Непознат потребител. Моля свържете се с вашия треньор.')
       setInfoMessage('')
-    } else {
-      navigation.navigate('home_cl')
     }      
     setScreenVisible(false)
 
