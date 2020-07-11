@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, Progress_Loader } from '../../../components'
+import {Screen, PageHeader_Tr, Progress_Loader } from '../../../components'
 import { color } from '../../../theme';
 import { Text, View } from 'react-native';
-import { Auth } from '../../../services/auth/auth.service';
-import { Api } from "../../../services/api"
 import { CheckBox } from 'react-native-elements'
 import { Snack } from '../../../components'
-import { globalStyles, return_yesterdays_date, return_todays_date, static_clients } from "../../../global-helper";
-import { ICardy, Cardy } from "../../../models";
+import { globalStyles } from "../../../global-helper";
 import {useStores } from "../../../models/root-store"
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
-// import { fbUpdateCard } from "../../../services/firebase/firebase.service";
-// import firestore from '@react-native-firebase/firestore';
 import moment from "moment"
 
 const trainedYesterday = (vis: string[]):boolean => {

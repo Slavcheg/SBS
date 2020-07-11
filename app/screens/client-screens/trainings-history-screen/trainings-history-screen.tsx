@@ -5,69 +5,102 @@ import { View, Text } from "react-native"
 import { Cardy } from "../../../models"
 import { static_cards, border_boxes } from "../../../global-helper"
 import { Avatar } from "react-native-elements"
+import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { observer } from "mobx-react-lite";
+import {useStores } from "../../../models/root-store"
 
-export function TrainingsHistoryScreen_Cl({navigation}) { 
+const Trainings: React.FunctionComponent<{}> = observer(props => {
+    const { cardStore, sessionStore } = useStores()
+    useEffect(() => {
+        cardStore.getCards()
+    }, [])
+    return (
+        <View
+            style={[{
+                width: '100%'
+            }]}
+        >
+            {
+                cardStore.cards
+                    .filter(card => card.item.client === sessionStore.userEmail)
+                    .map((card, k) => {
+                        const item = card.item
+                        return item.visits.map((v, i) => {
+                            return (
+                                <View
+                                    key={i + k + v + '1'}
+                                    style={[
+                                        // border_boxes().red,
+                                        {
+                                            borderRadius: 15,
+                                            shadowOffset: {width: 0, height: 2},
+                                            shadowColor: '#0000001A',
+                                            shadowOpacity: 0.5,
+                                            backgroundColor: 'white',
+                                            marginVertical: 10,
+                                            padding: 10,
+                                            flexDirection: 'row'
+                                        }
+                                    ]}
+                                >
+                                    <Avatar                
+                                        rounded
+                                        containerStyle={[{
+                                            borderColor: color.palette.green_sbs,
+                                            borderWidth: 1
+                                        }]}
+                                        size='medium'
+                                        source={{
+                                            uri:
+                                            'https://images.assetsdelivery.com/compings_v2/4zevar/4zevar1604/4zevar160400009.jpg',
+                                        }}
+                                    />
+                                    <View
+                                        style={[{
+                                            flexDirection: 'column',
+                                            marginLeft: 20
+                                        }]}
+                                    >
+                                        <View
+                                            style={[{
+                                                flexDirection: 'row'
+                                            }]}
+                                        >
+                                            <Text
+                                                style={[{
+                                                    fontSize: 10
+                                                }]}
+                                            >{'* Карта ХХХ / от '}</Text>
+                                            <Text 
+                                                style={[{
+                                                    color: color.palette.green_sbs,
+                                                    fontSize: 10
+                                                }]}
+                                            >{item.dateStart}</Text>
+                                        </View>
+                                    </View>
 
-    const trainings = static_cards.map((card, k) => {
-        return card.visits.map((v, i) => {
-            return (
-                <View
-                    key={i + k + v + '1'}
-                    style={[
-                        // border_boxes().red,
-                        {
-                            borderRadius: 15,
-                            shadowOffset: {width: 0, height: 2},
-                            shadowColor: '#0000001A',
-                            shadowOpacity: 0.5,
-                            backgroundColor: 'white',
-                            marginVertical: 10,
-                            padding: 10,
-                            flexDirection: 'row'
-                        }
-                    ]}
-                >
-                    <Avatar                
-                        rounded
-                        containerStyle={[{
-                            borderColor: color.palette.green_sbs,
-                            borderWidth: 1
-                        }]}
-                        size='medium'
-                        source={{
-                            uri:
-                            'https://images.assetsdelivery.com/compings_v2/4zevar/4zevar1604/4zevar160400009.jpg',
-                        }}
-                    />
-                    <View
-                        style={[{
-                            flexDirection: 'column',
-                            marginLeft: 20
-                        }]}
-                    >
-                        <View
-                            style={[{
-                                flexDirection: 'row'
-                            }]}
-                        >
-                            <Text
-                                style={[{
-                                    fontSize: 10
-                                }]}
-                            >{'* Карта ХХХ / от '}</Text>
-                            <Text 
-                                style={[{
-                                    color: color.palette.green_sbs,
-                                    fontSize: 10
-                                }]}
-                            >{card.dateStart}</Text>
-                        </View>
-                    </View>
+                                </View>
+                            )
+                        })
+                    })
+            }
+        </View>
+    )
+})
 
-                </View>
-            )
-        })
-    })
+
+interface TrainingsHistoryScreen_ClProps extends NavigationProps {}
+
+export const TrainingsHistoryScreen_Cl: React.FunctionComponent<TrainingsHistoryScreen_ClProps> = observer(props => {
+    const { navigation } = props
+    const { cardStore, sessionStore } = useStores()
+
+    useEffect(() => {
+        cardStore.getCards()
+    }, [])
+
+
     
     return (
         <Screen
@@ -96,8 +129,8 @@ export function TrainingsHistoryScreen_Cl({navigation}) {
                     backgroundColor: color.palette.grey_sbs,
                 }]}
             >
-                {trainings}
+                <Trainings />
             </View>
         </Screen>
     )
-}
+})
