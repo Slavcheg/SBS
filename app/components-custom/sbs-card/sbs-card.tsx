@@ -177,7 +177,7 @@ const {card, index} = props
                             color: color.palette.green_sbs
                         }]}
                     >{'Плащане към '}</Text>
-                    <Text>{card.trainer}</Text>                    
+                    <Text>{card.trainer.split('@', 1)}</Text>                    
                 </View>
                 <Text
                     style={[{

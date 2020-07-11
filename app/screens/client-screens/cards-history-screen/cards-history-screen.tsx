@@ -3,15 +3,28 @@ import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button, SbsCard } fr
 import { color } from "../../../theme"
 import { View, Text } from "react-native"
 import { static_cards, border_boxes } from "../../../global-helper"
-import { Badge, Avatar } from "react-native-elements"
+import {useStores } from "../../../models/root-store"
+import { observer } from "mobx-react-lite";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
 
-export function CardsHistoryScreen({navigation}) { 
+interface CardsHistoryScreenProps extends NavigationProps {}
 
-const cards = static_cards.map((card, index) => {
-    return (
-       <SbsCard key={index} index={index} card={card} />
-    )
-})
+export const CardsHistoryScreen: React.FunctionComponent<CardsHistoryScreenProps> = observer(props => {
+    const { cardStore, sessionStore } = useStores()
+    const { navigation } = props
+    
+    useEffect(() => {
+        cardStore.getCards()
+    }, [])
+
+    const cards = cardStore.cards
+        .filter(card => card.item.client === sessionStore.userEmail)
+        .map((card, index) => {
+            const item = card.item
+            return (
+            <SbsCard key={index} index={index} card={item} />
+            )
+        })
 
     return (
         <Screen
@@ -44,4 +57,4 @@ const cards = static_cards.map((card, index) => {
             </View>
         </Screen>
     )
-}
+})
