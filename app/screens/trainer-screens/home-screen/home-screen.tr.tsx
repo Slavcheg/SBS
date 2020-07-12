@@ -25,10 +25,10 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                 ></ButtonSquare>
     })
     const rootStore = useStores()
-
-    // useEffect(() => {
-
-    // }, [])
+    rootStore.hideLoader()
+    useEffect(() => {
+        
+    }, [])
 
     return (
         <Screen

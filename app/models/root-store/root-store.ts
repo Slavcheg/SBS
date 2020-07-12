@@ -12,8 +12,18 @@ import moment from 'moment'
 export const RootStoreModel = types.model("RootStore").props({
     cardStore: types.optional(CardStoreModel,{}),
     userStore: types.optional(UserStoreModel,{}),
-    sessionStore: types.optional(SessionStoreModel,{})
+    sessionStore: types.optional(SessionStoreModel,{}),
+    progressLoader: types.optional(types.boolean, false),
 })
+.actions(self => ({
+    showLoader(){
+        console.log('show loader')
+        self.progressLoader = true
+    },
+    hideLoader(){
+        self.progressLoader = false
+    },
+}))
 .views(self => ({
     get loggedUser(){
         return values(self.userStore.users)

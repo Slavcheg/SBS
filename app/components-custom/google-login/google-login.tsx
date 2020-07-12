@@ -10,6 +10,7 @@ import { border_boxes } from "../../global-helper"
 
 export function GoogleLogin({navigation}) {
   const {userStore, sessionStore} = useStores()
+  const rootStore = useStores()
     useEffect(() => {
       userStore.ggetItems()
     }, [])
@@ -26,10 +27,9 @@ export function GoogleLogin({navigation}) {
                 borderRadius: 20,
                 marginHorizontal: '5%'
             }}
-            onPress={() => onGoogleButtonPress().then((x) => {
-              // TODO do a loader until auth comes in
+            onPress={() => onGoogleButtonPress(rootStore.showLoader).then((x) => {              
               // Do after login successful
-              if (userStore.isUserExistend(x.additionalUserInfo.profile)){
+              if (userStore.isUserExistend(x.additionalUserInfo.profile)){                
                 sessionStore.logIn(x.additionalUserInfo.profile.email)
                 navigation.navigate('home_tr')
               } else {

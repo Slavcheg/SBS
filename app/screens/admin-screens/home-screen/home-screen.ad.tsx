@@ -12,9 +12,7 @@ import {useStores } from "../../../models/root-store"
 
 interface HomeScreenAdminProps extends NavigationProps {}
 
-export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = observer(props => {
-    const [numberOfTrainings, setNumberOfTrainings] = useState(0);  
-    
+export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = observer(props => {  
     const menuList = require('./menu-list-ad.json');
     const menu = menuList.map((el, i) => {
     const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
@@ -29,9 +27,9 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
     })
     const { navigation } = props
     const rootStore = useStores()
+    
     useEffect(() => {
     //    Auth.login('dobrev.jordan@gmail.com')
-       
       }, [])
 
     return (

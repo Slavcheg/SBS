@@ -4,9 +4,16 @@ import { spacing, color } from '../../../theme';
 import { imgs } from '../../../assets'
 import {Button, Screen, GoogleLogin} from '../../../components'
 import { googleInitialize } from "../../../services/auth/auth.service";
+import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { observer } from "mobx-react-lite";
+import {useStores } from "../../../models/root-store"
 
-export function WelcomeScreen({ navigation }, {state}) {
+interface WelcomeScreenProps extends NavigationProps {}
+
+export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observer(props => {
   const { green_sbs, blue_sbs } = color.palette
+  const rootStore = useStores()
+  const { navigation } = props
   
   useEffect(() => {
     googleInitialize()
@@ -71,5 +78,5 @@ export function WelcomeScreen({ navigation }, {state}) {
       </ImageBackground>
     </Screen>
   );
-}
+})
   
