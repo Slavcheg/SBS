@@ -31,13 +31,18 @@ export const UserStoreModel = types.model("RootStore").props({
         firebaseSnapShot({Type: 'users', RefreshHandler: this.refreshItems});  
     },
 
-    clientLogIn(gen_num, password) {        
-        return self.users
-                .filter(x => x.item.isClient == true)
-                .find(user => 
-                    user.item.generic_number == gen_num &&
-                    user.item.password == password
-                ).item.email
+    clientLogIn(gen_num, password) {   
+        try {
+            return self.users
+            .filter(x => x.item.isClient == true)
+            .find(user => 
+                user.item.generic_number == gen_num &&
+                user.item.password == password
+            ).item.email || null
+        }   catch {
+            return null
+        }  
+        
     },
 
     async updatePic(user, newPic){        

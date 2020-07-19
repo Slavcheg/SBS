@@ -131,7 +131,7 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
           autoCompleteType="off"
           autoCorrect={false}
           onChangeText={val => setEmail(val)}
-          placeholder={'име'}
+          placeholder={'рег номер'}
           placeholderTextColor={'#999999'}
           inputContainerStyle={ass.inputContainerStyle}          
           inputStyle={ass.inputTextStyle}

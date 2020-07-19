@@ -35,7 +35,6 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
     })
 
     useEffect(() => {
-
     }, [])
     // const {counterDone, counterTotal} = rootStore.numberOfTrainingsForLoggedClientForActiveCards
     return (
@@ -62,7 +61,7 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
                 <ProgressCircle
                     percent={
                         (rootStore.numberOfTrainingsForLoggedClientForActiveCards.counterDone /
-                        rootStore.numberOfTrainingsForLoggedClientForActiveCards.counterTotal) * 100
+                        rootStore.numberOfTrainingsForLoggedClientForActiveCards.counterTotal) * 100 || 0
                     }
                     radius={100}
                     borderWidth={15}
