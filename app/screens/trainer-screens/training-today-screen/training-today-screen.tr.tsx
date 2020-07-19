@@ -66,7 +66,7 @@ export const TrainingTodayScreen: React.FunctionComponent<TrainingTodayScreenPro
     const [showLoader, setShowLoader] = useState(true);  
     const [showSnack, setShowSnack] = useState(false);  
 
-    const cardStore = useStores().cardStore
+    const {cardStore, sessionStore}  = useStores()
     const { navigation } = props
     
     useEffect(() => {
@@ -117,7 +117,12 @@ export const TrainingTodayScreen: React.FunctionComponent<TrainingTodayScreenPro
                 }]}
             >
                 {
-                    cardStore.cards.map( (card, index) => {
+                    console.log(sessionStore.userEmail)
+                }
+                {
+                    cardStore.cards
+                        .filter(card => card.item.trainer === sessionStore.userEmail)
+                        .map( (card, index) => {
                         console.log(card.item.visits)
                         const item = card.item
                         const cardTrainedYesterday = trainedYesterday(item.visits)

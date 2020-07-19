@@ -6,11 +6,13 @@ import { Icon } from "react-native-elements";
 import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faChevronCircleRight   } from '@fortawesome/free-solid-svg-icons'
 
 interface GetCardsProps extends NavigationProps {}
 
 export const GetCards: React.FunctionComponent<GetCardsProps> = observer(props => {
-    const cardStore = useStores().cardStore
+    const {cardStore, sessionStore}  = useStores()
     const { navigation } = props
     
     useEffect(() => {
@@ -23,7 +25,9 @@ export const GetCards: React.FunctionComponent<GetCardsProps> = observer(props =
             }]}
         >
             {
-               cardStore.cards.map( (card, index) => {
+               cardStore.cards
+               .filter(card => card.item.trainer === sessionStore.userEmail)
+               .map( (card, index) => {
                    const item = card.item
                     return (
                         <View 
@@ -44,11 +48,15 @@ export const GetCards: React.FunctionComponent<GetCardsProps> = observer(props =
                                 navigation.navigate('trainings_history', {name: item.client, visits: item.visits})
                             }}
                                 style={[{
-                                    backgroundColor: index % 2 == 1 ? 'white': color.palette.grey_sbs,
+                                    backgroundColor: color.transparent,
                                     // width: '20%'
                                 }]}
                             >
-                               <Icon name='chevron-right' size={15}/>
+                               <FontAwesomeIcon
+                                    icon={faChevronCircleRight   }
+                                    size={25}    
+                                    color={color.palette.blue_sbs}
+                                />
                             </Button>
                         </View>
                     )
