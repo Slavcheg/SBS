@@ -8,6 +8,9 @@ import { globalStyles } from "../../../global-helper";
 import {useStores } from "../../../models/root-store"
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faCheckSquare   } from '@fortawesome/free-solid-svg-icons'
+import { faSquare   } from '@fortawesome/free-regular-svg-icons'
 import moment from "moment"
 
 const trainedYesterday = (vis: string[]):boolean => {
@@ -37,6 +40,16 @@ const checkBox = (bool, onClick) => {
     return (
         <CheckBox
             checked={bool}
+            checkedIcon={<FontAwesomeIcon
+                icon={faCheckSquare }
+                size={30}    
+                color={color.palette.blue_sbs}
+            />}
+            uncheckedIcon={<FontAwesomeIcon
+                icon={faSquare }
+                size={30}    
+                color={color.palette.blue_sbs}
+            />}
             containerStyle={[{
                 width: '15%'
             }]}
