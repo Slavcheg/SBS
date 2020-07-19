@@ -17,6 +17,7 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
   
   useEffect(() => {
     googleInitialize()
+    rootStore.hideLoader()
   }, [])
 
   return (
