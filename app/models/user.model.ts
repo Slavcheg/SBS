@@ -9,7 +9,8 @@ export interface IUser {
     referral: string
     isAdmin: boolean,
     isTrainer: boolean,
-    isClient: boolean
+    isClient: boolean,
+    diary: any
 }
 
 export class User implements IUser {
@@ -23,7 +24,15 @@ export class User implements IUser {
     isAdmin = false
     isTrainer = false
     isClient = false
+    diary = []
 }
+
+export const diaryItems = types.model({
+    date: '',
+    weight: 0,
+    calories: 0,
+    protein: 0
+})
 
 export const MUserItem = types.model({
     email :'',
@@ -35,7 +44,8 @@ export const MUserItem = types.model({
     referral : '',
     isAdmin : false,
     isTrainer : false,
-    isClient : false
+    isClient : false,
+    diary : types.optional(types.array(diaryItems), []),
 }
 )
 export const MUSer = types.model({

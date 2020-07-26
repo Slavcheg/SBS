@@ -53,7 +53,7 @@ async postSendEmail(sentFrom: string, emailContent: string) {
     },
     "personalizations": [{
       "to": [{
-        "email": "georgi.v.slavchev@gmail.com"
+        "email": "strongbysciencebulgaria@gmail.com"
       }],
       "dynamic_template_data": {
         "fromEmail": "${sentFrom}",

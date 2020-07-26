@@ -6,8 +6,8 @@ import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { View, Text } from "react-native";
+import { DataTable } from 'react-native-paper';
 import { border_boxes } from "../../../global-helper";
-import { Card } from "react-native-elements";
 
 export const CardsReport: React.FunctionComponent<{}> = observer(props => {
     const cardStore = useStores().cardStore
@@ -16,15 +16,20 @@ export const CardsReport: React.FunctionComponent<{}> = observer(props => {
     }, [])
 
     return(
-        <View
-            style={[{
-                width: '100%'
-            }]}
-        >
+            <DataTable>
+                <DataTable.Header accessibilityValue={''} focusable={''}>
+                <DataTable.Title accessibilityValue={''}>Клиент</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >Тренировки</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >Ставка</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >Тип</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >Реална цена</DataTable.Title>
+                </DataTable.Header>
+            
+
             {
                 cardStore.cards.map((card, key) => {
                     const item = card.item
-                    return  <View 
+                    return  <DataTable.Row accessibilityValue={''}
                                 key={key}
                                 style={[{
                                     paddingVertical: 5,
@@ -34,52 +39,52 @@ export const CardsReport: React.FunctionComponent<{}> = observer(props => {
                                     backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
                                 }]}
                             >
-                                <Text 
-                                    key={key} 
-                                    style={[{color: 'black'}]}
+                                <DataTable.Cell accessibilityValue={''}
+                                    // key={key} 
+                                    // style={[{color: 'black'}]}
                                 >
                                     {item.client.split('@', 1) + '   '}
-                                </Text>
-                                <Text 
-                                    key={key} 
-                                    style={[{color: 'black'}]}
+                                </DataTable.Cell>
+                                <DataTable.Cell accessibilityValue={''} 
+                                    // key={key} 
+                                    // style={[{color: 'black'}]}
                                 >
                                     {item.visits.length + '   '}
-                                </Text>
-                                <Text 
+                                </DataTable.Cell >
+                                {/* <DataTable.Cell accessibilityValue={''} 
                                     key={key} 
                                     style={[{color: 'black'}]}
                                 >
                                     {item.card_limit + '   '}
-                                </Text>
-                                <Text 
-                                    key={key} 
-                                    style={[{color: 'black'}]}
+                                </Text> */}
+                                <DataTable.Cell accessibilityValue={''} 
+                                    // key={key} 
+                                    // style={[{color: 'black'}]}
                                 >
                                     {item.rate + '   '}
-                                </Text>
-                                <Text 
-                                    key={key} 
-                                    style={[{color: 'black'}]}
+                                </DataTable.Cell>
+                                <DataTable.Cell accessibilityValue={''} 
+                                    // key={key} 
+                                    // style={[{color: 'black'}]}
                                 >
                                     {item.type + '   '}
-                                </Text>
-                                <Text 
+                                </DataTable.Cell>
+                                {/* <Text 
                                     key={key} 
                                     style={[{color: 'black'}]}
                                 >
                                     {item.price + '   '}
-                                </Text>
-                                <Text 
-                                    key={key} 
-                                    style={[{color: 'black'}]}
+                                </Text> */}
+                                <DataTable.Cell accessibilityValue={''}
+                                    // key={key} 
+                                    // style={[{color: 'black'}]}
                                 >
                                     {item.realPrice + '   '}
-                                </Text>
-                            </View>
+                                </DataTable.Cell>
+                            </DataTable.Row>
                 })
             }
-        </View>
+        </DataTable>
     )
 })
 

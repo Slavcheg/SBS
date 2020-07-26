@@ -1,5 +1,11 @@
 [{
     "iconLeft": "gr_news",
+    "title": "Дневник",
+    "iconRight": "gr_arrow_forward",
+    "onClick": "diary"
+},
+{
+    "iconLeft": "gr_news",
     "title": "Известия и новини",
     "iconRight": "gr_arrow_forward",
     "onClick": "goSomewhere"

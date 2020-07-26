@@ -4,6 +4,7 @@ export const imgs ={
     logo_white: require('./images/Logo_White.png'),
     logo_black: require('./images/Logo_Whole_Black.png'),
     trainings_bar: require('./images/trainings_bar.png'),
+    dairy: require('./images/dairy.png'),
   }
 
   export const icons = {

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { types } from "mobx-state-tree"
+import { types, getSnapshot } from "mobx-state-tree"
 import { MUSer } from "../user.model"
 import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
 import { values } from "mobx";
@@ -29,6 +29,19 @@ export const UserStoreModel = types.model("RootStore").props({
 
     async ggetItems(){
         firebaseSnapShot({Type: 'users', RefreshHandler: this.refreshItems});  
+    },
+
+    async updateDiary(email, date, weight, calories, protein){
+        let user = self.users
+            .find(user => user.item.email === email)
+        
+        user.item.diary.push({
+            date: date,
+            weight: +weight,
+            calories: +calories,
+            protein: +protein
+        })
+        this.uupdateItem(user.id, getSnapshot(user.item))
     },
 
     clientLogIn(gen_num, password) {   
