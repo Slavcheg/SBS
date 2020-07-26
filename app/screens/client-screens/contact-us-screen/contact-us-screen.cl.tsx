@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from "react"
-import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button } from '../../../components'
+import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button, Snack } from '../../../components'
 import { color, spacing } from "../../../theme"
 import { View, Text } from "react-native"
-import { border_boxes } from "../../../global-helper"
+import { border_boxes, globalStyles } from "../../../global-helper"
 import { Input } from "react-native-elements"
+import { Api } from '../../../services/api';
 
 export function ContactUsScreen({navigation}) { 
     const [name, setName] = useState('')
     const [message, setMessage] = useState('')
+    const [showSnack, setShowSnack] = useState(false);  
+
+    const sendEmail = () => {
+        const API = new Api()
+        API.setup()
+        API.postSendEmail(name, message)
+        // .then((res: any) => {
+        setName('')
+        setMessage('')
+        setShowSnack(true)
+        // })
+    }
 
     return (
         <Screen
@@ -27,6 +40,15 @@ export function ContactUsScreen({navigation}) {
                 style={{paddingHorizontal: 25, backgroundColor: 'white'}}
                 title={'СВЪРЖИ СЕ С НАС'} 
             />
+            <View style={globalStyles.snackView}>
+                {showSnack ? 
+                    <Snack 
+                        message={'Благодарим за съобщението!'}
+                        onDismiss={() => {setShowSnack(false)}}
+                        duration={2000}
+                    />
+                : null}
+            </View>
             <View
                 style={[
                     // border_boxes().orange,
@@ -119,7 +141,7 @@ export function ContactUsScreen({navigation}) {
                     }}
                     // tx={'welcomeScreen.registrationBtn'}
                     text={'ИЗПРАТИ'}
-                    // onPress={()=> navigation.navigate('registration')} 
+                    onPress={()=> sendEmail()} 
                 />  
                 <View
                     style={[{

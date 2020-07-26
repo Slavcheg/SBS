@@ -2,7 +2,6 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { values } from "mobx";
 import {CardStoreModel, UserStoreModel} from "../sub-stores"
 import { SessionStoreModel } from "../sub-stores/session-store"
-import { forEach, filter } from "ramda";
 import moment from 'moment'
 
 /**

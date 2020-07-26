@@ -46,6 +46,27 @@ export class Api {
 
 // Start of Strong by science API calls
 
+async postSendEmail(sentFrom: string, emailContent: string) {
+  const body = `{
+    "from":{
+      "email": "slavcheg@uni.coventry.ac.uk"
+    },
+    "personalizations": [{
+      "to": [{
+        "email": "georgi.v.slavchev@gmail.com"
+      }],
+      "dynamic_template_data": {
+        "fromEmail": "${sentFrom}",
+        "body": "${emailContent}"
+      }
+    }],
+    "template_id": "d-a68b97c564864d2aa0075a7da87a170d"
+  }`
+  const response = await this.apisauce.post("/SendEmail", body)
+  // const response = await this.apisauce.get("/Ping")
+  return response.ok
+}
+
 async getPing() {
   const response = await this.apisauce.get("/Ping")
   return response;
