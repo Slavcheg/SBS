@@ -9,6 +9,7 @@ export interface ICardy {
     type: string,
     card_limit: string,
     price: string,
+    realPrice: string,
     rate: string,
     whoPays: string,
     comment: string,
@@ -24,6 +25,7 @@ export class Cardy implements ICardy {
     type = ''
     card_limit = ''
     price = ''
+    realPrice: ''
     rate = ''
     whoPays = ''
     comment = ''
@@ -40,6 +42,7 @@ export const MCardItem = types.model({
     type : '',
     card_limit : '',
     price : '',
+    realPrice: '',
     rate : '',
     whoPays : '',
     comment : '',

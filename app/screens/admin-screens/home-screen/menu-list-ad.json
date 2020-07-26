@@ -1,6 +1,12 @@
 [
 {
     "iconLeft": "bl_payments",
+    "title": "Справка",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "reports"
+},
+{
+    "iconLeft": "bl_payments",
     "title": "Плащания",
     "iconRight": "bl_arrow_forward",
     "onClick": "payments"
