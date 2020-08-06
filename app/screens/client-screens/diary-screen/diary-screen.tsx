@@ -32,23 +32,24 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                         user.item.email === sessionStore.userEmail
                     )
                     .item.diary
-                        .map((diary, index) => {
+                        .map((diaryItem, index) => {
+                            let item = userStore.decodeDiaryItem(diaryItem)
                             return (
                                 <DataTable.Row 
                                     accessibilityValue={''}
                                     key={index}
                                 >
                                     <DataTable.Cell accessibilityValue={''}>
-                                        {diary.date}
+                                        {item.date}
                                     </DataTable.Cell>
                                     <DataTable.Cell accessibilityValue={''}>
-                                        {diary.weight}
+                                        {item.weight}
                                     </DataTable.Cell>
                                     <DataTable.Cell accessibilityValue={''}>
-                                        {diary.calories}
+                                        {item.calories}
                                     </DataTable.Cell>
                                     <DataTable.Cell accessibilityValue={''}>
-                                        {diary.protein}
+                                        {item.protein}
                                     </DataTable.Cell>
                                 </DataTable.Row>
                             )

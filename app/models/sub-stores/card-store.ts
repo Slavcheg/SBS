@@ -1,9 +1,7 @@
-import { types } from "mobx-state-tree"
-import { MCardy, Cardy } from "../cardy.model"
+import { types, getSnapshot } from "mobx-state-tree"
+import { MCardy } from "../cardy.model"
 import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
 import moment from "moment"
-import { values } from "mobx";
-import { cast, getSnapshot } from "mobx-state-tree"
 
 // prettier-ignore
 export const CardStoreModel = types.model("RootStore").props({

@@ -53,12 +53,3 @@ target 'ignite_green_field' do
   use_native_modules!
 end
 
-target 'ignite_green_field-tvOS' do
-  # Pods for ignite_green_field-tvOS
-
-  target 'ignite_green_field-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-end

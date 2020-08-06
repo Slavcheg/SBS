@@ -5,7 +5,7 @@ import { color, spacing } from "../../theme"
 import { border_boxes } from "../../global-helper/global-styles-helper/global-styles-helper"
 
 export function Input_Hoshi ({
-    placeholder, variable, setVariable, width='45%', onF=() => {}, onB=() => {}}) {
+    placeholder, variable, setVariable, width='45%', onF=() => {}, onB=() => {}, background= color.transparent}) {
         return(
             <View
                 style={[
@@ -24,7 +24,12 @@ export function Input_Hoshi ({
                     // placeholder={placeholder}
                     placeholderTextColor={'#999999'}
                     // containerStyle={{paddingHorizontal: 0}}
-                    style={styles.inputContainerStyle}          
+                    style={[
+                        {
+                            backgroundColor: background
+                        },
+                        styles.inputContainerStyle
+                    ]}          
                     inputStyle={{fontSize: 16}}
 
                     // onFocus={() => onF()}
@@ -41,7 +46,6 @@ export function Input_Hoshi ({
 
 const styles = StyleSheet.create({
     inputContainerStyle: {
-        // backgroundColor: color.palette.grey_sbs,
         width: '100%',
         paddingLeft: spacing[4],
         borderBottomColor: color.palette.grey_sbs,

@@ -7,6 +7,7 @@ import { return_todays_date, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
+import crashlytics from '@react-native-firebase/crashlytics';
 
 interface HomeScreenTrainerProps extends NavigationProps {}
 
@@ -27,7 +28,7 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
     const rootStore = useStores()
     rootStore.hideLoader()
     useEffect(() => {
-        
+
     }, [])
 
     return (

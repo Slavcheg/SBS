@@ -3,6 +3,7 @@ import { types, getSnapshot } from "mobx-state-tree"
 import { MUSer } from "../user.model"
 import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
 import { values } from "mobx";
+import { array } from "mobx-state-tree/dist/internal";
 
 export const UserStoreModel = types.model("RootStore").props({
     users: types.array(MUSer),
@@ -34,14 +35,25 @@ export const UserStoreModel = types.model("RootStore").props({
     async updateDiary(email, date, weight, calories, protein){
         let user = self.users
             .find(user => user.item.email === email)
-        
-        user.item.diary.push({
-            date: date,
-            weight: +weight,
-            calories: +calories,
-            protein: +protein
-        })
+        // !Array.isArray(user.item.diary)? user.item.diary = [] null
+        user.item.diary.push(
+            date + '||' +
+            +weight + '||' +
+            +calories + '||' +
+            +protein
+        )
         this.uupdateItem(user.id, getSnapshot(user.item))
+    },
+
+    decodeDiaryItem(item: string){
+        let obj = item.split('||')
+
+        return {
+            date: obj[0],
+            weight: obj[1],
+            calories: obj[2],
+            protein: obj[3],
+        }
     },
 
     clientLogIn(gen_num, password) {   
@@ -67,7 +79,7 @@ export const UserStoreModel = types.model("RootStore").props({
         let u = self.users
                 .find(user => user.item.email == googleProfile.email)
         if(u){
-            this.updatePic(u, googleProfile.picture)
+            // this.updatePic(u, googleProfile.picture)
             return true
         }
         return false

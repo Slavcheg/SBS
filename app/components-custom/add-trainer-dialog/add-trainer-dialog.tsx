@@ -6,9 +6,11 @@ import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
+import { RequiredWarning } from "../required-warning/required-warning"
 
 export function AddTrainerDialog({onDismiss}) {
     const [user, setUser] = useState(new User())
+    const [emailRequiredFlag, setRequiredFlag] = useState(false)
     const userStore = useStores().userStore
 
     useEffect(() => {
@@ -41,6 +43,7 @@ export function AddTrainerDialog({onDismiss}) {
                         width: device_width / 1.2,
                         // height: device_width / 2,
                         paddingVertical: 50,
+                        paddingHorizontal: '5%',
                         marginBottom: 200,
                         opacity: 1,
                         justifyContent: 'center',
@@ -49,20 +52,28 @@ export function AddTrainerDialog({onDismiss}) {
                 ]}
             >
                 <Input_Hoshi    
-                    width='80%'      
+                    width='100%'      
                     placeholder={'емайл'} 
                     variable={user.email}
-                    setVariable={val => setUser(prevState => ({...prevState, email: val, isTrainer: true}))}
+                    setVariable={val => {
+                        setUser(prevState => ({...prevState, email: val, isTrainer: true}))
+                        if (val === '') {
+                            setRequiredFlag(true)
+                        } else {
+                            setRequiredFlag(false)
+                        }
+                    }}
                     
                 />
+                <RequiredWarning flag={emailRequiredFlag} width={'100%'} />
                 <Input_Hoshi 
-                    width='80%'   
+                    width='100%'   
                     placeholder={'име'} 
                     variable={user.first}
                     setVariable={val => setUser(prevState => ({...prevState, first: val}))}
                 />
                 <Input_Hoshi 
-                    width='80%'   
+                    width='100%'   
                     placeholder={'фамилия'} 
                     variable={user.last}
                     setVariable={val => setUser(prevState => ({...prevState, last: val}))}
@@ -70,7 +81,6 @@ export function AddTrainerDialog({onDismiss}) {
                 
                 <View
                     style={[{
-                        width: '80%',
                         paddingVertical: 20,
                         flexDirection: 'row',
                         justifyContent: 'space-between'
@@ -94,8 +104,13 @@ export function AddTrainerDialog({onDismiss}) {
                     </Button>
                     <Button 
                         onPress={() => {
-                            userStore.aaddItem(user) 
-                            onDismiss()
+                            if(user.email !== '') {
+                                userStore.aaddItem(user) 
+                                onDismiss()
+                            } else {
+                                setRequiredFlag(true)
+                            }
+                            
                         }}
                         text={'Save'}
                         style={{

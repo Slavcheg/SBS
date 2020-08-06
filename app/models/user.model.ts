@@ -45,7 +45,7 @@ export const MUserItem = types.model({
     isAdmin : false,
     isTrainer : false,
     isClient : false,
-    diary : types.optional(types.array(diaryItems), []),
+    diary : types.optional(types.array(types.string), []),
 }
 )
 export const MUSer = types.model({
