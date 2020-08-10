@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog } from '../../../components'
-import { color, spacing } from "../../../theme"
+import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
 import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { SwipeRow } from 'react-native-swipe-list-view';
 
 export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
     const gymHallStore = useStores().gymHallStore
@@ -26,7 +27,21 @@ export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, s
                     .filter(trainer => props.search !== ''? trainer.item.name.toLocaleLowerCase().includes(props.search): true)
                     .map((gym, key) => {
                         const item = gym.item
-                        return  <TouchableOpacity 
+                        return ( 
+                            <SwipeRow 
+                                key={key}
+                                leftOpenValue={75}
+                                rightOpenValue={-75}
+                            >
+                                <View style={styles.standaloneRowBack}>
+                                    <TouchableOpacity
+                                        style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
+                                        onPress={() => gymHallStore.deleteGymHall(gym.id)}
+                                    >
+                                        <Text style={styles.backTextWhite}>Delete</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <TouchableOpacity 
                                     key={key}
                                     style={[{
                                         paddingVertical: 15,
@@ -47,6 +62,8 @@ export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, s
                                         style={[{color: 'black', marginLeft: '5%'}]}
                                     >{item.name}</Text>
                                 </TouchableOpacity>
+                            </SwipeRow>
+                        )
                     })
             }            
         </View>
@@ -71,11 +88,16 @@ export const GymHallsScreen: React.FunctionComponent<GymHallsProps> = observer(p
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
                 backgroundColor: color.palette.transparent,
-                // paddingHorizontal: 20
-                paddingHorizontal: 25
             }}
         >
-            <PageHeader_Tr navigation={navigation} style={{backgroundColor: 'white'}} title='Списък зали'/>
+            <PageHeader_Tr
+                navigation={navigation}
+                style={{
+                    backgroundColor: 'white',
+                    paddingHorizontal: 25
+                }}
+                title='Списък зали'
+            />
             <View
                 style={[
                     {

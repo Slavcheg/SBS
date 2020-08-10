@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog } from '../../../components'
-import { color, spacing } from "../../../theme"
+import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
 import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
@@ -8,6 +8,8 @@ import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { SwipeRow } from 'react-native-swipe-list-view';
+import { border_boxes } from "../../../global-helper";
 
 export const GetClients: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
     const userStore = useStores().userStore
@@ -26,17 +28,44 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                     .filter(trainer => props.search !== ''? trainer.item.email.toLocaleLowerCase().includes(props.search): true)
                     .map((user, key) => {
                         const item = user.item
-                        return  <TouchableOpacity 
-                                    key={key}
-                                    style={[{
-                                        paddingVertical: 15,
-                                        paddingHorizontal: '5%',
-                                        width: '100%',
+                        return  (
+                            <SwipeRow 
+                                key={key}
+                                // leftOpenValue={75} 
+                                rightOpenValue={-75}
+                            >
+                                <View 
+                                    style={[
+                                        {
+                                        flex: 1,
                                         flexDirection: 'row',
-                                        justifyContent: 'flex-start',
+                                        justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
-                                    }]}
+                                    }]}>
+                                    <TouchableOpacity
+                                        style={[ 
+                                            styles.backRightBtn,
+                                            styles.backRightBtnRight
+                                        ]}
+                                        onPress={() => userStore.ddeleteItem(user.id)}
+                                    >
+                                        <Text style={styles.backTextWhite}>Delete</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            
+                                <TouchableOpacity 
+                                    key={key}
+                                    style={[                                        
+                                        {
+                                            paddingVertical: 15,
+                                            paddingHorizontal: '5%',
+                                            width: '100%',
+                                            flexDirection: 'row',
+                                            justifyContent: 'flex-start',
+                                            alignItems: 'center',
+                                            backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
+                                        },
+                                    ]}
                                     onPress={() => {
                                         props.setEm(item.email)
                                         props.setSeeDialog(true)
@@ -59,6 +88,8 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                                         style={[{color: 'black', marginLeft: '5%'}]}
                                     >{item.email}</Text>
                                 </TouchableOpacity>
+                            </SwipeRow>  
+                        )
                     })
             }            
         </View>
@@ -83,11 +114,15 @@ export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = ob
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
                 backgroundColor: color.palette.transparent,
-                // paddingHorizontal: 20
-                paddingHorizontal: 25
             }}
         >
-            <PageHeader_Tr navigation={navigation} style={{backgroundColor: 'white'}} title='Списък трениращи'/>
+            <PageHeader_Tr 
+                navigation={navigation} 
+                style={{
+                    backgroundColor: 'white',
+                    paddingHorizontal: '5%'
+                }} 
+                title='Списък трениращи'/>
             <View
                 style={[
                     {

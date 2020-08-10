@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Cl, Button } from '../../../components'
-import { color } from "../../../theme"
+import { color, styles } from "../../../theme"
 import { Image, View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { imgs } from '../../../assets';
 import { NavigationProps } from "../../../models/commomn-navigation-props";
@@ -36,7 +36,10 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                         .map((diaryItem, index) => {
                             let item = userStore.decodeDiaryItem(diaryItem)
                             return (
-                                <SwipeRow leftOpenValue={75} rightOpenValue={-75}>
+                                <SwipeRow 
+                                    key={index}
+                                    leftOpenValue={75} rightOpenValue={-75}
+                                >
                                      <View style={styles.standaloneRowBack}>
                                         <TouchableOpacity
                                             style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
@@ -66,7 +69,6 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                                             {item.protein}
                                         </DataTable.Cell>
                                     </DataTable.Row>
-                                   
                                 </SwipeRow>                                
                             )
                         })
@@ -194,50 +196,3 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
         </Screen>
     )
 })
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'white',
-        flex: 1,
-    },
-    standalone: {
-        marginTop: 30,
-        marginBottom: 30,
-    },
-    standaloneRowFront: {
-        alignItems: 'center',
-        backgroundColor: '#CCC',
-        justifyContent: 'center',
-        height: 50,
-    },
-    standaloneRowBack: {
-        alignItems: 'center',
-        backgroundColor: '#8BC645',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 15,
-    },
-    backTextWhite: {
-        color: '#FFF',
-    },
-    spacer: {
-        height: 50,
-    },
-    backRightBtn: {
-        alignItems: 'center',
-        bottom: 0,
-        justifyContent: 'center',
-        position: 'absolute',
-        top: 0,
-        width: 75,
-    },
-    backRightBtnLeft: {
-        backgroundColor: 'blue',
-        right: 75,
-    },
-    backRightBtnRight: {
-        backgroundColor: 'red',
-        right: 0,
-    },
-});

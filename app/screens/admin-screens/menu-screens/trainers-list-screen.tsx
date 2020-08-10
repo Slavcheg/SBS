@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, SeeTrainerDialog } from '../../../components'
-import { color, spacing } from "../../../theme"
+import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
 import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { SwipeRow } from "react-native-swipe-list-view";
 
 export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, setSeeDialog: any}> = observer(props => {
     const userStore = useStores().userStore
@@ -26,7 +27,38 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
                     .filter(trainer => props.search !== ''? trainer.item.email.toLocaleLowerCase().includes(props.search): true)
                     .map((user, key) => {
                         const item = user.item
-                        return  <TouchableOpacity 
+                        return (
+                            <SwipeRow 
+                                key={key}
+                                // leftOpenValue={75} 
+                                rightOpenValue={-75}
+                            >
+                                <View 
+                                    style={[
+                                        {
+                                        flex: 1,
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                    }]}>
+                                    <TouchableOpacity
+                                        style={[ 
+                                            {
+                                                flex: 1,
+                                                flexDirection: 'row',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                            },
+                                            styles.backRightBtn,
+                                            styles.backRightBtnRight
+                                        ]}
+                                        onPress={() => userStore.ddeleteItem(user.id)}
+                                    >
+                                        <Text style={styles.backTextWhite}>Delete</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <TouchableOpacity 
                                     key={key}
                                     style={[{
                                         paddingVertical: 15,
@@ -59,6 +91,10 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
                                         style={[{color: 'black', marginLeft: '5%'}]}
                                     >{item.email}</Text>
                                 </TouchableOpacity>
+                            </SwipeRow>  
+                        )
+                        
+                       
                     })
             }
         </View>
@@ -84,10 +120,17 @@ export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = ob
                 justifyContent: 'flex-start',
                 backgroundColor: color.palette.transparent,
                 // paddingHorizontal: 20
-                paddingHorizontal: 25
+                // paddingHorizontal: 25
             }}
         >
-            <PageHeader_Tr navigation={navigation} style={{backgroundColor: 'white'}} title='Списък треньори'/>
+            <PageHeader_Tr 
+                navigation={navigation} 
+                style={{
+                    backgroundColor: 'white',
+                    paddingHorizontal: 25
+                }} 
+                title='Списък треньори'
+            />
             <View
                 style={[
                     {
