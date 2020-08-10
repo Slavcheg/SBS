@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Cl, Button } from '../../../components'
 import { color } from "../../../theme"
-import { Image, View, TouchableOpacity } from 'react-native';
+import { Image, View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { imgs } from '../../../assets';
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
@@ -9,6 +9,7 @@ import {useStores } from "../../../models/root-store"
 import { DataTable, TextInput } from 'react-native-paper';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { SwipeRow } from 'react-native-swipe-list-view';
 
 export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
     const { userStore, sessionStore } = useStores()
@@ -35,23 +36,38 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                         .map((diaryItem, index) => {
                             let item = userStore.decodeDiaryItem(diaryItem)
                             return (
-                                <DataTable.Row 
-                                    accessibilityValue={''}
-                                    key={index}
-                                >
-                                    <DataTable.Cell accessibilityValue={''}>
-                                        {item.date}
-                                    </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
-                                        {item.weight}
-                                    </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
-                                        {item.calories}
-                                    </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
-                                        {item.protein}
-                                    </DataTable.Cell>
-                                </DataTable.Row>
+                                <SwipeRow leftOpenValue={75} rightOpenValue={-75}>
+                                     <View style={styles.standaloneRowBack}>
+                                        <TouchableOpacity
+                                            style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
+                                            onPress={() => userStore.deleteDiaryItem(
+                                                sessionStore.userEmail,
+                                                userStore.encodeDiaryItem(item)
+                                            )}
+                                        >
+                                            <Text style={styles.backTextWhite}>Delete</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <DataTable.Row 
+                                        accessibilityValue={''}
+                                        style={styles.standaloneRowFront}
+                                        key={index}
+                                    >
+                                        <DataTable.Cell accessibilityValue={''}>
+                                            {item.date}
+                                        </DataTable.Cell>
+                                        <DataTable.Cell accessibilityValue={''}>
+                                            {item.weight}
+                                        </DataTable.Cell>
+                                        <DataTable.Cell accessibilityValue={''}>
+                                            {item.calories}
+                                        </DataTable.Cell>
+                                        <DataTable.Cell accessibilityValue={''}>
+                                            {item.protein}
+                                        </DataTable.Cell>
+                                    </DataTable.Row>
+                                   
+                                </SwipeRow>                                
                             )
                         })
             }
@@ -178,3 +194,50 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
         </Screen>
     )
 })
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'white',
+        flex: 1,
+    },
+    standalone: {
+        marginTop: 30,
+        marginBottom: 30,
+    },
+    standaloneRowFront: {
+        alignItems: 'center',
+        backgroundColor: '#CCC',
+        justifyContent: 'center',
+        height: 50,
+    },
+    standaloneRowBack: {
+        alignItems: 'center',
+        backgroundColor: '#8BC645',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 15,
+    },
+    backTextWhite: {
+        color: '#FFF',
+    },
+    spacer: {
+        height: 50,
+    },
+    backRightBtn: {
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        width: 75,
+    },
+    backRightBtnLeft: {
+        backgroundColor: 'blue',
+        right: 75,
+    },
+    backRightBtnRight: {
+        backgroundColor: 'red',
+        right: 0,
+    },
+});

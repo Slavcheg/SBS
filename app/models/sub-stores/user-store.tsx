@@ -1,11 +1,10 @@
-import React, { useState } from "react"
-import { types, getSnapshot } from "mobx-state-tree"
-import { MUSer } from "../user.model"
-import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
-import { values } from "mobx";
-import { array } from "mobx-state-tree/dist/internal";
+import React, { useState } from 'react'
+import { types, getSnapshot } from 'mobx-state-tree'
+import { MUSer } from '../user.model'
+import { addItem, updateItem, deleteItem, firebaseSnapShot } from '../../services/firebase/firebase.service'
+import { values } from 'mobx';
 
-export const UserStoreModel = types.model("RootStore").props({
+export const UserStoreModel = types.model('RootStore').props({
     users: types.array(MUSer),
     collection: 'users'
 })
@@ -54,6 +53,16 @@ export const UserStoreModel = types.model("RootStore").props({
             calories: obj[2],
             protein: obj[3],
         }
+    },
+    encodeDiaryItem(item): string {
+        return item.date + '||' + item.weight + '||' + item.calories + '||' + item.protein
+    },
+
+    deleteDiaryItem(userMail, diaryItem: string){
+        let user = self.users.find(user => user.item.email === userMail)
+        user.item.diary.splice(user.item.diary.indexOf(diaryItem))
+        console.log(user.item.diary)
+        this.uupdateItem(user.id, getSnapshot(user.item))
     },
 
     clientLogIn(gen_num, password) {   
