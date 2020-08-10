@@ -1,21 +1,39 @@
 [
 {
     "iconLeft": "bl_payments",
-    "title": "Справка",
+    "title": "Трениращи",
     "iconRight": "bl_arrow_forward",
-    "onClick": "reports"
+    "onClick": "clients_list_ad"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Плащания",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "payments"
-},
-{
-    "iconLeft": "bl_payments",
-    "title": "Trainers",
+    "title": "Треньори",
     "iconRight": "bl_arrow_forward",
     "onClick": "trainers_list"
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "Видове карти посещения",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "visitsCards"
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "Видове месечни карти",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "monthlyCards"
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "Фитнеси",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "gymhalls"
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "Рифъръли",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "referrals"
 },
 {
     "iconLeft": "bl_stats",

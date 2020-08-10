@@ -3,6 +3,10 @@ import { values } from "mobx";
 import {CardStoreModel, UserStoreModel} from "../sub-stores"
 import { SessionStoreModel } from "../sub-stores/session-store"
 import moment from 'moment'
+import { GymHallStoreModel } from "../sub-stores/gymhall-store";
+import { ReferralStoreModel } from "../sub-stores/referral-store";
+import { MonthlyCardStoreModel } from "../sub-stores/monthly-card-store";
+import { VisitsCardStoreModel } from "../sub-stores/visits-cards";
 
 /**
  * A RootStore model.
@@ -11,6 +15,10 @@ import moment from 'moment'
 export const RootStoreModel = types.model("RootStore").props({
     cardStore: types.optional(CardStoreModel,{}),
     userStore: types.optional(UserStoreModel,{}),
+    monthlyCardStore: types.optional(MonthlyCardStoreModel,{}),
+    visitsCardStore: types.optional(VisitsCardStoreModel,{}),
+    gymHallStore: types.optional(GymHallStoreModel,{}),
+    referralStore: types.optional(ReferralStoreModel,{}),
     sessionStore: types.optional(SessionStoreModel,{}),
     progressLoader: types.optional(types.boolean, false),
 })

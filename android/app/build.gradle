@@ -133,8 +133,8 @@ android {
         applicationId "com.ignite_green_field"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "0.1"
+        versionCode 1
+        versionName "0.1.6"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {

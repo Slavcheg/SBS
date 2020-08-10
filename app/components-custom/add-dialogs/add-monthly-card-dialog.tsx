@@ -4,17 +4,18 @@ import { border_boxes, device_width, device_height } from "../../global-helper"
 import { Button } from "../../components/button/button"
 import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
-import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
+import { RequiredWarning } from "../../components"
+import { MonthlyCardItem } from "../../models/sub-stores/monthly-card-store"
 
-export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
-    const userStore = useStores().userStore
-    const [user, setUser] = useState(new User())
+export const AddMonthlyCardDialog: React.FunctionComponent<{onDismiss}> = props => {
+    const monthlyCardStore = useStores().monthlyCardStore
+    const [mcard, setMCard] = useState(new MonthlyCardItem())
+    const [emailRequiredFlag, setRequiredFlag] = useState(false)
     const { onDismiss } = props
 
     useEffect(() => {
-        userStore.ggetItems()
-        setUser(prevState => ({...prevState, generic_number: 1000 + userStore.clientsCount + 1, password: 'admin123'}))        
+        monthlyCardStore.getMItem()
     }, [])
 
     return (
@@ -43,6 +44,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                         width: device_width / 1.2,
                         // height: device_width / 2,
                         paddingVertical: 50,
+                        paddingHorizontal: '5%',
                         marginBottom: 200,
                         opacity: 1,
                         justifyContent: 'center',
@@ -51,41 +53,35 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                 ]}
             >
                 <Input_Hoshi    
-                    width='80%'      
-                    placeholder={'генериран номер'} 
-                    variable={user.generic_number.toString()}
-                    setVariable={val => setUser(prevState => ({...prevState, generic_number: val}))}
-                    
-                />
-                <Input_Hoshi    
-                    width='80%'      
-                    placeholder={'емайл'} 
-                    variable={user.email}
-                    setVariable={val => setUser(prevState => ({...prevState, email: val, isClient: true}))}
-                    
-                />
-                <Input_Hoshi 
-                    width='80%'   
+                    width='100%'
                     placeholder={'име'} 
-                    variable={user.first}
-                    setVariable={val => setUser(prevState => ({...prevState, first: val}))}
+                    variable={mcard.name}
+                    setVariable={val => {
+                        setMCard(prevState => ({...prevState, name: val}))
+                        if (val === '') {
+                            setRequiredFlag(true)
+                        } else {
+                            setRequiredFlag(false)
+                        }
+                    }}                    
+                />
+                <RequiredWarning flag={emailRequiredFlag} width={'100%'} />
+                <Input_Hoshi 
+                    width='100%'
+                    placeholder={'Месеци'} 
+                    variable={mcard.monthsValid.toString()}
+                    setVariable={val => setMCard(prevState => ({...prevState, monthsValid: +val}))}
                 />
                 <Input_Hoshi 
-                    width='80%'   
-                    placeholder={'фамилия'} 
-                    variable={user.last}
-                    setVariable={val => setUser(prevState => ({...prevState, last: val}))}
-                />
-                <Input_Hoshi 
-                    width='80%'   
-                    placeholder={'препоръчан'} 
-                    variable={user.referral}
-                    setVariable={val => setUser(prevState => ({...prevState, referral: val}))}
+                    width='100%'
+                    placeholder={'Цена'} 
+                    variable={mcard.price.toString()}
+                    setVariable={val => setMCard(prevState => ({...prevState, price: +val}))}
                 />
                 
                 <View
                     style={[{
-                        width: '80%',
+                        width: '100%',
                         paddingVertical: 20,
                         flexDirection: 'row',
                         justifyContent: 'space-between'
@@ -99,7 +95,6 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                             marginTop: spacing[8],
                             paddingVertical: spacing[4],
                             backgroundColor: color.palette.grey_sbs,
-                            marginHorizontal: '5%'
                           }}
                         textStyle={{
                             color: 'black',
@@ -109,8 +104,12 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     </Button>
                     <Button 
                         onPress={() => {
-                            userStore.aaddItem(user) 
-                            onDismiss()
+                            if(mcard.name !== '') {
+                                monthlyCardStore.addMItem(mcard) 
+                                onDismiss()
+                            } else {
+                                setRequiredFlag(true)
+                            }                            
                         }}
                         text={'Save'}
                         style={{
@@ -118,7 +117,6 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                             marginTop: spacing[8],
                             paddingVertical: spacing[4],
                             backgroundColor: color.palette.green_sbs,
-                            marginHorizontal: '5%'
                           }}
                         textStyle={{
                             color: 'white',

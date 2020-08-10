@@ -19,7 +19,7 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
 
     return(
         <DataTable>
-            <DataTable.Header accessibilityValue={''} focusable={''}>
+            <DataTable.Header accessibilityValue={''} focusable={true}>
                 <DataTable.Title accessibilityValue={''}>Дата</DataTable.Title>
                 <DataTable.Title accessibilityValue={''} >Тегло (кг)</DataTable.Title>
                 <DataTable.Title accessibilityValue={''} >Калории</DataTable.Title>
@@ -150,9 +150,9 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                 onPress={() => {
                     userStore.updateDiary(sessionStore.userEmail,
                         date,
-                        +weight,
-                        +calories,
-                        +protein
+                        weight,
+                        calories,
+                        protein
                     )
                     setDate('')
                     setWeight('')

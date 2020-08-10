@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi } from '../../../components'
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog } from '../../../components'
 import { color, spacing } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
+import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 
-export const GetTrainers: React.FunctionComponent<{search: string}> = observer(props => {
-    const userStore = useStores().userStore
+export const GetMonthlyCards: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
+    const monthlyCardStore = useStores().monthlyCardStore
     useEffect(() => {
-        userStore.ggetItems()
+        monthlyCardStore.getMItem()
     }, [])
 
     return (
@@ -21,40 +22,44 @@ export const GetTrainers: React.FunctionComponent<{search: string}> = observer(p
             }]}
         >
             {
-                userStore.trainers
-                    .filter(trainer => props.search !== ''? trainer.item.email.includes(props.search): true)
-                    .map((user, key) => {
-                        const item = user.item
-                        return  <View 
+                monthlyCardStore.monthlyCards
+                    .filter(trainer => props.search !== ''? trainer.item.name.toLocaleLowerCase().includes(props.search): true)
+                    .map((card, key) => {
+                        const item = card.item
+                        return  <TouchableOpacity 
                                     key={key}
                                     style={[{
-                                        paddingVertical: 5,
+                                        paddingVertical: 15,
+                                        paddingHorizontal: '5%',
                                         width: '100%',
                                         flexDirection: 'row',
-                                        justifyContent: 'center',
+                                        justifyContent: 'flex-start',
+                                        alignItems: 'center',
                                         backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
                                     }]}
+                                    onPress={() => {
+                                        props.setEm(item.name)
+                                        props.setSeeDialog(true)
+                                    }}
                                 >
                                     <Text 
                                         key={key} 
-                                        style={[{color: 'black'}]}
-                                    >{item.email}</Text>
-                                </View>
+                                        style={[{color: 'black', marginLeft: '5%'}]}
+                                    >{item.name}</Text>
+                                </TouchableOpacity>
                     })
-            }
+            }            
         </View>
     )
 })
-interface TrainersListProps extends NavigationProps {}
+interface MonthlyCardsProps extends NavigationProps {}
 
-export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = observer(props => {
+export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = observer(props => {
     const { navigation} = props
     const [seeDialog, setSeeDialog] = useState(false)
     const [searchValue, setSearchValue] = useState('')
-    
-    const [data, setData] = useState([])
-
-    
+    const [seeClientDialog, setSeeClientDialog] = useState(false)
+    const [email, setEmail] = useState('') 
 
     return (
         <Screen
@@ -70,7 +75,7 @@ export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = ob
                 paddingHorizontal: 25
             }}
         >
-            <PageHeader_Tr navigation={navigation} style={{backgroundColor: 'white'}} title='Списък треньори'/>
+            <PageHeader_Tr navigation={navigation} style={{backgroundColor: 'white'}} title='Списък месечни карти'/>
             <View
                 style={[
                     {
@@ -85,12 +90,18 @@ export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = ob
                 ]}
             >
                 <Input_Hoshi    
-                    width='80%'      
+                    width='75%'      
                     placeholder={'search'} 
                     variable={searchValue}
                     setVariable={val => setSearchValue(val)}
                     background={'white'}
                 />
+                <View
+                    style={[{
+                        flexDirection: 'row',
+                        flexGrow: 1
+                    }]}
+                ></View>
                 <TouchableOpacity
                     onPress={() => setSeeDialog(true)}
                     style={[
@@ -109,12 +120,17 @@ export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = ob
                 </TouchableOpacity>
             </View>
             
-            <GetTrainers search={searchValue}/>
+            <GetMonthlyCards search={searchValue} setEm={setEmail} setSeeDialog={setSeeClientDialog}/>
             {
                 seeDialog ?
-                    <AddTrainerDialog onDismiss={() => {setSeeDialog(false)}} />
+                    <AddMonthlyCardDialog onDismiss={() => {setSeeDialog(false)}} />
                 : null
             }
+            {/* {
+                seeClientDialog ?
+                    <SeeClientDialog email={email} onDismiss={() => {setSeeClientDialog(false)}} />
+                : null
+            } */}
         </Screen>
     )
 })

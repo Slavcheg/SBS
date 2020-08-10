@@ -19,6 +19,11 @@ export * from './trainer-screens/clients-list-screen/trainings-history-screen.tr
 export * from './trainer-screens/training-today-screen/training-today-screen.tr'
 
 export * from './admin-screens/home-screen/home-screen.ad'
-export * from './admin-screens/trainers-list-screen/trainers-list-screen'
+export * from './admin-screens/menu-screens/trainers-list-screen'
+export * from './admin-screens/menu-screens/clients-list-screen'
 export * from './admin-screens/payments-screen/payments-screen.tr'
 export * from './admin-screens/report-screen/report-screen'
+export * from './admin-screens/menu-screens/referral-screen'
+export * from './admin-screens/menu-screens/gymhalls-screen'
+export * from './admin-screens/menu-screens/monthly-cards-screen'
+export * from './admin-screens/menu-screens/visits-cards-screen'

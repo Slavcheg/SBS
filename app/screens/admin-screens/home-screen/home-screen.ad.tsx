@@ -46,7 +46,7 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
             }}
         >
             <MainHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}}/>
-            <View 
+            {/* <View 
                 style={[
                     // boxes.black,
                     {
@@ -85,8 +85,8 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
                         >{'до ' + return_todays_date()}</Text>
                     </View>            
                 </ProgressCircle>
-            </View>
-            <View 
+            </View>*/}
+            <View  
                 style={[
                     // boxes.orange,
                     {

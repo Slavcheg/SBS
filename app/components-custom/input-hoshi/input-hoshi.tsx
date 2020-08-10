@@ -5,7 +5,11 @@ import { color, spacing } from "../../theme"
 import { border_boxes } from "../../global-helper/global-styles-helper/global-styles-helper"
 
 export function Input_Hoshi ({
-    placeholder, variable, setVariable, width='45%', onF=() => {}, onB=() => {}, background= color.transparent}) {
+    placeholder, variable, setVariable, 
+    width='45%', onF=() => {}, onB=() => {}, 
+    background= color.transparent,
+    editable = true
+}) {
         return(
             <View
                 style={[
@@ -19,6 +23,7 @@ export function Input_Hoshi ({
                     autoCapitalize='none'
                     autoCompleteType="off"
                     autoCorrect={false}
+                    editable = {editable}
                     value={variable}
                     onChangeText={x => setVariable(x)}
                     // placeholder={placeholder}
