@@ -123,7 +123,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                         width: '25%',
                     }]}
                     accessibilityValue={''}
-                    focusable={''}
+                    focusable={true}
                     showSoftInputOnFocus={true}
                     label="Дата"
                     value={date}
@@ -134,7 +134,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                         width: '25%'
                     }]}
                     accessibilityValue={''}
-                    focusable={''}
+                    focusable={true}
                     showSoftInputOnFocus={true}
                     label="Тегло"
                     value={weight}
@@ -145,7 +145,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                         width: '25%'
                     }]}
                     accessibilityValue={''}
-                    focusable={''}
+                    focusable={true}
                     showSoftInputOnFocus={true}
                     label="Калории"
                     value={calories}
@@ -156,7 +156,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                         width: '25%'
                     }]}
                     accessibilityValue={''}
-                    focusable={''}
+                    focusable={true}
                     showSoftInputOnFocus={true}
                     label="Протеин"
                     value={protein}

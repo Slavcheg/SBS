@@ -13,6 +13,18 @@
 },
 {
     "iconLeft": "bl_payments",
+    "title": "Закупени карти посещения",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "purchasedVisits"
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "Закупени месечни карти",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "purchasedMonthly"
+},
+{
+    "iconLeft": "bl_payments",
     "title": "Видове карти посещения",
     "iconRight": "bl_arrow_forward",
     "onClick": "visitsCards"

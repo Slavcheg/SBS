@@ -17,7 +17,7 @@ export const CardsReport: React.FunctionComponent<{}> = observer(props => {
 
     return(
             <DataTable>
-                <DataTable.Header accessibilityValue={''} focusable={''}>
+                <DataTable.Header accessibilityValue={''} focusable={true}>
                 <DataTable.Title accessibilityValue={''}>Клиент</DataTable.Title>
                 <DataTable.Title accessibilityValue={''} >Тренировки</DataTable.Title>
                 <DataTable.Title accessibilityValue={''} >Ставка</DataTable.Title>

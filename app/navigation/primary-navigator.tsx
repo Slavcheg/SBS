@@ -28,8 +28,9 @@ import {
   ReferralsScreen,
   GymHallsScreen,
   VisitsCardsScreen,
-  MonthlyCardsScreen
-
+  MonthlyCardsScreen,
+  PurchasedVisitsCardsScreen,
+  PurchasedMonthlyCardsScreen
 } from "../screens"
 // import { PrimaryParamList } from "./types"
 
@@ -71,6 +72,8 @@ export function PrimaryNavigator() {
       <Stack.Screen name="referrals" component={ReferralsScreen} />
       <Stack.Screen name="monthlyCards" component={MonthlyCardsScreen} />
       <Stack.Screen name="visitsCards" component={VisitsCardsScreen} />
+      <Stack.Screen name="purchasedMonthly" component={PurchasedMonthlyCardsScreen} />
+      <Stack.Screen name="purchasedVisits" component={PurchasedVisitsCardsScreen} />
     </Stack.Navigator>
   )
 }
