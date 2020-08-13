@@ -81,14 +81,14 @@ export const UserStoreModel = types.model('RootStore').props({
 
     async updatePic(user, newPic){        
         user.item.picture = newPic
-        this.uupdateItem(user.id, user.item)
+        this.uupdateItem(user.id, getSnapshot(user.item))
     },
     
     isUserExistend(googleProfile: any): boolean {
         let u = self.users
                 .find(user => user.item.email == googleProfile.email)
         if(u){
-            // this.updatePic(u, googleProfile.picture)
+            this.updatePic(u, googleProfile.picture)
             return true
         }
         return false
