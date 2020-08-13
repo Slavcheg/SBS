@@ -9,6 +9,7 @@ import { return_todays_date, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
+import { translate } from "../../../i18n"
 
 interface HomeScreenAdminProps extends NavigationProps {}
 
@@ -19,7 +20,7 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
         return  <ButtonSquare 
                     style={{marginTop: 20}} 
                     key={i} 
-                    title={el.title}
+                    title={translate(el.title)}
                     onPress={onPress}
                     leftIcon={el.iconLeft}
                     rightIcon={el.iconRight}

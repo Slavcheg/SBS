@@ -7,6 +7,7 @@ import { border_boxes } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
+import { translate } from "../../../i18n"
 
 interface HomeScreenClientProps extends NavigationProps {}
 
@@ -27,7 +28,7 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
         return  <ButtonSquare 
                     style={{marginTop: 0}} 
                     key={i} 
-                    title={el.title} 
+                    title={translate(el.title)} 
                     onPress={onPress}
                     leftIcon={el.iconLeft}
                     rightIcon={el.iconRight}
@@ -85,12 +86,12 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
                             style={{
                                 color: '#666666'
                             }}
-                        >{'тренировки'}</Text>
+                        >{translate('clientHomeScreen.progressCircleTextTop')}</Text>
                         <Text
                             style={{
                                 color: '#666666'
                             }}
-                        >{'от карта ХХХ'}</Text>
+                        >{translate('clientHomeScreen.progressCircleTextBottom') + ' ХХХ'}</Text>
                     </View>            
                 </ProgressCircle>
             </View>

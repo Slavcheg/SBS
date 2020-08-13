@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react"
-import { StyleSheet, Text, View, ImageBackground, Image } from 'react-native';
-import { Input, CheckBox } from "react-native-elements"
+import { View, Image } from 'react-native';
+import { Text } from '../../../components'
+import { Input } from "react-native-elements"
 import { spacing, color } from '../../../theme';
 import { imgs } from '../../../assets'
 import {Button, Screen} from '../../../components'
 import {auth_screens_styles as ass} from '../auth-screens-style'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Api } from '../../../services/api';
 import ProgressLoader from 'rn-progress-loader';
-import { SocialIcon } from 'react-native-elements'
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
+import { translate } from "../../../i18n"
 
 interface SignInScreenProps extends NavigationProps {
 }
@@ -26,9 +26,7 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
   const isServerErrored = serverError !== '';
 
   const [infoMessage, setInfoMessage] = useState(''); 
-  const isInfo = infoMessage !== '';
-
-  const [submitBtnClicked, setSubmitBtnClicked] = useState(false);   
+  const isInfo = infoMessage !== ''; 
 
   const { userStore, sessionStore } = useStores()
   useEffect(() => {
@@ -63,7 +61,6 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
     API.postSendResetPasswordEmail(email.toLocaleLowerCase())
     .then( (res: any) => {
       setScreenVisible(false)
-      // console.log(res)
       if (res.data.message !== 'ok!') {
         setServerError(res.data.message);
         setInfoMessage('')
@@ -125,13 +122,14 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
             color: color.palette.green_sbs,
             marginBottom: spacing[8]
           }}
-        >{'ВХОД'}</Text>
+          tx={'signinScreen.caption'}
+        ></Text>
         <Input
           autoCapitalize='none'
           autoCompleteType="off"
           autoCorrect={false}
           onChangeText={val => setEmail(val)}
-          placeholder={'рег номер'}
+          placeholder={translate('signinScreen.topRowForm')}
           placeholderTextColor={'#999999'}
           inputContainerStyle={ass.inputContainerStyle}          
           inputStyle={ass.inputTextStyle}
@@ -141,7 +139,7 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
           autoCompleteType="off"
           autoCorrect={false}
           onChangeText={val => setPass(val)}
-          placeholder={'парола'}
+          placeholder={translate('signinScreen.bottomRowForm')}
           placeholderTextColor={'#999999'}
           inputContainerStyle={ass.inputContainerStyle}          
           inputStyle={ass.inputTextStyle}
@@ -195,7 +193,7 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
             color: 'white',
             fontSize: 16
           }}
-          tx={'welcomeScreen.entryBtn'}
+          tx={'signinScreen.entryBtn'}
           onPress={()=> signInUser()} 
         />               
       </View>

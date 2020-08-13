@@ -1,36 +1,36 @@
 [{
     "iconLeft": "gr_news",
-    "title": "Дневник",
+    "title": "clientHomeScreen.diarySquareButtonCaption",
     "iconRight": "gr_arrow_forward",
     "onClick": "diary"
 },
 {
     "iconLeft": "gr_news",
-    "title": "Известия и новини",
+    "title": "clientHomeScreen.newsSquareButtonCaption",
     "iconRight": "gr_arrow_forward",
     "onClick": "goSomewhere"
 },
 {
     "iconLeft": "gr_cards",
-    "title": "Презареди карта",
+    "title": "clientHomeScreen.reloadCardSquareButtonCaption",
     "iconRight": "gr_arrow_forward",
     "onClick": "link"
 },
 {
     "iconLeft": "gr_trainings",
-    "title": "История на тренировките",
+    "title": "clientHomeScreen.trainingsHistorySquareButtonCaption",
     "iconRight": "gr_arrow_forward",
     "onClick": "trainings_history_cl"
 },
 {
     "iconLeft": "gr_paymnets",
-    "title": "История на плащанията",
+    "title": "clientHomeScreen.paymentsHistorySquareButtonCaption",
     "iconRight": "gr_arrow_forward",
     "onClick": "cards_history_cl"
 },
 {
     "iconLeft": "gr_contact_us",
-    "title": "Свържи се с нас",
+    "title": "clientHomeScreen.contactUsSquareButtonCaption",
     "iconRight": "gr_arrow_forward",
     "onClick": "contact_us"
 }

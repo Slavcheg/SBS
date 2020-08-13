@@ -1,0 +1,39 @@
+{
+  "welcomeScreen": {
+    "registrationBtn": "РЕГИСТРАЦИЯ",
+    "entryBtn": "ВХОД"
+  },
+  "signinScreen": {
+    "caption": "ВХОД",
+    "entryBtn": "ВХОД",
+    "topRowForm": "рег. номер",
+    "bottomRowForm": "парола"
+  },
+  "clientHomeScreen": {
+    "diarySquareButtonCaption": "Дневник",
+    "newsSquareButtonCaption": "Известия и новини",
+    "reloadCardSquareButtonCaption": "Презареди карта",
+    "trainingsHistorySquareButtonCaption": "История на тренировките",
+    "paymentsHistorySquareButtonCaption": "История на плащанията",
+    "progressCircleTextTop": "тренировки",
+    "progressCircleTextBottom": "от карта"
+  },
+  "trainerHomeScreen": {
+    "trainingsTodaySquareButtonCaption": "Трениращи днес",
+    "clientsButtonCaption": "Клиенти",
+    "adminSquareButtonCaption": "Админ",
+    "progressCircleTextTop": "тренировки",
+    "progressCircleTextBottom": "до"
+  },
+  "adminHomeScreen": {
+    "clientsSquareButtonCaption": "Трениращи",
+    "trainersSquareButtonCaption": "Треньори",
+    "purchasedCardsVisitsSquareButtonCaption": "Закупени карти посещения",
+    "purchasedCardsMonthlySquareButtonCaption": "Закупени месечни карти",
+    "typesCardsVisitsSquareButtonCaption": "Видове карти посещения",
+    "typesCardsMonthlySquareButtonCaption": "Видове месечни карти",
+    "gymHallsSquareButtonCaption": "Фитнеси",
+    "referralsSquareButtonCaption": "Реферали",
+    "trainersHomeSquareButtonCaption": "Меню треньори"
+  }
+}

@@ -1,18 +1,18 @@
 [{
     "iconLeft": "bl_trainings_today",
-    "title": "Трениращи днес",
+    "title": "trainerHomeScreen.trainingsTodaySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "training_today"
 },
 {
     "iconLeft": "bl_clients",
-    "title": "Клиенти",
+    "title": "trainerHomeScreen.clientsButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "clients_list"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Admin",
+    "title": "trainerHomeScreen.adminSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "home_ad"
 }

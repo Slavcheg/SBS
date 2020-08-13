@@ -1,26 +1,43 @@
 {
-  "common": {
-    "ok": "OK!",
-    "cancel": "Cancel",
-    "back": "Back"
-  },
   "errors": {
     "invalidEmail": "Invalid email address."
   },
   "welcomeScreen": {
-    "registrationBtn": "РЕГИСТРАЦИЯ",
-    "entryBtn": "ВХОД"
+    "registrationBtn": "REGISTRATION",
+    "entryBtn": "LogIn"
   },
-  "demoScreen": {
-    "howTo": "HOW TO",
-    "title": "What’s In This Stack?",
-    "tagLine": "Congratulations, you’ve got a very advanced React Native app template here.  Take advantage of this boilerplate!",
-    "reactotron": "Demo Reactotron",
-    "androidReactotronHint": "If this doesn't work, ensure the Reactotron desktop app is running, run adb reverse tcp:9090 tcp:9090 from your terminal, and reload the app.",
-    "iosReactotronHint": "If this doesn't work, ensure the Reactotron desktop app is running and reload app."
+  "signinScreen": {
+    "caption": "LogIn",
+    "entryBtn": "LogIn",
+    "topRowForm": "reg number",
+    "bottomRowForm": "password"
   },
-  "storybook": {
-    "placeholder": "Placeholder",
-    "field": "Field"
+  "clientHomeScreen": {
+    "diarySquareButtonCaption": "Diary",
+    "newsSquareButtonCaption": "News and articles",
+    "reloadCardSquareButtonCaption": "Reload card",
+    "trainingsHistorySquareButtonCaption": "Trainings history",
+    "paymentsHistorySquareButtonCaption": "Payments history",
+    "contactUsSquareButtonCaption": "Contact us",
+    "progressCircleTextTop": "trainings",
+    "progressCircleTextBottom": "from card"
+  },
+  "trainerHomeScreen": {
+    "trainingsTodaySquareButtonCaption": "Trainings today",
+    "clientsButtonCaption": "Clients",
+    "adminSquareButtonCaption": "Admin",
+    "progressCircleTextTop": "trainings",
+    "progressCircleTextBottom": "until"
+  },
+  "adminHomeScreen": {
+    "clientsSquareButtonCaption": "Clients",
+    "trainersSquareButtonCaption": "Trainers",
+    "purchasedCardsVisitsSquareButtonCaption": "Purchased cards p/ visits",
+    "purchasedCardsMonthlySquareButtonCaption": "Purchased monthly cards",
+    "typesCardsVisitsSquareButtonCaption": "Types cards p/ visits",
+    "typesCardsMonthlySquareButtonCaption": "Types monthly cards",
+    "gymHallsSquareButtonCaption": "Gym Halls",
+    "referralsSquareButtonCaption": "Referrals",
+    "trainersHomeSquareButtonCaption": "Trainer home"
   }
 }

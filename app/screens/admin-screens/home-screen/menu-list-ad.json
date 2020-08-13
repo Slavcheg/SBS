@@ -1,55 +1,55 @@
 [
 {
     "iconLeft": "bl_payments",
-    "title": "Трениращи",
+    "title": "adminHomeScreen.clientsSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "clients_list_ad"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Треньори",
+    "title": "adminHomeScreen.trainersSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "trainers_list"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Закупени карти посещения",
+    "title": "adminHomeScreen.purchasedCardsVisitsSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "purchasedVisits"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Закупени месечни карти",
+    "title": "adminHomeScreen.purchasedCardsMonthlySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "purchasedMonthly"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Видове карти посещения",
+    "title": "adminHomeScreen.typesCardsVisitsSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "visitsCards"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Видове месечни карти",
+    "title": "adminHomeScreen.typesCardsMonthlySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "monthlyCards"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Фитнеси",
+    "title": "adminHomeScreen.gymHallsSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "gymhalls"
 },
 {
     "iconLeft": "bl_payments",
-    "title": "Рифъръли",
+    "title": "adminHomeScreen.referralsSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "referrals"
 },
 {
     "iconLeft": "bl_stats",
-    "title": "Меню треньор",
+    "title": "adminHomeScreen.trainersHomeSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "home_tr"
 }

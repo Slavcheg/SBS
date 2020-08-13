@@ -7,6 +7,7 @@ import { return_todays_date, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
+import { translate } from "../../../i18n"
 import crashlytics from '@react-native-firebase/crashlytics';
 
 interface HomeScreenTrainerProps extends NavigationProps {}
@@ -19,7 +20,7 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
         return  <ButtonSquare 
                     style={{marginTop: 20}} 
                     key={i} 
-                    title={el.title}
+                    title={translate(el.title)}
                     onPress={onPress}
                     leftIcon={el.iconLeft}
                     rightIcon={el.iconRight}
@@ -76,12 +77,12 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                             style={{
                                 color: '#666666'
                             }}
-                        >{'тренировки'}</Text>
+                        >{translate('trainerHomeScreen.progressCircleTextTop')}</Text>
                         <Text
                             style={{
                                 color: '#666666'
                             }}
-                        >{'до ' + return_todays_date()}</Text>
+                        >{translate('trainerHomeScreen.progressCircleTextBottom') + ' ' + return_todays_date()}</Text>
                     </View>            
                 </ProgressCircle>
             </View>
