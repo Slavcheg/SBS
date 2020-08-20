@@ -34,4 +34,12 @@ export const styles = StyleSheet.create({
         backgroundColor: 'red',
         right: 0,
     },
+    rowSpace: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    inputTextStyle: {
+        fontSize: 12,
+        opacity: 0.5
+    }
 });

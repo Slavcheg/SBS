@@ -24,15 +24,17 @@ export function DatePicker({showPicker, useValue}) {
           is24Hour={true}
           display="default"
           onChange={(e, d) => {
-            setDate(d)
-            useValue(d)
+            const currentDate = d || date;
+            setDate(currentDate)
+            showPicker(Platform.OS === 'ios');
+            useValue(currentDate)
           }}
         />
-        <Button 
+        {/*<Button 
           style={[{
             backgroundColor: 'white'
           }]}
-        onPress={() => showPicker()}><Text>{'save & close'}</Text></Button>
+        onPress={() => showPicker()}><Text>{'save & close'}</Text></Button>*/}
         </View>
     </View>
   );

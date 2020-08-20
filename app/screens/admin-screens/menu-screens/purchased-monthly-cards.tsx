@@ -10,25 +10,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { DataTable } from 'react-native-paper';
 import { SwipeRow } from 'react-native-swipe-list-view';
-
-export const PurchasedMonthlyCards: React.FunctionComponent<{}> = observer(props => {
+import { Hoshi } from 'react-native-textinput-effects';
+import { DatePicker } from '../../../components-custom/date-picker/date-picker';
+import { return_date_formated} from '../../../global-helper';
+export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, startDate: Date, endDate: Date}> = observer(props => {
     const cardStore = useStores().cardStore
     useEffect(() => {
         cardStore.getCards()
     }, [])
-
+    
     return(
         <DataTable>
             <DataTable.Header accessibilityValue={''} focusable={true}>
-                <DataTable.Title accessibilityValue={''}>Клиент</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Цена</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Дата на плащане</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Важи от</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Лимит м/в</DataTable.Title>
+                <DataTable.Title accessibilityValue={''}>??????</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >????</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >???? ?? ???????</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >???? ??</DataTable.Title>
+                <DataTable.Title accessibilityValue={''} >????? ?/?</DataTable.Title>
             </DataTable.Header>
             {
                 cardStore.cards
-                .filter(item => item.item.type === 'month')
+                .filter(item => 
+                    item.item.type === 'month' 
+                    && (props.search !="" ?item.item.client.indexOf(props.search) >= 0:true) == true 
+                    && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
+                    && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
+                    && item.item.visits.length > 0 )
                 .map((card, key) => {
                 const item = card.item
                 
@@ -92,7 +99,11 @@ export const PurchasedMonthlyCards: React.FunctionComponent<{}> = observer(props
 interface PurchasedMonthlyCardsProps extends NavigationProps {}
 export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonthlyCardsProps> = observer(props => {
     const { navigation } = props
-    const [searchValue, setSearchValue] = useState('')
+    const [searchValue, setSearchValue] = useState('');
+    const [filterStartDate, setFilterStartDate] = useState('');
+    const [filterEndDate, setFilterEndDate] = useState('');
+    const [seeEndDatePicker, setSeeEndDatePicker] = useState(false);
+    const [seeStartDatePicker, setSeeStartDatePicker] = useState(false);
     return (
         <Screen
             preset="scroll"
@@ -111,7 +122,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                     backgroundColor: 'white',
                     paddingHorizontal: 25
                 }}
-                title='Закупени месечни карти'
+                title='???????? ??????? ?????'
             />
             <View
                 style={[
@@ -155,8 +166,80 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         size={60}
                     />
                 </TouchableOpacity>
+               
             </View>
-            <PurchasedMonthlyCards />
+            <View
+                    style={[
+                        styles.rowSpace
+                    ]}
+                >
+                    {   getInput('???? ?? ???????',
+                                filterStartDate,
+                                (x) => {setFilterStartDate(x)},
+                                undefined,
+                                () => {setSeeStartDatePicker(true)},
+                                () => {setSeeStartDatePicker(false)}
+                    )}
+                    {   getInput('???? ?? ???????',
+                                filterEndDate,
+                                (x) => {setFilterEndDate(x)},
+                                undefined,
+                                () => {setSeeEndDatePicker(true)},
+                                () => {setSeeEndDatePicker(false)}
+                    )}
+                </View>
+                {seeStartDatePicker? (
+                    <DatePicker 
+                        showPicker={() => {setSeeStartDatePicker(false)} }
+                        useValue={(v: Date) => {
+                            setFilterStartDate( return_date_formated(v)) }}
+                    />
+                ): null}
+
+                {seeEndDatePicker? (
+                    <DatePicker 
+                        showPicker={() => {setSeeEndDatePicker(false)}} 
+                        useValue={(v: Date) => {
+                            setFilterEndDate( return_date_formated(v))
+                        }}
+                    />
+                ): null}   
+            <PurchasedMonthlyCards search={searchValue} startDate = {filterStartDate != "" ? new Date(filterStartDate): null} endDate = {filterEndDate != ""? new Date(filterEndDate): null} />
         </Screen>
     )
 })
+const getInput = (placeholder, operatedVariable, setVarState, width='45%', onF, onB) => {
+    return (
+        <View
+            style={[
+                // border_boxes().black,
+                {
+                width: width,
+                marginVertical: 5,
+                margin: 5,
+            }]}
+        >
+            <Hoshi 
+                autoCapitalize='none'
+                autoCompleteType="off"
+                autoCorrect={false}
+                value={operatedVariable}
+                onChangeText={x => setVarState(x)}
+                // placeholder={placeholder}
+                placeholderTextColor={'#999999'}
+                // containerStyle={{paddingHorizontal: 0}}
+                // inputContainerStyle={styles.inputContainerStyle}          
+                inputStyle={{fontSize: 16}}
+
+                onFocus={() => onF()}
+                onBlur={() => onB()}
+                label={placeholder}
+                labelStyle={[styles.inputTextStyle, {marginBottom: 10}]}
+                defaultValue={operatedVariable}
+                borderColor={color.palette.blue_sbs}
+                inputPadding={3}
+            />
+
+        </View>
+    )
+}
