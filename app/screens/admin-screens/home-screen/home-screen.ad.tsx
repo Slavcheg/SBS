@@ -38,7 +38,7 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
             preset="scroll"
             unsafe={false} 
             style={{
-                flex: 1, 
+                flexGrow: 1, 
                 flexDirection: 'column',
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
