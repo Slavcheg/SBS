@@ -26,7 +26,7 @@ export function DatePicker({showPicker, useValue}) {
           onChange={(e, d) => {
             const currentDate = d || date;
             setDate(currentDate)
-            showPicker(Platform.OS === 'ios');
+            //showPicker(Platform.OS === 'ios');
             useValue(currentDate)
           }}
         />

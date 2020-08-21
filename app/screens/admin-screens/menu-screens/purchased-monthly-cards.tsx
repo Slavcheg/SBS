@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons'
 import { DataTable } from 'react-native-paper';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { Hoshi } from 'react-native-textinput-effects';
@@ -18,81 +19,112 @@ export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, sta
     useEffect(() => {
         cardStore.getCards()
     }, [])
-    
-    return(
-        <DataTable>
-            <DataTable.Header accessibilityValue={''} focusable={true}>
-                <DataTable.Title accessibilityValue={''}>??????</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >????</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >???? ?? ???????</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >???? ??</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >????? ?/?</DataTable.Title>
-            </DataTable.Header>
-            {
-                cardStore.cards
-                .filter(item => 
-                    item.item.type === 'month' 
-                    && (props.search !="" ?item.item.client.indexOf(props.search) >= 0:true) == true 
-                    && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
-                    && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
-                    && item.item.visits.length > 0 )
-                .map((card, key) => {
-                const item = card.item
-                
-                return (
-                    <DataTable.Row
-                        accessibilityValue={''}
-                        key={key}
-                        style={[{
-                            paddingVertical: 5,
-                            width: '100%',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
-                        }]}
-                    >
-                        <DataTable.Cell
-                            accessibilityValue={''}
-                            // key={key} 
-                            // style={[{color: 'black'}]}
-                        >
-                            {item.client.split('@', 1) + '   '}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                            accessibilityValue={''}
-                            // key={key} 
-                            // style={[{color: 'black'}]}
-                        >
-                            {item.price}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                            accessibilityValue={''}
-                            // key={key} 
-                            // style={[{color: 'black'}]}
-                        >
-                            {item.datePayment}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                            accessibilityValue={''}
-                            // key={key} 
-                            // style={[{color: 'black'}]}
-                        >
-                            {item.dateStart}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                            accessibilityValue={''}
-                            // key={key} 
-                            // style={[{color: 'black'}]}
-                        >
-                            {item.card_limit}
-                        </DataTable.Cell>
+    function exportGoogleSheet(){
 
-                    </DataTable.Row>
-                
-                )
-                })
-            }
-        </DataTable>
+    }
+    return(
+        <View
+            style={[
+                {                    
+                    width: '100%',                    
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-end'
+                }
+            ]}
+        >
+            <TouchableOpacity
+                    onPress={() => exportGoogleSheet()}
+                    style={[
+                        // border_boxes().green,
+                        {
+                        width: '20%',
+                        margin: 15,
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                    }]}
+                >
+                    <FontAwesomeIcon 
+                        icon={ faFileExcel }
+                        color={color.palette.green_sbs}
+                        size={30}
+                    />
+                </TouchableOpacity>
+            <DataTable>
+                <DataTable.Header accessibilityValue={''} focusable={true}>
+                    <DataTable.Title accessibilityValue={''}>Клиент</DataTable.Title>
+                    <DataTable.Title accessibilityValue={''} >Цена</DataTable.Title>
+                    <DataTable.Title accessibilityValue={''} >Дата на плащане</DataTable.Title>
+                    <DataTable.Title accessibilityValue={''} >Важи от</DataTable.Title>
+                    <DataTable.Title accessibilityValue={''} >Лимит м/в</DataTable.Title>
+                </DataTable.Header>
+                {
+                    cardStore.cards
+                    .filter(item => 
+                        item.item.type === 'month' 
+                        && (props.search !="" ?item.item.client.indexOf(props.search) >= 0:true) == true 
+                        && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
+                        && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
+                        && item.item.visits.length > 0 )
+                    .map((card, key) => {
+                    const item = card.item
+                    
+                    return (
+                        <DataTable.Row
+                            accessibilityValue={''}
+                            key={key}
+                            style={[{
+                                paddingVertical: 5,
+                                width: '100%',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
+                            }]}
+                        >
+                            <DataTable.Cell
+                                accessibilityValue={''}
+                                // key={key} 
+                                // style={[{color: 'black'}]}
+                            >
+                                {item.client.split('@', 1) + '   '}
+                            </DataTable.Cell>
+                            <DataTable.Cell
+                                accessibilityValue={''}
+                                // key={key} 
+                                // style={[{color: 'black'}]}
+                            >
+                                {item.price}
+                            </DataTable.Cell>
+                            <DataTable.Cell
+                                accessibilityValue={''}
+                                // key={key} 
+                                // style={[{color: 'black'}]}
+                            >
+                                {item.datePayment}
+                            </DataTable.Cell>
+                            <DataTable.Cell
+                                accessibilityValue={''}
+                                // key={key} 
+                                // style={[{color: 'black'}]}
+                            >
+                                {item.dateStart}
+                            </DataTable.Cell>
+                            <DataTable.Cell
+                                accessibilityValue={''}
+                                // key={key} 
+                                // style={[{color: 'black'}]}
+                            >
+                                {item.card_limit}
+                            </DataTable.Cell>
+
+                        </DataTable.Row>
+                    
+                    )
+                    })
+                }
+            </DataTable>
+        </View>
+        
     )
 })
 
@@ -122,7 +154,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                     backgroundColor: 'white',
                     paddingHorizontal: 25
                 }}
-                title='???????? ??????? ?????'
+                title='Закупени месечни карти'
             />
             <View
                 style={[
@@ -137,57 +169,46 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                     }
                 ]}
             >
-                <Input_Hoshi    
-                    width='75%'      
-                    placeholder={'search'} 
-                    variable={searchValue}
-                    setVariable={val => setSearchValue(val)}
-                    background={'white'}
-                />
                 <View
-                    style={[{
-                        flexDirection: 'row',
-                        flexGrow: 1
-                    }]}
-                ></View>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('payments')}
-                    style={[
-                        // border_boxes().green,
-                        {
-                        width: '20%',
-                        justifyContent: 'center',
-                        alignItems: 'flex-end',
-                    }]}
+                    style={
+                        [{
+                            flexDirection: 'column',
+                            width: "75%"
+                        }]
+                    }
                 >
-                    <FontAwesomeIcon 
-                        icon={ faPlusCircle }
-                        color={color.palette.green_sbs}
-                        size={60}
+                    <Input_Hoshi    
+                        width = "100%"     
+                        placeholder={'search'} 
+                        variable={searchValue}
+                        setVariable={val => setSearchValue(val)}
+                        background={'white'}
                     />
-                </TouchableOpacity>
-               
-            </View>
-            <View
-                    style={[
-                        styles.rowSpace
-                    ]}
-                >
-                    {   getInput('???? ?? ???????',
-                                filterStartDate,
-                                (x) => {setFilterStartDate(x)},
-                                undefined,
-                                () => {setSeeStartDatePicker(true)},
-                                () => {setSeeStartDatePicker(false)}
-                    )}
-                    {   getInput('???? ?? ???????',
-                                filterEndDate,
-                                (x) => {setFilterEndDate(x)},
-                                undefined,
-                                () => {setSeeEndDatePicker(true)},
-                                () => {setSeeEndDatePicker(false)}
-                    )}
+                    <View
+                        style={[{
+                            flexDirection: 'row',
+                            flexGrow: 1,
+                            width: "100%"
+                        }]}
+                    >
+                        {   getInput('Дата на плащане',
+                                    filterStartDate,
+                                    (x) => {setFilterStartDate(x)},
+                                    undefined,
+                                    () => {setSeeStartDatePicker(true)},
+                                    () => {setSeeStartDatePicker(false)}
+                        )}
+                        {   getInput('Дата на картата',
+                                    filterEndDate,
+                                    (x) => {setFilterEndDate(x)},
+                                    undefined,
+                                    () => {setSeeEndDatePicker(true)},
+                                    () => {setSeeEndDatePicker(false)}
+                        )}
+                    </View>
                 </View>
+                
+               
                 {seeStartDatePicker? (
                     <DatePicker 
                         showPicker={() => {setSeeStartDatePicker(false)} }
@@ -204,7 +225,27 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         }}
                     />
                 ): null}   
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('payments')}
+                    style={[
+                        // border_boxes().green,
+                        {
+                        width: '25%',
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                    }]}
+                >
+                    <FontAwesomeIcon 
+                        icon={ faPlusCircle }
+                        color={color.palette.green_sbs}
+                        size={60}
+                    />
+                </TouchableOpacity>
+               
+            </View>
+            
             <PurchasedMonthlyCards search={searchValue} startDate = {filterStartDate != "" ? new Date(filterStartDate): null} endDate = {filterEndDate != ""? new Date(filterEndDate): null} />
+            
         </Screen>
     )
 })
