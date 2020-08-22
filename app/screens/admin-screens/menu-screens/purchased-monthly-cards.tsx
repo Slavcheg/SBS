@@ -14,13 +14,38 @@ import { SwipeRow } from 'react-native-swipe-list-view';
 import { Hoshi } from 'react-native-textinput-effects';
 import { DatePicker } from '../../../components-custom/date-picker/date-picker';
 import { return_date_formated} from '../../../global-helper';
+import {exportSpreadSheet} from '../../../services/spreadsheet/spreadsheet';
 export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, startDate: Date, endDate: Date}> = observer(props => {
     const cardStore = useStores().cardStore
     useEffect(() => {
         cardStore.getCards()
     }, [])
     function exportGoogleSheet(){
-
+       
+        var data = cardStore.cards
+                    .filter(item => 
+                        item.item.type === 'month' 
+                        && (props.search !="" ?item.item.client.indexOf(props.search) >= 0:true) == true 
+                        && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
+                        && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
+                        && item.item.visits.length > 0 ).map((card, key)=>{
+                            const item = card.item;
+                            return [
+                                item.client,
+                                item.price,
+                                item.datePayment,
+                                item.dateStart,
+                                item.card_limit
+                            ]
+                            
+                        });
+        data.unshift(["Клиент", "Цена", "Дата на плащане", "Важи от", "Лимит м/в"]);
+        var dataForSpreadSheet = {
+            "range": `Sheet1!A1:E${data.length}`,
+            "majorDimension": "ROWS",
+            "values": data
+        }
+        exportSpreadSheet(dataForSpreadSheet);
     }
     return(
         <View

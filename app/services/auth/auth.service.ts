@@ -28,6 +28,11 @@ let user = {
     logged: false
 }
 
+export async function getAccessToken():Promise<String>{
+    const {accessToken} = await GoogleSignin.getTokens();
+    return accessToken;
+}
+
 export class Auth {
     user$: Promise<{}>;
     static login(u) {
