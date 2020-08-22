@@ -221,14 +221,14 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                                     (x) => {setFilterStartDate(x)},
                                     undefined,
                                     () => {setSeeStartDatePicker(true)},
-                                    () => {setSeeStartDatePicker(false)}
+                                    () => {}
                         )}
                         {   getInput('Дата на картата',
                                     filterEndDate,
                                     (x) => {setFilterEndDate(x)},
                                     undefined,
                                     () => {setSeeEndDatePicker(true)},
-                                    () => {setSeeEndDatePicker(false)}
+                                    () => }
                         )}
                     </View>
                 </View>
@@ -236,7 +236,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                
                 {seeStartDatePicker? (
                     <DatePicker 
-                        showPicker={() => {setSeeStartDatePicker(false)} }
+                        showPicker={(state) => {setSeeStartDatePicker(state)} }
                         useValue={(v: Date) => {
                             setFilterStartDate( return_date_formated(v)) }}
                     />
@@ -244,7 +244,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
 
                 {seeEndDatePicker? (
                     <DatePicker 
-                        showPicker={() => {setSeeEndDatePicker(false)}} 
+                        showPicker={(state) => {setSeeEndDatePicker(state)}} 
                         useValue={(v: Date) => {
                             setFilterEndDate( return_date_formated(v))
                         }}

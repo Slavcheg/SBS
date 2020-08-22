@@ -15,7 +15,6 @@ export function DatePicker({showPicker, useValue}) {
 
   return (
     <View>
-        <View>
         <DateTimePicker
           testID="dateTimePicker"
           timeZoneOffsetInMinutes={0}
@@ -26,7 +25,7 @@ export function DatePicker({showPicker, useValue}) {
           onChange={(e, d) => {
             const currentDate = d || date;
             setDate(currentDate)
-            //showPicker(Platform.OS === 'ios');
+            showPicker(Platform.OS === 'ios');
             useValue(currentDate)
           }}
         />
@@ -35,7 +34,6 @@ export function DatePicker({showPicker, useValue}) {
             backgroundColor: 'white'
           }]}
         onPress={() => showPicker()}><Text>{'save & close'}</Text></Button>*/}
-        </View>
     </View>
   );
 }
