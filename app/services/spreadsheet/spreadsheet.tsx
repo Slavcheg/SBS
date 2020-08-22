@@ -4,6 +4,7 @@ export async function exportSpreadSheet(data){
     console.log(data);
     let accessToken = await getAccessToken() as String;
     console.log(accessToken);
+   
     const request = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets`,
         {
@@ -14,14 +15,15 @@ export async function exportSpreadSheet(data){
           },
           body: JSON.stringify({
             properties: {
-              title: "Report_" + new Date().toString(),
-            },
+              title: "Report" + new Date().toString(),
+              
+            }
           }),
         }
       );
     const spreadSheet = await request.json();
-    console.log(request.json());
-    const response = fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadSheet.spreadsheetId}/values/${data.range}?valueInputOption=USER_ENTERED`, {
+    data.range = data.range.replace("Sheet1", spreadSheet.sheets[0].properties.title);
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadSheet.spreadsheetId}/values/${data.range}?valueInputOption=USER_ENTERED`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json; charset=UTF-8',
@@ -29,5 +31,7 @@ export async function exportSpreadSheet(data){
         },
         body: JSON.stringify(data)
     });
-    return (await response).json();
+    const result = await response.json();
+    console.log(result);
+    return result;
 }
