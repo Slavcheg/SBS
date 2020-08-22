@@ -4,6 +4,7 @@ import auth from '@react-native-firebase/auth';
 
 export function googleInitialize() {
     GoogleSignin.configure({
+	scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         iosClientId: '1077690630800-bt3cqrn85q5g37datesf286mkuc37m78.apps.googleusercontent.com',
         webClientId: '1077690630800-4kbqjgj1fluvbsu111sa57dp17kdnedb.apps.googleusercontent.com',
         offlineAccess: false
