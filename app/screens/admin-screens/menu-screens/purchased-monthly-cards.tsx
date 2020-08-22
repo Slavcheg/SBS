@@ -228,7 +228,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                                     (x) => {setFilterEndDate(x)},
                                     undefined,
                                     () => {setSeeEndDatePicker(true)},
-                                    () => }
+                                    () => {}
                         )}
                     </View>
                 </View>
