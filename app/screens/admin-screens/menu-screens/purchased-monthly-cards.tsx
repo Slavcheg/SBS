@@ -15,12 +15,14 @@ import { Hoshi } from 'react-native-textinput-effects';
 import { DatePicker } from '../../../components-custom/date-picker/date-picker';
 import { return_date_formated} from '../../../global-helper';
 import {exportSpreadSheet} from '../../../services/spreadsheet/spreadsheet';
-export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, startDate: Date, endDate: Date}> = observer(props => {
+import {Snack} from '../../../components-custom/snack/snack';
+export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, startDate: Date, endDate: Date, setShowSnack: Function}> = observer(props => {
     const cardStore = useStores().cardStore
     useEffect(() => {
         cardStore.getCards()
     }, [])
-    function exportGoogleSheet(){
+    
+    async function exportGoogleSheet(){
        
         var data = cardStore.cards
                     .filter(item => 
@@ -45,7 +47,10 @@ export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, sta
             "majorDimension": "ROWS",
             "values": data
         }
-        exportSpreadSheet(dataForSpreadSheet);
+        var result = await exportSpreadSheet(dataForSpreadSheet);
+        if(result){
+            props.setShowSnack(true);
+        }
     }
     return(
         <View
@@ -148,6 +153,7 @@ export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, sta
                     })
                 }
             </DataTable>
+           
         </View>
         
     )
@@ -161,6 +167,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
     const [filterEndDate, setFilterEndDate] = useState('');
     const [seeEndDatePicker, setSeeEndDatePicker] = useState(false);
     const [seeStartDatePicker, setSeeStartDatePicker] = useState(false);
+    const [showSnack, setShowSnack] = useState(false);
     return (
         <Screen
             preset="scroll"
@@ -220,14 +227,14 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                                     filterStartDate,
                                     (x) => {setFilterStartDate(x)},
                                     undefined,
-                                    () => {setSeeStartDatePicker(true)},
+                                    () => {console.log("focus");setSeeStartDatePicker(true)},
                                     () => {}
                         )}
                         {   getInput('Дата на картата',
                                     filterEndDate,
                                     (x) => {setFilterEndDate(x)},
                                     undefined,
-                                    () => {setSeeEndDatePicker(true)},
+                                    () => {console.log("focus");setSeeEndDatePicker(true)},
                                     () => {}
                         )}
                     </View>
@@ -236,15 +243,15 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                
                 {seeStartDatePicker? (
                     <DatePicker 
-                        showPicker={(state) => {setSeeStartDatePicker(state)} }
+                        showPicker={(state) => {console.log(state);setSeeStartDatePicker(state)} }
                         useValue={(v: Date) => {
                             setFilterStartDate( return_date_formated(v)) }}
                     />
                 ): null}
 
-                {seeEndDatePicker? (
+                {seeEndDatePicker? (                    
                     <DatePicker 
-                        showPicker={(state) => {setSeeEndDatePicker(state)}} 
+                        showPicker={(state) => {console.log(state);setSeeEndDatePicker(state)}} 
                         useValue={(v: Date) => {
                             setFilterEndDate( return_date_formated(v))
                         }}
@@ -269,8 +276,10 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                
             </View>
             
-            <PurchasedMonthlyCards search={searchValue} startDate = {filterStartDate != "" ? new Date(filterStartDate): null} endDate = {filterEndDate != ""? new Date(filterEndDate): null} />
-            
+            <PurchasedMonthlyCards search={searchValue} startDate = {filterStartDate != "" ? new Date(filterStartDate): null} endDate = {filterEndDate != ""? new Date(filterEndDate): null} setShowSnack = {(state)=>setShowSnack(state)} />
+            {showSnack ? 
+                <Snack message={'Saved !'} onDismiss={() => {setShowSnack(false)}} duration = {3000}/>
+            : null}
         </Screen>
     )
 })
