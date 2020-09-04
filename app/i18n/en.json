@@ -23,7 +23,7 @@
     "progressCircleTextBottom": "from card"
   },
   "trainerHomeScreen": {
-    "trainingsTodaySquareButtonCaption": "Trainings today",
+    "trainingsTodaySquareButtonCaption": "Trainings",
     "clientsButtonCaption": "Clients",
     "adminSquareButtonCaption": "Admin",
     "progressCircleTextTop": "trainings",

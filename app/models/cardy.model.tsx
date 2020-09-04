@@ -36,7 +36,9 @@ export class Cardy implements ICardy {
 export const MCardItem = types.model({
     active : true,
     trainer : '',
+    trainers: types.optional(types.array(types.string), []),
     client : '',
+    clients: types.optional(types.array(types.string), []),
     datePayment : return_todays_date(),
     dateStart : return_todays_date(),
     type : '',

@@ -9,6 +9,10 @@ import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
 import crashlytics from '@react-native-firebase/crashlytics';
+import { Button } from "react-native-elements";
+
+import {IUser2} from "../../../models/sub-stores/v2-user-store"
+import { IUser } from "../../../models/user.model";
 
 interface HomeScreenTrainerProps extends NavigationProps {}
 
@@ -17,19 +21,22 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
     const menuList = require('./menu-list-tr.json');
     const menu = menuList.map((el, i) => {
     const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
-        return  <ButtonSquare 
-                    style={{marginTop: 20}} 
-                    key={i} 
-                    title={translate(el.title)}
-                    onPress={onPress}
-                    leftIcon={el.iconLeft}
-                    rightIcon={el.iconRight}
-                ></ButtonSquare>
+        return  el.show ? 
+                    <ButtonSquare 
+                        style={{marginTop: 20}} 
+                        key={i} 
+                        title={translate(el.title)}
+                        onPress={onPress}
+                        leftIcon={el.iconLeft}
+                        rightIcon={el.iconRight}
+                    ></ButtonSquare>
+                : null
     })
     const rootStore = useStores()
+    const User2Strore = useStores().user2Store
     rootStore.hideLoader()
     useEffect(() => {
-
+        User2Strore.getItems()
     }, [])
 
     return (
@@ -85,6 +92,29 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                         >{translate('trainerHomeScreen.progressCircleTextBottom') + ' ' + return_todays_date()}</Text>
                     </View>            
                 </ProgressCircle>
+            <Button 
+                containerStyle={[{
+                    margin: 10
+                }]}
+                raised={true}
+                title={'Create user2'}
+                onPress={()=>{
+                    let user: IUser2 = {
+                        email: 'asdad'
+                    }
+                    user.first = 'asd'
+                    User2Strore.addItem(user)
+                }}
+            />
+            <Button 
+                containerStyle={[{
+                    margin: 10
+                }]}
+                raised={true}
+                title={'List users'}
+                onPress={()=> User2Strore.users.map(i => console.log(i.item.email))}
+            />
+            
             </View>
             <View 
                 style={[

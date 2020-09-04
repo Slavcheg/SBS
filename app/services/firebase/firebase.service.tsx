@@ -32,16 +32,16 @@ export const updateItem = async (id: string, item: any, collection: string) => {
     });
 }
 export const getItems = async (collection :string)=>{
-    let items = [];  
+    let newItems = [];  
     await firestore()
     .collection(collection)
     .get()
-    .then(querySnapshot => {
-        querySnapshot.forEach(documentSnapshot => {
-        items.push(documentSnapshot);
+    .then(items => {
+        items.forEach(item => {
+            newItems.push({id:item.id,item: item.data() });
         });
     });
-    return items;
+    return newItems;
 }
 export const firebaseSnapShot = async (props: SnapShotProps)=>{
     const ref = firestore().collection(props.Type);
@@ -53,3 +53,29 @@ export const firebaseSnapShot = async (props: SnapShotProps)=>{
             props.RefreshHandler(newItems); 
         })      
 }
+
+const fb_addItem = addItem
+const fb_updateItem = updateItem
+const fb_deleteItem = deleteItem
+
+export const firebaseFuncs = <T extends {}>(listOfItems, collection) => ({
+    async addItem(newItem: T){
+        await fb_addItem(newItem, collection);
+    },
+
+    async updateItem(id, newItem){
+        await fb_updateItem(id, newItem, collection);
+    },
+
+    refreshItems(items){
+        listOfItems = items
+    },
+
+    async deleteItem(id){
+        await fb_deleteItem(id, collection);
+    },
+
+    async getItems(){
+        firebaseSnapShot({Type: collection, RefreshHandler: this.refreshItems});  
+    }
+})

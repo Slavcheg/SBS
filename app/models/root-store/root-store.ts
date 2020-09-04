@@ -7,6 +7,9 @@ import { GymHallStoreModel } from "../sub-stores/gymhall-store";
 import { ReferralStoreModel } from "../sub-stores/referral-store";
 import { MonthlyCardStoreModel } from "../sub-stores/monthly-card-store";
 import { VisitsCardStoreModel } from "../sub-stores/visits-cards";
+import { UserStoreModel2 } from "../sub-stores/v2-user-store";
+import { CardTypesStoreModel2 } from "../sub-stores/v2-cardy-types-store";
+import { CardStoreModel2 } from "../sub-stores/v2-cardy-store";
 
 /**
  * A RootStore model.
@@ -19,6 +22,12 @@ export const RootStoreModel = types.model("RootStore").props({
     visitsCardStore: types.optional(VisitsCardStoreModel,{}),
     gymHallStore: types.optional(GymHallStoreModel,{}),
     referralStore: types.optional(ReferralStoreModel,{}),
+
+
+    user2Store: types.optional(UserStoreModel2,{}),
+    cardyTypes2Store: types.optional(CardTypesStoreModel2,{}),
+    cardy2Store: types.optional(CardStoreModel2,{}),
+    
     sessionStore: types.optional(SessionStoreModel,{}),
     progressLoader: types.optional(types.boolean, false),
 })

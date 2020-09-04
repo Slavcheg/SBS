@@ -2,18 +2,20 @@
     "iconLeft": "bl_trainings_today",
     "title": "trainerHomeScreen.trainingsTodaySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
-    "onClick": "training_today"
+    "onClick": "training_today",
+    "show": true
 },
 {
     "iconLeft": "bl_clients",
     "title": "trainerHomeScreen.clientsButtonCaption",
     "iconRight": "bl_arrow_forward",
-    "onClick": "clients_list"
+    "onClick": "clients_list",
+    "show": false
 },
 {
     "iconLeft": "bl_payments",
     "title": "trainerHomeScreen.adminSquareButtonCaption",
     "iconRight": "bl_arrow_forward",
-    "onClick": "home_ad"
-}
-]
+    "onClick": "home_ad",
+    "show": true
+}]
