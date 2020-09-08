@@ -24,9 +24,9 @@ export const RootStoreModel = types.model("RootStore").props({
     referralStore: types.optional(ReferralStoreModel,{}),
 
 
-    user2Store: types.optional(UserStoreModel2,{}),
-    cardyTypes2Store: types.optional(CardTypesStoreModel2,{}),
-    cardy2Store: types.optional(CardStoreModel2,{}),
+    userStore2: types.optional(UserStoreModel2,{}),
+    cardyTypesStore2: types.optional(CardTypesStoreModel2,{}),
+    cardyStore2: types.optional(CardStoreModel2,{}),
     
     sessionStore: types.optional(SessionStoreModel,{}),
     progressLoader: types.optional(types.boolean, false),

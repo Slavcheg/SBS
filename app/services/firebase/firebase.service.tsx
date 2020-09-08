@@ -58,7 +58,7 @@ const fb_addItem = addItem
 const fb_updateItem = updateItem
 const fb_deleteItem = deleteItem
 
-export const firebaseFuncs = <T extends {}>(listOfItems, collection) => ({
+export const firebaseFuncs = <T extends {}>(refreshItems, collection) => ({
     async addItem(newItem: T){
         await fb_addItem(newItem, collection);
     },
@@ -67,15 +67,11 @@ export const firebaseFuncs = <T extends {}>(listOfItems, collection) => ({
         await fb_updateItem(id, newItem, collection);
     },
 
-    refreshItems(items){
-        listOfItems = items
-    },
-
     async deleteItem(id){
         await fb_deleteItem(id, collection);
     },
 
     async getItems(){
-        firebaseSnapShot({Type: collection, RefreshHandler: this.refreshItems});  
+        firebaseSnapShot({Type: collection, RefreshHandler: refreshItems});  
     }
 })

@@ -26,6 +26,8 @@ const User2 = types.model('User2',{
     first : types.optional(types.string, ''),
     last : types.optional(types.string, ''),
 
+    referral : types.optional(types.string, ''),
+
     isClient: types.optional(types.boolean, false),
     isTrainer: types.optional(types.boolean, false),
     isAdmin: types.optional(types.boolean, false),
@@ -48,8 +50,17 @@ export const UserStoreModel2 = types.model('RootStore').props({
     collection: 'users2'
 })
 
-
-.actions(self => firebaseFuncs<IUser2>(self.users, self.collection))
+.actions(self => ({
+    refreshItems(items){
+        self.users = items
+    },
+}))
+.actions(self => 
+    firebaseFuncs<IUser2>(
+        self.refreshItems,
+        self.collection
+    )
+)
 .actions(self => ({
 
     async addToDiary(userId: string, newDiaryEntry: IDiaryItem){
@@ -67,7 +78,8 @@ export const UserStoreModel2 = types.model('RootStore').props({
         self.updateItem(userId, getSnapshot(user.item))
     },
 
-    clientLogIn(gen_num, password) {   
+    clientLogIn(gen_num, password) {  
+        console.log(gen_num, password) 
         try {
             return self.users
             .filter(x => x.item.isClient == true)
