@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { spacing, color } from '../../../theme';
 import {Screen, MainHeader_Tr, ButtonSquare } from '../../../components'
 import ProgressCircle from 'react-native-progress-circle'
-import { return_todays_date, today_vs_last_day } from "../../../global-helper";
+import { displayDateFromTimestamp, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
@@ -89,7 +89,7 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                             style={{
                                 color: '#666666'
                             }}
-                        >{translate('trainerHomeScreen.progressCircleTextBottom') + ' ' + return_todays_date()}</Text>
+                        >{translate('trainerHomeScreen.progressCircleTextBottom') + ' ' + displayDateFromTimestamp()}</Text>
                     </View>            
                 </ProgressCircle>
             <Button 

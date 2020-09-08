@@ -2,16 +2,18 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, Platform} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from '../../components/button/button';
+import moment from 'moment'
+import { getStampFromDate } from '../../global-helper';
 
-export function DatePicker({showPicker, useValue}) {
-  const [date, setDate] = useState(new Date(1598051730000));
+interface DatePickerProps {
+  showPicker: Function,
+  inputDateStamp: number,
+  onDateChange: Function
+}
 
-  // const onChange = (event, selectedDate) => {
-  //   const currentDate = selectedDate || date;
-  //   setDate(currentDate);
-  //   console.log(date);
-  //   (date) => useValue(date)
-  // };
+export const DatePicker: React.FunctionComponent<DatePickerProps> = props => {
+  const {showPicker, inputDateStamp, onDateChange} = props
+  const [date, setDate] = useState<Date>(moment(inputDateStamp).toDate() || moment().toDate());
 
   return (
     <View>
@@ -22,18 +24,16 @@ export function DatePicker({showPicker, useValue}) {
           mode={'date'}
           is24Hour={true}
           display="default"
-          onChange={(e, d) => {
-            const currentDate = d || date;
-            setDate(currentDate)
-            showPicker(Platform.OS === 'ios');
-            useValue(currentDate)
+          onChange={(event, _date) => {
+            setDate(_date)
+            onDateChange(getStampFromDate(_date))
           }}
         />
-        {/*<Button 
+        <Button 
           style={[{
             backgroundColor: 'white'
           }]}
-        onPress={() => showPicker()}><Text>{'save & close'}</Text></Button>*/}
+        onPress={() => showPicker()}><Text>{'save & close'}</Text></Button>
     </View>
   );
 }

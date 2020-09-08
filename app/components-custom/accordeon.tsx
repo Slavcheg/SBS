@@ -4,7 +4,7 @@ import { Avatar, Icon } from 'react-native-elements';
 import { color, spacing } from '../theme';
 import { Button } from '../components/button/button'
 import { DatePicker } from './date-picker/date-picker'
-import { return_date_formated, border_boxes, globalStyles } from '../global-helper';
+import { border_boxes, globalStyles, moment_date_formats, today_vs_last_day, displayDateFromTimestamp } from '../global-helper';
 import { Hoshi } from 'react-native-textinput-effects';
 import { Snack } from './snack/snack';
 import { Api } from '../services/api';
@@ -12,10 +12,11 @@ import { Progress_Loader } from './progress-loader/progress-loader';
 import { ICardy, Cardy } from '../models';
 import { addItem} from '../services/firebase/firebase.service';
 import { observer } from "mobx-react-lite";
-import {useStores } from "../models/root-store"
+import { useStores } from "../models/root-store"
 import { AddClientDialog } from '../components';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import moment from 'moment'
 
 const styles = StyleSheet.create({
     rowSpace: {
@@ -449,15 +450,15 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                             ]}
                         >
                             {   getInput('Дата на плащане',
-                                        this.state.cardy.datePayment,
-                                        (x) => {this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, datePayment:  x}}))},
+                                        displayDateFromTimestamp(this.state.cardy.datestampPayment),
+                                        (x) => {this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, datestampPayment:  x}}))},
                                         undefined,
                                         () => {this.setState({ seeDatePaymentPicker:  true})},
                                         () => {}
                             )}
                             {   getInput('Дата на картата',
-                                        this.state.cardy.dateStart,
-                                        (x) => {this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, dateStart:  x}}))},
+                                        displayDateFromTimestamp(this.state.cardy.datestampStart),
+                                        (x) => {this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, datestampStart:  x}}))},
                                         undefined,
                                         () => {this.setState({ seeDateStartPicker:  true})},
                                         () => {}
@@ -465,18 +466,20 @@ class Accordion_Panel extends Component<{item: any, onClickFunction, activateSna
                         </View>
                         {this.state.seeDatePaymentPicker? (
                             <DatePicker 
-                                showPicker={() => {this.setState({seeDatePaymentPicker: false})}} 
-                                useValue={(v: Date) => {
-                                    this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, datePayment: return_date_formated(v) }}))
+                                showPicker={() => {this.setState({seeDatePaymentPicker: false})}}
+                                inputDateStamp={this.state.cardy.datestampPayment}
+                                onDateChange={(_dateStamp: number) => {
+                                    this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, datestampPayment: _dateStamp }}))
                                 }}
                             />
                         ): null}
 
                         {this.state.seeDateStartPicker? (
                             <DatePicker 
-                                showPicker={() => {this.setState({seeDateStartPicker: false})}} 
-                                useValue={(v: Date) => {
-                                    this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, dateStart: return_date_formated(v) }}))
+                                showPicker={() => {this.setState({seeDateStartPicker: false})}}
+                                inputDateStamp={this.state.cardy.datestampStart}
+                                onDateChange={(_dateStamp: number) => {
+                                    this.setState(prevSt => ({...prevSt, cardy: {...prevSt.cardy, datestampStart: _dateStamp }}))
                                 }}
                             />
                         ): null}                    
