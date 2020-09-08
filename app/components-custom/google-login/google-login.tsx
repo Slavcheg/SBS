@@ -9,10 +9,10 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { border_boxes } from "../../global-helper"
 
 export function GoogleLogin({navigation}) {
-  const {userStore, sessionStore} = useStores()
+  const {userStore2, sessionStore} = useStores()
   const rootStore = useStores()
     useEffect(() => {
-      userStore.ggetItems()
+      userStore2.getItems()
     }, [])
 
     return (
@@ -29,7 +29,7 @@ export function GoogleLogin({navigation}) {
             }}
             onPress={() => onGoogleButtonPress(rootStore.showLoader).then((x) => {              
               // Do after login successful
-              if (userStore.isUserExistend(x.additionalUserInfo.profile)){                
+              if (userStore2.isUserExistend(x.additionalUserInfo.profile)){                
                 sessionStore.logIn(x.additionalUserInfo.profile.email)
                 navigation.navigate('home_tr')
               } else {

@@ -63,19 +63,22 @@ export const UserStoreModel2 = types.model('RootStore').props({
 )
 .actions(self => ({
 
-    async addToDiary(userId: string, newDiaryEntry: IDiaryItem){
+    async addToDiary(userEmail: string, newDiaryEntry: IDiaryItem){
         let user = self.users
-            .find(user => user.id === userId)
+            .find(user => user.item.email === userEmail)
         user.item.diary.push(newDiaryEntry)
-        self.updateItem(userId, getSnapshot(user.item))
+        self.updateItem(user.id, getSnapshot(user.item))
+            .then(res => {
+                console.log(res)
+            })
     },
 
-    async deleteFromDiary(userId: string, diaryEntry: IDiaryItem){        
+    async deleteFromDiary(userEmail: string, diaryEntry: IDiaryItem){        
         let user = self.users
-            .find(user => user.id === userId)
+            .find(user => user.item.email === userEmail)
         let index = user.item.diary.indexOf(diaryEntry, 0)
-        user.item.diary.splice(index)
-        self.updateItem(userId, getSnapshot(user.item))
+        user.item.diary.splice(index, 1)
+        self.updateItem(user.id, getSnapshot(user.item))
     },
 
     clientLogIn(gen_num, password) {  

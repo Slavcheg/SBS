@@ -12,10 +12,10 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from 'react-native-swipe-list-view';
 
 export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
-    const { userStore, sessionStore } = useStores()
+    const { userStore2, sessionStore } = useStores()
 
     useEffect(() => {
-        userStore.ggetItems()
+        userStore2.getItems()
     }, [])
 
     return(
@@ -28,13 +28,12 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
             </DataTable.Header>
 
             {
-                userStore.users
+                userStore2.users
                     .find(user => 
                         user.item.email === sessionStore.userEmail
                     )
                     .item.diary
                         .map((diaryItem, index) => {
-                            let item = userStore.decodeDiaryItem(diaryItem)
                             return (
                                 <SwipeRow 
                                     key={index}
@@ -43,9 +42,9 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                                      <View style={styles.standaloneRowBack}>
                                         <TouchableOpacity
                                             style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
-                                            onPress={() => userStore.deleteDiaryItem(
+                                            onPress={() => userStore2.deleteFromDiary(
                                                 sessionStore.userEmail,
-                                                userStore.encodeDiaryItem(item)
+                                                diaryItem
                                             )}
                                         >
                                             <Text style={styles.backTextWhite}>Delete</Text>
@@ -57,16 +56,16 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                                         key={index}
                                     >
                                         <DataTable.Cell accessibilityValue={''}>
-                                            {item.date}
+                                            {diaryItem.date}
                                         </DataTable.Cell>
                                         <DataTable.Cell accessibilityValue={''}>
-                                            {item.weight}
+                                            {diaryItem.weight}
                                         </DataTable.Cell>
                                         <DataTable.Cell accessibilityValue={''}>
-                                            {item.calories}
+                                            {diaryItem.calories}
                                         </DataTable.Cell>
                                         <DataTable.Cell accessibilityValue={''}>
-                                            {item.protein}
+                                            {diaryItem.protein}
                                         </DataTable.Cell>
                                     </DataTable.Row>
                                 </SwipeRow>                                
@@ -80,13 +79,13 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
 interface DiaryScreenProps extends NavigationProps {}
 export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(props => {
     const { navigation } = props
-    const { userStore, sessionStore } = useStores()
+    const { userStore2, sessionStore } = useStores()
     const [date, setDate] = useState('')
     const [weight, setWeight] = useState('')
     const [calories, setCalories] = useState('')
     const [protein, setProtein] = useState('')
     useEffect(() => {
-        userStore.ggetItems()
+        userStore2.getItems()
     }, [])
     return(
         <Screen
@@ -166,11 +165,14 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
             </View>
             <TouchableOpacity
                 onPress={() => {
-                    userStore.updateDiary(sessionStore.userEmail,
-                        date,
-                        weight,
-                        calories,
-                        protein
+                    userStore2.addToDiary(sessionStore.userEmail,
+                        {
+                            id: Math.random(),
+                            date: 0,
+                            weight: +weight,
+                            calories: +calories,
+                            protein: +protein
+                        }
                     )
                     setDate('')
                     setWeight('')
