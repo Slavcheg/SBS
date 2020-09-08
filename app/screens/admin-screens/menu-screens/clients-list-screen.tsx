@@ -12,9 +12,9 @@ import { SwipeRow } from 'react-native-swipe-list-view';
 import { border_boxes } from "../../../global-helper";
 
 export const GetClients: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
-    const userStore = useStores().userStore2    
+    const userStore2 = useStores().userStore2    
     useEffect(() => {
-        userStore.getItems()
+        userStore2.getItems()
     }, [])
 
     return (
@@ -24,7 +24,7 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
             }]}
         >
             {
-                userStore.clients
+                userStore2.clients
                     .filter(trainer => props.search !== ''? trainer.item.email.toLocaleLowerCase().includes(props.search): true)
                     .map((user, key) => {
                         const item = user.item
@@ -47,7 +47,7 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                                             styles.backRightBtn,
                                             styles.backRightBtnRight
                                         ]}
-                                        onPress={() => userStore.deleteItem(user.id)}
+                                        onPress={() => userStore2.deleteItem(user.id)}
                                     >
                                         <Text style={styles.backTextWhite}>Delete</Text>
                                     </TouchableOpacity>

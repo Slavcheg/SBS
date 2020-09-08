@@ -14,13 +14,26 @@ import { Button } from "react-native-elements";
 import {IUser2} from "../../../models/sub-stores/v2-user-store"
 import { IUser } from "../../../models/user.model";
 
-interface HomeScreenTrainerProps extends NavigationProps {}
+interface menuProps extends NavigationProps {}
 
-export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> = observer(props => {
+const MenuButtonsList: React.FunctionComponent<menuProps> = observer(props => {
     const { navigation } = props
+    const sessionStore = useStores().sessionStore
+    const userStore2 = useStores().userStore2
+    const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false)
+    
+    useEffect(() => {
+        userStore2.getItems()
+        let user = userStore2.users.find(user => user.item.email === sessionStore.userEmail)
+        setIsUserAdmin(user.item.isAdmin)
+        console.log('user is admin: ', isUserAdmin)
+    }, [isUserAdmin])
+
     const menuList = require('./menu-list-tr.json');
-    const menu = menuList.map((el, i) => {
-    const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
+    return menuList.map((el, i) => {
+        const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
+        
+        if (el.needsAdminRights && !isUserAdmin) return null
         return  el.show ? 
                     <ButtonSquare 
                         style={{marginTop: 20}} 
@@ -32,9 +45,19 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                     ></ButtonSquare>
                 : null
     })
+})
+
+interface HomeScreenTrainerProps extends NavigationProps {}
+
+export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> = observer(props => {
+    const { navigation } = props
     const rootStore = useStores()
     const User2Strore = useStores().userStore2
     rootStore.hideLoader()
+    
+    
+    const menu = 
+
     useEffect(() => {
         User2Strore.getItems()
     }, [])
@@ -128,9 +151,7 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                     }
                 ]}
             >
-                {
-                    menu
-                }
+                <MenuButtonsList navigation={navigation}/>
                 
                 {/* <ButtonSquare style={{marginTop: 20}}></ButtonSquare>
                 <ButtonSquare style={{marginTop: 20}}></ButtonSquare> */}
