@@ -9,17 +9,17 @@ import { IUser2 } from "../../models/sub-stores/v2-user-store"
 import { RequiredWarning } from "../../components"
 
 export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
-    const userStore = useStores().userStore2
+    const userStore2 = useStores().userStore2
     const [user, setUser] = useState<IUser2>({})
     const [emailRequiredFlag, setRequiredFlag] = useState(false)
     const { onDismiss } = props
-    let gen_num = 1000 + userStore.clientsCount + 1
+    let gen_num = 1000 + userStore2.clientsCount + 1
     useEffect(() => {
-        userStore.getItems()
+        userStore2.getItems()
         setUser(prevState => ({
             ...prevState, 
             client: {
-                generic_number: 1000 + userStore.clientsCount + 1,
+                generic_number: 1000 + userStore2.clientsCount + 1,
                 password: 'admin123'
             }
         }))
@@ -124,8 +124,8 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     </Button>
                     <Button 
                         onPress={() => {
-                            if(user.email !== '') {
-                                userStore.addItem(user) 
+                            if(user.email) {
+                                userStore2.addItem(user) 
                                 onDismiss()
                             } else {
                                 setRequiredFlag(true)

@@ -4,7 +4,7 @@ import { Avatar, Icon } from 'react-native-elements';
 import { color, spacing } from '../theme';
 import { Button } from '../components/button/button'
 import { DatePicker } from './date-picker/date-picker'
-import { border_boxes, globalStyles, moment_date_formats, today_vs_last_day, displayDateFromTimestamp } from '../global-helper';
+import { border_boxes, globalStyles  } from '../global-helper';
 import { Hoshi } from 'react-native-textinput-effects';
 import { Snack } from './snack/snack';
 import { Api } from '../services/api';
@@ -16,7 +16,6 @@ import { useStores } from "../models/root-store"
 import { AddClientDialog } from '../components';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import moment from 'moment'
 
 const styles = StyleSheet.create({
     rowSpace: {
