@@ -10,11 +10,14 @@ import { DataTable, TextInput } from 'react-native-paper';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from 'react-native-swipe-list-view';
+import { DatePicker } from "../../../components-custom/date-picker/date-picker";
+import { return_todays_datestamp, displayDateFromTimestamp, border_boxes } from "../../../global-helper";
 
 export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
     const { userStore2, sessionStore } = useStores()
 
     useEffect(() => {
+        console.log('this should update')
         userStore2.getItems()
     }, [])
 
@@ -56,7 +59,7 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                                         key={index}
                                     >
                                         <DataTable.Cell accessibilityValue={''}>
-                                            {diaryItem.date}
+                                            {displayDateFromTimestamp(diaryItem.date)}
                                         </DataTable.Cell>
                                         <DataTable.Cell accessibilityValue={''}>
                                             {diaryItem.weight}
@@ -80,11 +83,13 @@ interface DiaryScreenProps extends NavigationProps {}
 export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(props => {
     const { navigation } = props
     const { userStore2, sessionStore } = useStores()
-    const [date, setDate] = useState('')
+    const [seeDatePicker, setSeeDatePicker] = useState(false)
+    const [date, setDate] = useState(return_todays_datestamp())
     const [weight, setWeight] = useState('')
     const [calories, setCalories] = useState('')
     const [protein, setProtein] = useState('')
     useEffect(() => {
+        console.log('does this udpates?')
         userStore2.getItems()
     }, [])
     return(
@@ -96,7 +101,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                 flexDirection: 'column',
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
-                backgroundColor: color.palette.transparent,
+                backgroundColor: color.palette.transparent
             }}
         >
             <PageHeader_Cl 
@@ -125,8 +130,9 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                     focusable={true}
                     showSoftInputOnFocus={true}
                     label="Дата"
-                    value={date}
-                    onChangeText={text => setDate(text)}
+                    value={displayDateFromTimestamp(date)}
+                    onFocus={()=> setSeeDatePicker(true)}
+                    // onChangeText={text => setDate(text)}
                 />
                 <TextInput
                     style={[{
@@ -163,18 +169,32 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                 />
 
             </View>
+            {seeDatePicker? 
+            <View
+                style={[{
+                    width: '100%'
+                }]}
+            >
+                <DatePicker 
+                    showPicker={() => setSeeDatePicker(false)}
+                    inputDateStamp={date}
+                    onDateChange={(_dateStamp: number) => {
+                        setDate(_dateStamp)
+                    }}
+                /></View>
+            : null}    
             <TouchableOpacity
                 onPress={() => {
                     userStore2.addToDiary(sessionStore.userEmail,
                         {
                             id: Math.random(),
-                            date: 0,
+                            date: date,
                             weight: +weight,
                             calories: +calories,
                             protein: +protein
                         }
                     )
-                    setDate('')
+                    setDate(return_todays_datestamp())
                     setWeight('')
                     setCalories('')
                     setProtein('')
