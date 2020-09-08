@@ -6,12 +6,11 @@ const card_types = ['monthly', 'visits']
 
 export const Cardy_Type = types.model({
     type : types.enumeration(card_types),
+    title: types.string,
     visits_limit : types.maybeNull(types.number),
     monthly_limit: types.maybeNull(types.number),
     price : types.number,
-    realPrice: types.number,
     rate : types.number,
-    visits : types.optional(types.array(types.string), []),
 })
 
 export interface ICardy_Type extends SnapshotIn<typeof Cardy_Type> {}
@@ -25,23 +24,25 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
 })
 .actions(self => firebaseFuncs<ICardy_Type>(self.cards, self.collection))
 .actions(self => ({
-    async addMonltyCard(_months: number, _price: number, _realPrice: number){
+    async addMonltyCard(_title: string, _months: number, _price: number){
         self.addItem({
             type: card_types[0],
+            title: _title,
+            visits_limit: -1,
             monthly_limit: _months,
             price: _price,
-            realPrice: _realPrice
+            rate: _price / _months
         })
     },
 
-    async addVisitsCard(_visits: number, _price: number, _realPrice: number){
+    async addVisitsCard(_title: string, _visits: number, _price: number){
         self.addItem({
             type: card_types[1],
+            title: _title,
             visits_limit: _visits,
+            monthly_limit: -1,
             price: _price,
-            realPrice: _realPrice,
             rate: _price /_visits,
-            visits: []
         })
     }
 }))

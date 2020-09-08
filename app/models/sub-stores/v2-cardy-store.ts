@@ -1,14 +1,15 @@
 import { types, SnapshotIn, getSnapshot } from "mobx-state-tree"
 import { firebaseFuncs } from '../../services/firebase/firebase.service'
 import moment from "moment"
+import { return_todays_datestamp } from "../../global-helper"
 
 const card_types = ['monthly', 'visits']
 
 export const Card2 = types.model({
     trainers: types.optional(types.array(types.string), []),
     clients: types.optional(types.array(types.string), []),
-    datePayment : Date.now(),
-    dateStart : Date.now(),
+    datestampPayment : return_todays_datestamp(),
+    datestampStart : return_todays_datestamp(),
     whoPays : '',
     comment : '',
     
