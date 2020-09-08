@@ -11,7 +11,7 @@ import { RequiredWarning } from "../required-warning/required-warning"
 export function AddTrainerDialog({onDismiss}) {
     const [user, setUser] = useState(new User())
     const [emailRequiredFlag, setRequiredFlag] = useState(false)
-    const userStore = useStores().userStore
+    const userStore = useStores().userStore2
 
     useEffect(() => {
         // userStore.ggetItems()
@@ -105,7 +105,7 @@ export function AddTrainerDialog({onDismiss}) {
                     <Button 
                         onPress={() => {
                             if(user.email !== '') {
-                                userStore.aaddItem(user) 
+                                userStore.addItem(user) 
                                 onDismiss()
                             } else {
                                 setRequiredFlag(true)

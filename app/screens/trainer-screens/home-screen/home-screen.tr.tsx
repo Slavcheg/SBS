@@ -33,7 +33,7 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                 : null
     })
     const rootStore = useStores()
-    const User2Strore = useStores().user2Store
+    const User2Strore = useStores().userStore2
     rootStore.hideLoader()
     useEffect(() => {
         User2Strore.getItems()

@@ -7,10 +7,10 @@ import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import {useStores } from "../../models/root-store"
 
 export const SeeClientDialog: React.FunctionComponent<{email, onDismiss}> = props => {
-    const userStore = useStores().userStore
+    const userStore = useStores().userStore2
     const { onDismiss } = props
     useEffect(() => {
-        userStore.ggetItems()
+        userStore.getItems()
     }, [])
     let client = userStore.clients
                     .find(cl => cl.item.email === props.email)
@@ -58,14 +58,14 @@ export const SeeClientDialog: React.FunctionComponent<{email, onDismiss}> = prop
                 <Input_Hoshi    
                     width='100%'
                     placeholder={'генериран номер'} 
-                    variable={client.item.generic_number.toString()}
+                    variable={client.item.client.generic_number.toString()}
                     setVariable={val => val}
                     editable = {false}
                 />
                 <Input_Hoshi    
                     width='100%'
                     placeholder={'препоръчител'} 
-                    variable={client.item.referral}
+                    variable={client.item.client.referral}
                     setVariable={val => val}
                     editable = {false}
                 />

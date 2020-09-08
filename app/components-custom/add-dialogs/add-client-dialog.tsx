@@ -4,19 +4,25 @@ import { border_boxes, device_width, device_height } from "../../global-helper"
 import { Button } from "../../components/button/button"
 import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
-import { User } from "../../models/user.model"
-import {useStores } from "../../models/root-store"
+import { useStores } from "../../models/root-store"
+import { IUser2 } from "../../models/sub-stores/v2-user-store"
 import { RequiredWarning } from "../../components"
 
 export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
-    const userStore = useStores().userStore
-    const [user, setUser] = useState(new User())
+    const userStore = useStores().userStore2
+    const [user, setUser] = useState<IUser2>({})
     const [emailRequiredFlag, setRequiredFlag] = useState(false)
     const { onDismiss } = props
-
+    let gen_num = 1000 + userStore.clientsCount + 1
     useEffect(() => {
-        userStore.ggetItems()
-        setUser(prevState => ({...prevState, generic_number: 1000 + userStore.clientsCount + 1, password: 'admin123'}))        
+        userStore.getItems()
+        setUser(prevState => ({
+            ...prevState, 
+            client: {
+                generic_number: 1000 + userStore.clientsCount + 1,
+                password: 'admin123'
+            }
+        }))
     }, [])
 
     return (
@@ -56,7 +62,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                 <Input_Hoshi    
                     width='100%'
                     placeholder={'генериран номер'} 
-                    variable={user.generic_number.toString()}
+                    variable={user.client?.generic_number.toString()}
                     setVariable={val => setUser(prevState => ({...prevState, generic_number: val}))}
                     editable = {false}
                 />
@@ -65,7 +71,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     placeholder={'емайл'} 
                     variable={user.email}
                     setVariable={val => {
-                        setUser(prevState => ({...prevState, email: val, isClient: true}))
+                        setUser(prevState => ({...prevState, email: val, isClient: true, isAdmin: false, isTrainer: false}))
                         if (val === '') {
                             setRequiredFlag(true)
                         } else {
@@ -119,7 +125,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     <Button 
                         onPress={() => {
                             if(user.email !== '') {
-                                userStore.aaddItem(user) 
+                                userStore.addItem(user) 
                                 onDismiss()
                             } else {
                                 setRequiredFlag(true)

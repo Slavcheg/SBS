@@ -28,14 +28,15 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
   const [infoMessage, setInfoMessage] = useState(''); 
   const isInfo = infoMessage !== ''; 
 
-  const { userStore, sessionStore } = useStores()
+  const { userStore2, sessionStore } = useStores()
   useEffect(() => {
-    userStore.ggetItems()
+    userStore2.getItems()
   }, [])
 
   const signInUser = () => {
     setScreenVisible(true)
-    let userEmail = userStore.clientLogIn(email.toLocaleLowerCase(), pass)
+    let userEmail = userStore2.clientLogIn(email.toLocaleLowerCase(), pass)
+    console.log(userEmail)
     if (userEmail) {
       sessionStore.logIn(userEmail)
       navigation.navigate('home_cl')
