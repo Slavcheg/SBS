@@ -1,13 +1,17 @@
-import { types, SnapshotIn, getSnapshot } from "mobx-state-tree"
+import { types, SnapshotIn } from "mobx-state-tree"
 import { firebaseFuncs } from '../../services/firebase/firebase.service'
-import moment from "moment"
 
-const card_types = ['monthly', 'visits']
+export enum card_types {
+    monthly = 'monthly', 
+    per_visits = 'visits'
+}
+
+const card_types_list: string[] = [card_types.monthly, card_types.per_visits]
 
 export const Cardy_Type = types.model({
-    type : types.enumeration(card_types),
+    type : types.enumeration(card_types_list),
     title: types.string,
-    visits_limit : types.maybeNull(types.number),
+    card_limit : types.maybeNull(types.number),
     monthly_limit: types.maybeNull(types.number),
     price : types.number,
     rate : types.number,
@@ -24,25 +28,32 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
 })
 .actions(self => firebaseFuncs<ICardy_Type>(self.cards, self.collection))
 .actions(self => ({
-    async addMonltyCard(_title: string, _months: number, _price: number){
+
+    async addMonltyCard(_title: string, _card_limit: number, _price: number){
         self.addItem({
             type: card_types[0],
             title: _title,
-            visits_limit: -1,
-            monthly_limit: _months,
+            card_limit: _card_limit,
+            monthly_limit: _card_limit,
             price: _price,
-            rate: _price / _months
+            rate: _price / _card_limit
         })
     },
 
-    async addVisitsCard(_title: string, _visits: number, _price: number){
+    async addVisitsCard(_title: string, _card_limit: number, _price: number){
         self.addItem({
             type: card_types[1],
             title: _title,
-            visits_limit: _visits,
+            card_limit: _card_limit,
             monthly_limit: -1,
             price: _price,
-            rate: _price /_visits,
+            rate: _price /_card_limit,
         })
-    }
+    },
+
+    async addCardType(obj: {type: card_types, title: string, card_limit: number, price: number}){
+        obj.type === card_types.monthly ?
+            this.addMonltyCard(obj.title, obj.card_limit, obj.price)
+        : this.addVisitsCard(obj.title, obj.card_limit, obj.price)
+    },
 }))

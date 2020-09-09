@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog } from '../../../components'
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog, SbsCardType } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
 import { Avatar } from 'react-native-elements';
@@ -10,72 +10,73 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { DataTable } from 'react-native-paper';
 import { SwipeRow } from 'react-native-swipe-list-view';
+import { AddCardyType2Dialog } from "../../../components-custom/add-dialogs/add-cardy-type2";
 
-export const GetMonthlyCards: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
-    const monthlyCardStore = useStores().monthlyCardStore
-    useEffect(() => {
-        monthlyCardStore.getMItem()
-    }, [])
+// export const GetMonthlyCards: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
+//     const monthlyCardStore = useStores().monthlyCardStore
+//     useEffect(() => {
+//         monthlyCardStore.getMItem()
+//     }, [])
 
-    return (
-        <DataTable>
-            <DataTable.Header accessibilityValue={''} focusable={true}>
-                <DataTable.Title accessibilityValue={''} >Име</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Месеци валидност</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Цена</DataTable.Title>
-            </DataTable.Header>
-            {
-                monthlyCardStore.monthlyCards
-                    .filter(trainer => props.search !== ''? trainer.item.name.toLocaleLowerCase().includes(props.search): true)
-                    .map((card, key) => {
-                        const item = card.item
-                        return (
-                            <SwipeRow 
-                                key={key}
-                                leftOpenValue={75}
-                                rightOpenValue={-75}
-                            >
-                                <View style={styles.standaloneRowBack}>
-                                    <TouchableOpacity
-                                        style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
-                                        onPress={() => monthlyCardStore.deleteMItem(card.id)}
-                                    >
-                                        <Text style={styles.backTextWhite}>Delete</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <DataTable.Row 
-                                    accessibilityValue={''}
-                                    style={[
-                                        styles.standaloneRowFront,
-                                        {
-                                            backgroundColor: key % 2 === 1 ? 'white': color.palette.grey_sbs
-                                        }
+//     return (
+//         <DataTable>
+//             <DataTable.Header accessibilityValue={''} focusable={true}>
+//                 <DataTable.Title accessibilityValue={''} >Име</DataTable.Title>
+//                 <DataTable.Title accessibilityValue={''} >Месеци валидност</DataTable.Title>
+//                 <DataTable.Title accessibilityValue={''} >Цена</DataTable.Title>
+//             </DataTable.Header>
+//             {
+//                 monthlyCardStore.monthlyCards
+//                     .filter(trainer => props.search !== ''? trainer.item.name.toLocaleLowerCase().includes(props.search): true)
+//                     .map((card, key) => {
+//                         const item = card.item
+//                         return (
+//                             <SwipeRow 
+//                                 key={key}
+//                                 leftOpenValue={75}
+//                                 rightOpenValue={-75}
+//                             >
+//                                 <View style={styles.standaloneRowBack}>
+//                                     <TouchableOpacity
+//                                         style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
+//                                         onPress={() => monthlyCardStore.deleteMItem(card.id)}
+//                                     >
+//                                         <Text style={styles.backTextWhite}>Delete</Text>
+//                                     </TouchableOpacity>
+//                                 </View>
+//                                 <DataTable.Row 
+//                                     accessibilityValue={''}
+//                                     style={[
+//                                         styles.standaloneRowFront,
+//                                         {
+//                                             backgroundColor: key % 2 === 1 ? 'white': color.palette.grey_sbs
+//                                         }
                                         
-                                    ]}
-                                    key={key}
-                                >
-                                    <DataTable.Cell accessibilityValue={''}>
-                                        {item.name}
-                                    </DataTable.Cell>
-                                    <DataTable.Cell 
-                                        style={[{
+//                                     ]}
+//                                     key={key}
+//                                 >
+//                                     <DataTable.Cell accessibilityValue={''}>
+//                                         {item.name}
+//                                     </DataTable.Cell>
+//                                     <DataTable.Cell 
+//                                         style={[{
                                             
-                                        }]}
-                                        accessibilityValue={''
-                                    }>
-                                        {item.monthsValid}
-                                    </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
-                                        {item.price}
-                                    </DataTable.Cell>
-                                </DataTable.Row>
-                            </SwipeRow>   
-                        ) 
-                    })
-            }            
-        </DataTable>
-    )
-})
+//                                         }]}
+//                                         accessibilityValue={''
+//                                     }>
+//                                         {item.monthsValid}
+//                                     </DataTable.Cell>
+//                                     <DataTable.Cell accessibilityValue={''}>
+//                                         {item.price}
+//                                     </DataTable.Cell>
+//                                 </DataTable.Row>
+//                             </SwipeRow>   
+//                         ) 
+//                     })
+//             }            
+//         </DataTable>
+//     )
+// })
 interface MonthlyCardsProps extends NavigationProps {}
 
 export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = observer(props => {
@@ -148,11 +149,11 @@ export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = ob
                     />
                 </TouchableOpacity>
             </View>
-            
-            <GetMonthlyCards search={searchValue} setEm={setEmail} setSeeDialog={setSeeClientDialog}/>
+            <SbsCardType />
+            {/* <GetMonthlyCards search={searchValue} setEm={setEmail} setSeeDialog={setSeeClientDialog}/> */}
             {
                 seeDialog ?
-                    <AddMonthlyCardDialog onDismiss={() => {setSeeDialog(false)}} />
+                    <AddCardyType2Dialog cardyTypeId={null} onDismiss={() => {setSeeDialog(false)}} />
                 : null
             }
             {/* {

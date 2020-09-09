@@ -23,12 +23,7 @@
     "iconRight": "bl_arrow_forward",
     "onClick": "purchasedMonthly"
 },
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.typesCardsVisitsSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "visitsCards"
-},
+
 {
     "iconLeft": "bl_payments",
     "title": "adminHomeScreen.typesCardsMonthlySquareButtonCaption",
