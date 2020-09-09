@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button } from '../../components'
 import { color } from "../../theme"
 import { View, Text } from "react-native"
-import { static_cards, border_boxes } from "../../global-helper"
+import { border_boxes, displayDateFromTimestamp } from "../../global-helper"
 import { Badge, Avatar } from "react-native-elements"
 import { Cardy } from "../../models"
 
@@ -183,7 +183,7 @@ const {card, index} = props
                     style={[{
                         // color: color.palette.grey_sbs
                     }]}
-                >{card.dateStart}</Text>
+                >{displayDateFromTimestamp(card.datestampStart)}</Text>
             </View>
 
         </View>
