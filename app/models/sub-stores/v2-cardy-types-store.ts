@@ -8,7 +8,7 @@ export enum card_types {
 
 const card_types_list: string[] = [card_types.monthly, card_types.per_visits]
 
-export const Cardy_Type = types.model({
+const Cardy_Type = types.model({
     type : types.enumeration(card_types_list),
     title: types.string,
     card_limit : types.maybeNull(types.number),
@@ -17,21 +17,26 @@ export const Cardy_Type = types.model({
     rate : types.number,
 })
 
-export interface ICardy_Type extends SnapshotIn<typeof Cardy_Type> {}
+const Card_Type_Model = types.model({
+    id: types.identifier,
+    item: Cardy_Type
+})
 
 export const CardTypesStoreModel2 = types.model('RootStore').props({
-    cards: types.array(types.model({
-        id: types.identifier,
-        item: Cardy_Type
-    })),
+    cards: types.array(Card_Type_Model),
     collection: 'card-types'
 })
-.actions(self => firebaseFuncs<ICardy_Type>(self.cards, self.collection))
+.actions(self => ({
+    refreshItems(items){
+        self.cards = items
+    },
+}))
+.actions(self => firebaseFuncs<ICardy_Type>(self.refreshItems, self.collection))
 .actions(self => ({
 
     async addMonltyCard(_title: string, _card_limit: number, _price: number){
         self.addItem({
-            type: card_types[0],
+            type: card_types.monthly,
             title: _title,
             card_limit: _card_limit,
             monthly_limit: _card_limit,
@@ -42,7 +47,7 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
 
     async addVisitsCard(_title: string, _card_limit: number, _price: number){
         self.addItem({
-            type: card_types[1],
+            type: card_types.per_visits,
             title: _title,
             card_limit: _card_limit,
             monthly_limit: -1,
@@ -51,9 +56,12 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
         })
     },
 
-    async addCardType(obj: {type: card_types, title: string, card_limit: number, price: number}){
+    async addCardType(obj: ICardy_Type ){
         obj.type === card_types.monthly ?
             this.addMonltyCard(obj.title, obj.card_limit, obj.price)
         : this.addVisitsCard(obj.title, obj.card_limit, obj.price)
     },
 }))
+
+export interface ICardy_Type extends SnapshotIn<typeof Cardy_Type> {}
+export interface ICardy_Type_Model extends SnapshotIn<typeof Card_Type_Model> {}

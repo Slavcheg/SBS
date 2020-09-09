@@ -1,97 +1,36 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog, SbsCardType } from '../../../components'
-import { color, spacing, styles } from "../../../theme"
-import { View, Text, TouchableOpacity } from "react-native";
-import { Avatar } from 'react-native-elements';
-import {useStores } from "../../../models/root-store"
+import {Screen, PageHeader_Tr, Input_Hoshi, SbsCardType, ConfirmationDialog } from '../../../components'
+import { color } from "../../../theme"
+import { View, TouchableOpacity } from "react-native";
 import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { DataTable } from 'react-native-paper';
-import { SwipeRow } from 'react-native-swipe-list-view';
-import { AddCardyType2Dialog } from "../../../components-custom/add-dialogs/add-cardy-type2";
+import { EditCardyType2Dialog } from "../../../components";
+import { useStores } from "../../../models/root-store";
+import { CardTypesStoreModel2, ICardy_Type_Model } from "../../../models/sub-stores/v2-cardy-types-store";
 
-// export const GetMonthlyCards: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
-//     const monthlyCardStore = useStores().monthlyCardStore
-//     useEffect(() => {
-//         monthlyCardStore.getMItem()
-//     }, [])
-
-//     return (
-//         <DataTable>
-//             <DataTable.Header accessibilityValue={''} focusable={true}>
-//                 <DataTable.Title accessibilityValue={''} >Име</DataTable.Title>
-//                 <DataTable.Title accessibilityValue={''} >Месеци валидност</DataTable.Title>
-//                 <DataTable.Title accessibilityValue={''} >Цена</DataTable.Title>
-//             </DataTable.Header>
-//             {
-//                 monthlyCardStore.monthlyCards
-//                     .filter(trainer => props.search !== ''? trainer.item.name.toLocaleLowerCase().includes(props.search): true)
-//                     .map((card, key) => {
-//                         const item = card.item
-//                         return (
-//                             <SwipeRow 
-//                                 key={key}
-//                                 leftOpenValue={75}
-//                                 rightOpenValue={-75}
-//                             >
-//                                 <View style={styles.standaloneRowBack}>
-//                                     <TouchableOpacity
-//                                         style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
-//                                         onPress={() => monthlyCardStore.deleteMItem(card.id)}
-//                                     >
-//                                         <Text style={styles.backTextWhite}>Delete</Text>
-//                                     </TouchableOpacity>
-//                                 </View>
-//                                 <DataTable.Row 
-//                                     accessibilityValue={''}
-//                                     style={[
-//                                         styles.standaloneRowFront,
-//                                         {
-//                                             backgroundColor: key % 2 === 1 ? 'white': color.palette.grey_sbs
-//                                         }
-                                        
-//                                     ]}
-//                                     key={key}
-//                                 >
-//                                     <DataTable.Cell accessibilityValue={''}>
-//                                         {item.name}
-//                                     </DataTable.Cell>
-//                                     <DataTable.Cell 
-//                                         style={[{
-                                            
-//                                         }]}
-//                                         accessibilityValue={''
-//                                     }>
-//                                         {item.monthsValid}
-//                                     </DataTable.Cell>
-//                                     <DataTable.Cell accessibilityValue={''}>
-//                                         {item.price}
-//                                     </DataTable.Cell>
-//                                 </DataTable.Row>
-//                             </SwipeRow>   
-//                         ) 
-//                     })
-//             }            
-//         </DataTable>
-//     )
-// })
 interface MonthlyCardsProps extends NavigationProps {}
 
 export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = observer(props => {
-    const { navigation} = props
+    const { navigation } = props
     const [seeDialog, setSeeDialog] = useState(false)
+    const [seeDeleteConfirmation, setSeeDeleteConfirmation] = useState(false)
+    const [editCTM, setECTM] = useState<ICardy_Type_Model>(null)
     const [searchValue, setSearchValue] = useState('')
-    const [seeClientDialog, setSeeClientDialog] = useState(false)
-    const [email, setEmail] = useState('') 
+
+    const { cardyTypesStore2 } = useStores()
+
+    useEffect(() => {
+        cardyTypesStore2.getItems()
+    }, [])
 
     return (
         <Screen
             preset="scroll"
             unsafe={false} 
             style={{
-                flex: 1, 
+                flexGrow: 1, 
                 flexDirection: 'column',
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
@@ -104,7 +43,7 @@ export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = ob
                     backgroundColor: 'white',
                     paddingHorizontal: 25
                 }}
-                title='Списък месечни карти'
+                title='Типове карти'
             />
             <View
                 style={[
@@ -149,18 +88,42 @@ export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = ob
                     />
                 </TouchableOpacity>
             </View>
-            <SbsCardType />
-            {/* <GetMonthlyCards search={searchValue} setEm={setEmail} setSeeDialog={setSeeClientDialog}/> */}
+            {
+                cardyTypesStore2.cards.map(cardModel => {
+                    return  <SbsCardType 
+                                key={cardModel.id}
+                                cardyTypeModel={cardModel}
+                                openEditDialog={() => {
+                                    setSeeDialog(true)
+                                    setECTM(cardModel)
+                                }}
+                                openDeleteDialog={() => {
+                                    setSeeDeleteConfirmation(true)
+                                    setECTM(cardModel)
+                                }}
+                            />
+                })
+            }
             {
                 seeDialog ?
-                    <AddCardyType2Dialog cardyTypeId={null} onDismiss={() => {setSeeDialog(false)}} />
+                    <EditCardyType2Dialog cardyTypeModel={editCTM} onDismiss={() => {
+                        setSeeDialog(false)
+                        setECTM(null)
+                    }} />
                 : null
             }
-            {/* {
-                seeClientDialog ?
-                    <SeeClientDialog email={email} onDismiss={() => {setSeeClientDialog(false)}} />
+            {
+                seeDeleteConfirmation ? 
+                    <ConfirmationDialog 
+                        message={'Delete card type?'}
+                        onDismiss={(delFl) => {
+                            setSeeDeleteConfirmation(false)
+                            delFl ? cardyTypesStore2.deleteItem(editCTM.id) : null
+                            setECTM(null)
+                        }}
+                    />
                 : null
-            } */}
+            }
         </Screen>
     )
 })

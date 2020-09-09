@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from "react"
 import { View, TouchableOpacity } from "react-native"
-import { ICardy_Type, card_types } from "../../models/sub-stores/v2-cardy-types-store"
+import { ICardy_Type, card_types, ICardy_Type_Model } from "../../models/sub-stores/v2-cardy-types-store"
 import { border_boxes } from "../../global-helper"
 import { Text } from "../../components/text/text"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { color } from "../../theme"
-import { Button } from "react-native-elements"
+import { observer } from "mobx-react-lite";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faPen, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { EditCardyType2Dialog } from "../../components"
 
-export const SbsCardType: React.FunctionComponent<{}> = props => {
-    let cardType: ICardy_Type = {
-        title: '2m 200lv',
-        type: card_types.monthly,
-        card_limit: 2,
-        price: 100,
-        rate: 50
+interface SbsCardTypeProps {
+    cardyTypeModel: ICardy_Type_Model,
+    openEditDialog: Function,
+    openDeleteDialog: Function
+}
 
-    }
-    let id: number
+export const SbsCardType: React.FunctionComponent<SbsCardTypeProps> = observer(props => {
+    // let cardType: ICardy_Type = {
+    //     title: '2m 200lv',
+    //     type: card_types.monthly,
+    //     card_limit: 2,
+    //     price: 100,
+    //     rate: 50
+
+    // }
+    // let id: number
+
+    const { cardyTypeModel, openEditDialog, openDeleteDialog } = props
     return (
         <View
-            key={id}
+            key={cardyTypeModel.id}
             style={[
                 // border_boxes().red,
                 {
@@ -46,7 +55,7 @@ export const SbsCardType: React.FunctionComponent<{}> = props => {
             >
                 <Input_Hoshi 
                     placeholder={'title'} 
-                    variable={cardType.title} 
+                    variable={cardyTypeModel.item.title} 
                     setVariable={x => x} 
                     width='30%'                            
                 />
@@ -59,7 +68,7 @@ export const SbsCardType: React.FunctionComponent<{}> = props => {
                 }]}
             >
                 <TouchableOpacity
-                    // onPress={() => setSeeDialog(true)}
+                    onPress={() => openEditDialog()}
                     style={[
                         // border_boxes().green,
                         {
@@ -78,7 +87,7 @@ export const SbsCardType: React.FunctionComponent<{}> = props => {
                     />
                 </TouchableOpacity>
                 <TouchableOpacity
-                    // onPress={() => setSeeDialog(true)}
+                    onPress={() => openDeleteDialog()}
                     style={[
                         // border_boxes().green,
                         {
@@ -109,23 +118,23 @@ export const SbsCardType: React.FunctionComponent<{}> = props => {
                  
                 <Input_Hoshi 
                     placeholder={'type'} 
-                    variable={cardType.type} 
+                    variable={cardyTypeModel.item.type} 
                     setVariable={x => x} 
                     width='30%'                            
                 />
                 <Input_Hoshi 
                     placeholder={
-                        cardType.type === card_types.monthly?
+                        cardyTypeModel.item.type === card_types.monthly?
                             'months'
                         : 'visits'
                     } 
-                    variable={cardType.card_limit.toString()} 
+                    variable={cardyTypeModel.item.card_limit.toString()} 
                     setVariable={x => x} 
                     width='30%'                            
                 />   
                 <Input_Hoshi 
                     placeholder={'rate'} 
-                    variable={cardType.rate.toString()} 
+                    variable={cardyTypeModel.item.rate.toString()} 
                     setVariable={x => x} 
                     width='30%'                            
                 />            
@@ -140,12 +149,11 @@ export const SbsCardType: React.FunctionComponent<{}> = props => {
                 
                 <Input_Hoshi 
                     placeholder={'price'} 
-                    variable={cardType.price.toString()} 
+                    variable={cardyTypeModel.item.price.toString()} 
                     setVariable={x => x} 
                     width='30%'                            
                 />
             </View>
-                
         </View>
     )
-}
+})

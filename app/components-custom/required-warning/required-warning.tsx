@@ -3,7 +3,7 @@ import { View, Text } from "react-native"
 import { Hoshi } from "react-native-textinput-effects"
 import { color, spacing } from "../../theme"
 
-export const RequiredWarning: React.FunctionComponent<{flag: boolean, width: string}> = props => {
+export const RequiredWarning: React.FunctionComponent<{flag: boolean, width: string, message?:string}> = props => {
     return (
         <View
             style={[{width: props.width}]}
@@ -15,7 +15,7 @@ export const RequiredWarning: React.FunctionComponent<{flag: boolean, width: str
                         fontSize: 12,
                         width: '100%'
                     }]}
-                >{'Полето е задължително!'}</Text>
+                >{props.message || 'Полето е задължително!'}</Text>
             : null}
         </View>
     )
