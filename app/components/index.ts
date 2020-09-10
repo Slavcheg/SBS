@@ -36,3 +36,4 @@ export * from "../components-custom/sbs-card-type/sbs-card-type"
 
 export * from "../components-custom/edit-dialogs/edit-cardy-type2"
 export * from "../components-custom/edit-dialogs/edit-cardy2"
+export * from "../components-custom/sbs-card-purchased/sbs-card-purchased"

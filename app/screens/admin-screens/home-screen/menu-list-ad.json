@@ -13,12 +13,6 @@
 },
 {
     "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.purchasedCardsVisitsSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "purchasedVisits"
-},
-{
-    "iconLeft": "bl_payments",
     "title": "adminHomeScreen.purchasedCardsMonthlySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
     "onClick": "purchasedMonthly"

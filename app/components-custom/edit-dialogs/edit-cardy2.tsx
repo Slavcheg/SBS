@@ -29,7 +29,7 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
             clients: [],
             trainers: [],
             datestampPayment: return_todays_datestamp(),
-            datestampStart: return_todays_datestamp()
+            datestampStart: return_todays_datestamp(),
         })    
 
     const [pageHelpers, setPageHelper] = useState({
@@ -368,7 +368,7 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                     <Input_Hoshi    
                         width='100%'
                         placeholder={'Реална цена'} 
-                        variable={obj.realPrice.toString()}
+                        variable={obj.realPrice?.toString()}
                         setVariable={(val)=>{
                             setObj(prSt => ({...prSt, realPric: +val}))
                         }}

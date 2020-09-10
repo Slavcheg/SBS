@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog, EditCardy2Dialog } from '../../../components'
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog, EditCardy2Dialog, SbsCardPurchased } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
 import { Avatar } from 'react-native-elements';
@@ -179,6 +179,12 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
     const [editCTM, setECTM] = useState<ICardy2_Model>(null)
 
     const [showSnack, setShowSnack] = useState(false);
+
+    const { cardyStore2 } = useStores()
+    useEffect(() => {
+        cardyStore2.getItems()
+    }, [])
+
     return (
         <Screen
             preset="scroll"
@@ -296,7 +302,15 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                     ): null}   
                 </View>                                 
             </View>
-            
+            {
+                cardyStore2.cards.map((card, index) => {
+                    return (
+                        <SbsCardPurchased 
+                            cardyModel ={card}
+                        />
+                    )
+                })
+            }
             {/* <PurchasedCards search={searchValue} startDate = {filterStartDatestamp ? filterStartDatestamp: null} endDate = {filterEndDatestamp ? filterEndDatestamp: null} setShowSnack = {(state)=>setShowSnack(state)} />
             {showSnack ? 
                 <Snack message={'Saved !'} onDismiss={() => {setShowSnack(false)}} duration = {3000}/>
