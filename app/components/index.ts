@@ -35,3 +35,4 @@ export * from "../components-custom/add-dialogs/add-visits-card-dialog"
 export * from "../components-custom/sbs-card-type/sbs-card-type"
 
 export * from "../components-custom/edit-dialogs/edit-cardy-type2"
+export * from "../components-custom/edit-dialogs/edit-cardy2"

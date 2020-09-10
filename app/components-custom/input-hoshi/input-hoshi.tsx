@@ -37,8 +37,8 @@ export function Input_Hoshi ({
                     ]}          
                     inputStyle={{fontSize: 16}}
 
-                    // onFocus={() => onF()}
-                    // onBlur={() => onB()}
+                    onFocus={() => onF()}
+                    onBlur={() => onB()}
                     label={placeholder}
                     labelStyle={[styles.inputTextStyle, {marginBottom: 10}]}
                     defaultValue={variable}

@@ -166,7 +166,6 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                     </Button>
                     <Button 
                         onPress={() => {
-                            console.log(obj.type)
                             if(obj.title && obj.card_limit && obj.price && !isNaN(Number(obj.card_limit)) && !isNaN(Number(obj.price))) {
                                 isNewType ? cardyTypesStore2.addCardType(obj)
                                     : cardyTypesStore2.updateItem(cardyTypeModel.id, obj)

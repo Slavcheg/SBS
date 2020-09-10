@@ -11,9 +11,9 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from "react-native-swipe-list-view";
 
 export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, setSeeDialog: any}> = observer(props => {
-    const userStore = useStores().userStore
+    const userStore2 = useStores().userStore2
     useEffect(() => {
-        userStore.ggetItems()
+        userStore2.getItems()
     }, [])
 
     return (
@@ -23,10 +23,10 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
             }]}
         >
             {
-                userStore.trainers
+                userStore2.trainers
                     .filter(trainer => props.search !== ''? trainer.item.email.toLocaleLowerCase().includes(props.search): true)
                     .map((user, key) => {
-                        const item = user.item
+                        const item = user?.item
                         return (
                             <SwipeRow 
                                 key={key}
@@ -52,7 +52,7 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
                                             styles.backRightBtn,
                                             styles.backRightBtnRight
                                         ]}
-                                        onPress={() => userStore.ddeleteItem(user.id)}
+                                        onPress={() => userStore2.deleteItem(user.id)}
                                     >
                                         <Text style={styles.backTextWhite}>Delete</Text>
                                     </TouchableOpacity>

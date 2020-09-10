@@ -8,7 +8,7 @@ export enum card_types {
 
 const card_types_list: string[] = [card_types.monthly, card_types.per_visits]
 
-const Cardy_Type = types.model({
+export const Cardy_Type = types.model({
     type : types.enumeration(card_types_list),
     title: types.string,
     card_limit : types.maybeNull(types.number),
@@ -21,6 +21,8 @@ const Card_Type_Model = types.model({
     id: types.identifier,
     item: Cardy_Type
 })
+export interface ICardy_Type extends SnapshotIn<typeof Cardy_Type> {}
+export interface ICardy_Type_Model extends SnapshotIn<typeof Card_Type_Model> {}
 
 export const CardTypesStoreModel2 = types.model('RootStore').props({
     cards: types.array(Card_Type_Model),
@@ -62,6 +64,3 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
         : this.addVisitsCard(obj.title, obj.card_limit, obj.price)
     },
 }))
-
-export interface ICardy_Type extends SnapshotIn<typeof Cardy_Type> {}
-export interface ICardy_Type_Model extends SnapshotIn<typeof Card_Type_Model> {}

@@ -47,7 +47,7 @@ export const RootStoreModel = types.model("RootStore").props({
     },
     get getProfilePicture(){
         try{
-            return values(self.userStore.users)
+            return values(self.userStore2.users)
             .find(user => user?.item?.email == self.sessionStore.userEmail)
             .item
             .picture

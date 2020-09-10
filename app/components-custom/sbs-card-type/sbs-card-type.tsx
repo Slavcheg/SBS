@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { View, TouchableOpacity } from "react-native"
-import { ICardy_Type, card_types, ICardy_Type_Model } from "../../models/sub-stores/v2-cardy-types-store"
+import { card_types, ICardy_Type_Model } from "../../models/sub-stores/v2-cardy-types-store"
 import { border_boxes } from "../../global-helper"
-import { Text } from "../../components/text/text"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { color } from "../../theme"
 import { observer } from "mobx-react-lite";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faPen, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { EditCardyType2Dialog } from "../../components"
 
 interface SbsCardTypeProps {
     cardyTypeModel: ICardy_Type_Model,

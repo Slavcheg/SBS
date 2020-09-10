@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog } from '../../../components'
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog, EditCardy2Dialog } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
 import { Avatar } from 'react-native-elements';
@@ -13,13 +13,17 @@ import { DataTable } from 'react-native-paper';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { Hoshi } from 'react-native-textinput-effects';
 import { DatePicker } from '../../../components-custom/date-picker/date-picker';
-import { return_date_formated} from '../../../global-helper';
+// import { return_date_formated} from '../../../global-helper';
 import {exportSpreadSheet} from '../../../services/spreadsheet/spreadsheet';
 import {Snack} from '../../../components-custom/snack/snack';
-export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, startDate: Date, endDate: Date, setShowSnack: Function}> = observer(props => {
+import { displayDateFromTimestamp, return_todays_datestamp } from "../../../global-helper";
+import { ICardy2_Model } from "../../../models/sub-stores/v2-cardy-store";
+
+export const PurchasedCards: React.FunctionComponent<{search: string, startDate: number, endDate: number, setShowSnack: Function}> = observer(props => {
+    const cardyStore2 = useStores().cardyStore2
     const cardStore = useStores().cardStore
     useEffect(() => {
-        cardStore.getCards()
+        cardyStore2.getItems()
     }, [])
     
     async function exportGoogleSheet(){
@@ -28,8 +32,8 @@ export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, sta
                     .filter(item => 
                         item.item.type === 'month' 
                         && (props.search !="" ?item.item.client.indexOf(props.search) >= 0:true) == true 
-                        && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
-                        && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
+                        && (props.startDate != null ? props.startDate < item.item.dateStart: true 
+                        && props.endDate != null? props.endDate > item.item.dateStart: true) == true
                         && item.item.visits.length > 0 ).map((card, key)=>{
                             const item = card.item;
                             return [
@@ -52,6 +56,7 @@ export const PurchasedMonthlyCards: React.FunctionComponent<{search: string, sta
             props.setShowSnack(true);
         }
     }
+
     return(
         <View
             style={[
@@ -163,10 +168,16 @@ interface PurchasedMonthlyCardsProps extends NavigationProps {}
 export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonthlyCardsProps> = observer(props => {
     const { navigation } = props
     const [searchValue, setSearchValue] = useState('');
-    const [filterStartDate, setFilterStartDate] = useState('');
-    const [filterEndDate, setFilterEndDate] = useState('');
+
+    const [filterStartDatestamp, setFilterStartDatestamp] = useState<number>(return_todays_datestamp());
+    const [filterEndDatestamp, setFilterEndDatestamp] = useState<number>(return_todays_datestamp());
+
     const [seeEndDatePicker, setSeeEndDatePicker] = useState(false);
     const [seeStartDatePicker, setSeeStartDatePicker] = useState(false);
+    
+    const [seeDialog, setSeeDialog] = useState(false);
+    const [editCTM, setECTM] = useState<ICardy2_Model>(null)
+
     const [showSnack, setShowSnack] = useState(false);
     return (
         <Screen
@@ -195,7 +206,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         width: '100%',
                         paddingVertical: 30,
                         paddingHorizontal: '5%',
-                        flexDirection: 'row',
+                        // flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'flex-start'
                     }
@@ -204,117 +215,100 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                 <View
                     style={
                         [{
-                            flexDirection: 'column',
-                            width: "75%"
+                            flexDirection: 'row',
+                            width: "100%",
+                            justifyContent: 'center',
+                            // paddingHorizontal: '5%'
                         }]
                     }
                 >
                     <Input_Hoshi    
-                        width = "100%"     
+                        width = "75%"     
                         placeholder={'search'} 
                         variable={searchValue}
                         setVariable={val => setSearchValue(val)}
                         background={'white'}
                     />
-                    <View
-                        style={[{
-                            flexDirection: 'row',
-                            flexGrow: 1,
-                            width: "100%"
+                    <TouchableOpacity
+                        // onPress={() => navigation.navigate('payments')}
+                        onPress={() => setSeeDialog(true)}
+                        style={[
+                            // border_boxes().green,
+                            {
+                            width: '20%',
+                            justifyContent: 'center',
+                            alignItems: 'flex-end',
                         }]}
                     >
-                        {   getInput('Дата на плащане',
-                                    filterStartDate,
-                                    (x) => {setFilterStartDate(x)},
-                                    undefined,
-                                    () => {console.log("focus");setSeeStartDatePicker(true)},
-                                    () => {}
-                        )}
-                        {   getInput('Дата на картата',
-                                    filterEndDate,
-                                    (x) => {setFilterEndDate(x)},
-                                    undefined,
-                                    () => {console.log("focus");setSeeEndDatePicker(true)},
-                                    () => {}
-                        )}
-                    </View>
+                        <FontAwesomeIcon 
+                            icon={ faPlusCircle }
+                            color={color.palette.green_sbs}
+                            size={60}
+                        />
+                    </TouchableOpacity>
                 </View>
-                
-               
-                {seeStartDatePicker? (
-                    <DatePicker 
-                        showPicker={(state) => {console.log(state);setSeeStartDatePicker(state)} }
-                        useValue={(v: Date) => {
-                            setFilterStartDate( return_date_formated(v)) }}
-                    />
-                ): null}
-
-                {seeEndDatePicker? (                    
-                    <DatePicker 
-                        showPicker={(state) => {console.log(state);setSeeEndDatePicker(state)}} 
-                        useValue={(v: Date) => {
-                            setFilterEndDate( return_date_formated(v))
-                        }}
-                    />
-                ): null}   
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('payments')}
-                    style={[
-                        // border_boxes().green,
-                        {
-                        width: '25%',
-                        justifyContent: 'center',
-                        alignItems: 'flex-end',
+                <View
+                    style={[{
+                        flexDirection: 'row',
+                        flexGrow: 1,
+                        width: "100%"
                     }]}
                 >
-                    <FontAwesomeIcon 
-                        icon={ faPlusCircle }
-                        color={color.palette.green_sbs}
-                        size={60}
+                    <Input_Hoshi 
+                        placeholder={'Дата на картата от'}
+                        variable={displayDateFromTimestamp(filterStartDatestamp)}
+                        setVariable={(x) => {setFilterStartDatestamp(x)}}
+                        onF={() => {
+                            setSeeStartDatePicker(true)
+                        }}
                     />
-                </TouchableOpacity>
-               
+                    <Input_Hoshi 
+                        placeholder={'Дата на картата до'}
+                        variable={displayDateFromTimestamp(filterEndDatestamp)}
+                        setVariable={(x) => {setFilterEndDatestamp(x)}}
+                        onF={() => {
+                            setSeeEndDatePicker(true)
+                        }}
+                    />
+                </View>
+                <View
+                    style={[{
+                        width: '100%'
+                    }]}
+                >
+                    {seeStartDatePicker? (
+                        <DatePicker 
+                            showPicker={(state) => {console.log(state);setSeeStartDatePicker(state)} }
+                            inputDateStamp={filterStartDatestamp} 
+                            onDateChange={(_dateStamp: number) => {
+                                setFilterStartDatestamp(_dateStamp) }}
+                        />
+                    ): null}
+
+                    {seeEndDatePicker? (                    
+                        <DatePicker 
+                            showPicker={(state) => {console.log(state);setSeeEndDatePicker(state)}}
+                            inputDateStamp={filterEndDatestamp} 
+                            onDateChange={(_dateStamp: number) => {
+                                setFilterEndDatestamp(_dateStamp)
+                            }}
+                        />
+                    ): null}   
+                </View>                                 
             </View>
             
-            <PurchasedMonthlyCards search={searchValue} startDate = {filterStartDate != "" ? new Date(filterStartDate): null} endDate = {filterEndDate != ""? new Date(filterEndDate): null} setShowSnack = {(state)=>setShowSnack(state)} />
+            {/* <PurchasedCards search={searchValue} startDate = {filterStartDatestamp ? filterStartDatestamp: null} endDate = {filterEndDatestamp ? filterEndDatestamp: null} setShowSnack = {(state)=>setShowSnack(state)} />
             {showSnack ? 
                 <Snack message={'Saved !'} onDismiss={() => {setShowSnack(false)}} duration = {3000}/>
-            : null}
+            : null} */}
+            {
+                seeDialog ?
+                    <EditCardy2Dialog cardyModel={editCTM} onDismiss={() => {
+                        setSeeDialog(false)
+                        setECTM(null)
+                    }} />
+                : null
+            }
         </Screen>
     )
 })
-const getInput = (placeholder, operatedVariable, setVarState, width='45%', onF, onB) => {
-    return (
-        <View
-            style={[
-                // border_boxes().black,
-                {
-                width: width,
-                marginVertical: 5,
-                margin: 5,
-            }]}
-        >
-            <Hoshi 
-                autoCapitalize='none'
-                autoCompleteType="off"
-                autoCorrect={false}
-                value={operatedVariable}
-                onChangeText={x => setVarState(x)}
-                // placeholder={placeholder}
-                placeholderTextColor={'#999999'}
-                // containerStyle={{paddingHorizontal: 0}}
-                // inputContainerStyle={styles.inputContainerStyle}          
-                inputStyle={{fontSize: 16}}
-
-                onFocus={() => onF()}
-                onBlur={() => onB()}
-                label={placeholder}
-                labelStyle={[styles.inputTextStyle, {marginBottom: 10}]}
-                defaultValue={operatedVariable}
-                borderColor={color.palette.blue_sbs}
-                inputPadding={3}
-            />
-
-        </View>
-    )
-}

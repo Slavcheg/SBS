@@ -2,36 +2,49 @@ import { types, SnapshotIn, getSnapshot } from "mobx-state-tree"
 import { firebaseFuncs } from '../../services/firebase/firebase.service'
 import moment from "moment"
 import { return_todays_datestamp } from "../../global-helper"
+import { Cardy_Type } from "./v2-cardy-types-store"
 
 const card_types = ['monthly', 'visits']
 
-export const Card2 = types.model({
+export const Cardy2 = types.model({
     trainers: types.optional(types.array(types.string), []),
+    trainersPics: types.optional(types.array(types.string), []),
     clients: types.optional(types.array(types.string), []),
+    clientsPics: types.optional(types.array(types.string), []),
     datestampPayment : return_todays_datestamp(),
     datestampStart : return_todays_datestamp(),
     whoPays : '',
     comment : '',
-    
-    type : types.enumeration(card_types),
-    visits_limit : types.maybeNull(types.number),
-    monthly_limit: types.maybeNull(types.number),
-    price : types.number,
+
+    card_type: Cardy_Type,
     realPrice: types.number,
-    rate : types.number,
-    visits : types.optional(types.array(types.string), []),
+    // type : types.enumeration(card_types),
+    // visits_limit : types.maybeNull(types.number),
+    // monthly_limit: types.maybeNull(types.number),
+    // price : types.number,
+    // realPrice: types.number,
+    // rate : types.number,
+    // visits : types.optional(types.array(types.string), []),
 })
 
-export interface ICard2 extends SnapshotIn<typeof Card2> {}
+const Cardy_Model = types.model({
+    id: types.identifier,
+    item: Cardy2
+})
+
+export interface ICardy2 extends SnapshotIn<typeof Cardy2> {}
+export interface ICardy2_Model extends SnapshotIn<typeof Cardy_Model> {}
 
 export const CardStoreModel2 = types.model('RootStore').props({
-    cards: types.array(types.model({
-        id: types.identifier,
-        item: Card2
-    })),
+    cards: types.array(Cardy_Model),
     collection: 'cards2'
 })
-.actions(self => firebaseFuncs<ICard2>(self.cards, self.collection))
+.actions(self => ({
+    refreshItems(items){
+        self.cards = items
+    },
+}))
+.actions(self => firebaseFuncs<ICardy2>(self.refreshItems, self.collection))
 .actions(self => ({
 
     async addTrainingYesterday(cardy){

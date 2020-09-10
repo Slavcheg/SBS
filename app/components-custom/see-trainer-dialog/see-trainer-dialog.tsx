@@ -9,12 +9,12 @@ import {useStores } from "../../models/root-store"
 import { RequiredWarning } from "../../components"
 
 export const SeeTrainerDialog: React.FunctionComponent<{email, onDismiss}> = props => {
-    const userStore = useStores().userStore
+    const userStore2 = useStores().userStore2
     const { onDismiss } = props
     useEffect(() => {
-        userStore.ggetItems()
+        userStore2.getItems()
     }, [])
-    let client = userStore.trainers
+    let client = userStore2.trainers
                     .find(cl => cl.item.email === props.email)
     return (
         <View
