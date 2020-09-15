@@ -26,10 +26,7 @@ return (
         headerLogo={<Image 
                         source={imgs.logo} 
                         style={[{ height: 40, width: 160}]}
-                        
-                        // containerStyle={boxes.x}
                     />}
-        // headerText={'asdasd'}
         rightIcon={
             <Avatar                
                 rounded

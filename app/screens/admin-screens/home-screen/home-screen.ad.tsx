@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { Text, View } from 'react-native';
-import { spacing, color } from '../../../theme';
+import { View } from 'react-native';
+import { color } from '../../../theme';
 import {Screen, MainHeader_Tr, ButtonSquare } from '../../../components'
-import ProgressCircle from 'react-native-progress-circle'
-import { Auth } from '../../../services/auth/auth.service';
-import { Api } from "../../../services/api";
-import { return_todays_datestamp, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
-import {useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
 
 interface HomeScreenAdminProps extends NavigationProps {}
@@ -17,6 +12,18 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
     const menuList = require('./menu-list-ad.json');
     const menu = menuList.map((el, i) => {
     const onPress = el.onClick !== "goSomewhere" ? () => navigation.navigate(el.onClick) : null;
+        
+        if (el.title === 'flexGrow') {
+            return (
+                <View
+                    key={i}
+                    style={[{
+                        flexGrow: 1
+                    }]}
+                ></View>
+            )
+        }
+    
         return  <ButtonSquare 
                     style={{marginTop: 20}} 
                     key={i} 
@@ -27,11 +34,10 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
                 ></ButtonSquare>
     })
     const { navigation } = props
-    const rootStore = useStores()
     
-    useEffect(() => {
-    //    Auth.login('dobrev.jordan@gmail.com')
-      }, [])
+    // useEffect(() => {
+
+    //   }, [])
 
     return (
         <Screen
@@ -43,58 +49,17 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
                 backgroundColor: color.palette.transparent,
-                // paddingHorizontal: 20
             }}
         >
             <MainHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}}/>
-            {/* <View 
-                style={[
-                    // boxes.black,
-                    {
-                    paddingVertical: spacing[8]
-                }]}
-            >
-                <ProgressCircle
-                    percent={today_vs_last_day()*100}
-                    radius={100}
-                    borderWidth={15}
-                    color={color.palette.blue_sbs}
-                    shadowColor="#CCCCCC"
-                    bgColor="#fff"
-                >
-                    <View
-                        style={{
-                            alignItems: 'center'
-                        }}
-                    >
-                        <Text 
-                            style={{ 
-                                fontSize: 30,
-                                fontWeight: 'bold',
-                                color: color.palette.blue_sbs
-                            }}
-                        >{rootStore.numberOfTrainingsForLoggedTrainerThisMonth}</Text>
-                        <Text
-                            style={{
-                                color: '#666666'
-                            }}
-                        >{'тренировки'}</Text>
-                        <Text
-                            style={{
-                                color: '#666666'
-                            }}
-                        >{'до ' + return_todays_date()}</Text>
-                    </View>            
-                </ProgressCircle>
-            </View>*/}
             <View  
                 style={[
-                    // boxes.orange,
                     {
                         flex: 1,
                         width: '100%',
                         backgroundColor: "#F4F8FB",
                         paddingTop: 5,
+                        paddingBottom: 30,
                         paddingHorizontal: 25
                     }
                 ]}
@@ -102,9 +67,6 @@ export const HomeScreenAdmin: React.FunctionComponent<HomeScreenAdminProps> = ob
                 {
                     menu
                 }
-                
-                {/* <ButtonSquare style={{marginTop: 20}}></ButtonSquare>
-                <ButtonSquare style={{marginTop: 20}}></ButtonSquare> */}
             </View>
         </Screen>     
     )

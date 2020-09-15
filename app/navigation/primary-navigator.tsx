@@ -27,10 +27,9 @@ import {
   ClientsListScreenAd,
   ReferralsScreen,
   GymHallsScreen,
-  VisitsCardsScreen,
-  MonthlyCardsScreen,
-  PurchasedVisitsCardsScreen,
-  PurchasedMonthlyCardsScreen
+  CardTypesListScreen,
+  PurchasedCardsListScreen,
+  AddCardScreen
 } from "../screens"
 // import { PrimaryParamList } from "./types"
 
@@ -70,10 +69,9 @@ export function PrimaryNavigator() {
       <Stack.Screen name="reports" component={ReportScreen} />
       <Stack.Screen name="gymhalls" component={GymHallsScreen} />
       <Stack.Screen name="referrals" component={ReferralsScreen} />
-      <Stack.Screen name="monthlyCards" component={MonthlyCardsScreen} />
-      <Stack.Screen name="visitsCards" component={VisitsCardsScreen} />
-      <Stack.Screen name="purchasedMonthly" component={PurchasedMonthlyCardsScreen} />
-      <Stack.Screen name="purchasedVisits" component={PurchasedVisitsCardsScreen} />
+      <Stack.Screen name="cardTypesList" component={CardTypesListScreen} />
+      <Stack.Screen name="purchasedCardsList" component={PurchasedCardsListScreen} />
+      <Stack.Screen name="addCardScreen" component={AddCardScreen} />
     </Stack.Navigator>
   )
 }

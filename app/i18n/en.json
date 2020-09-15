@@ -1,4 +1,11 @@
 {
+  "generic": {
+    "search_label": "Search",
+    "required_field": "Field is required !",
+    "required_numeric": "Field must be digital !",  
+    "close_button": "Close",
+    "save_button": "Save"
+  },
   "errors": {
     "invalidEmail": "Invalid email address."
   },
@@ -39,5 +46,55 @@
     "gymHallsSquareButtonCaption": "Gym Halls",
     "referralsSquareButtonCaption": "Referrals",
     "trainersHomeSquareButtonCaption": "Trainer home"
+  },
+  "clients_list_ad": {
+    "header_label": "Clients list"
+  },
+  "trainers_list": {
+    "header_label": "Trainers list"
+  },
+  "purchasedCardsList": {
+    "seeOnlyActiveCardsLabel": "Оnly active cards?: ",
+    "onlyActiveCards": "active",
+    "allCards": "all cards",
+    "searchByLabel": "Search by: ",
+    "clients": "clients",
+    "trainers": "trainers",
+    "header_label": "Purchased cards",
+    "start_date_from": "Start date from",
+    "start_date_to": "Start date to"
+  },
+  "cardTypesList": {
+    "header_label": "Card types"
+  },
+  "see/add-client-dialog": {
+    "name_field": "name",
+    "family_name_field": "family name",
+    "email_field": "email",
+    "generic_num_field": "generic number",
+    "referral_field": "referral"
+  },
+  "see/add-trainer-dialog": {
+      "name_field": "name",
+      "family_name_field": "family name",
+      "email_field": "email",
+      "generic_num_field": "generic number",
+      "referral_field": "referral",
+      "gyms_field": "gyms"
+  },
+  "edit/sbsCardPurchased": {
+    "type_name": "type name",
+    "type": "type",
+    "limit_months": "months",
+    "limit_visits": "visits",
+    "clients": "Clients:",
+    "trainers": "Trаiners:",
+    "dateOfPayment": "date of payment",
+    "dateOfStart": "date of start",
+    "price": "price",
+    "realPrice": "real price",
+    "card_type_months": "monthly",
+    "card_type_visits": "visists",
+    "rate": "rate"
   }
 }

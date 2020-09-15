@@ -15,14 +15,20 @@
     "iconLeft": "bl_payments",
     "title": "adminHomeScreen.purchasedCardsMonthlySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
-    "onClick": "purchasedMonthly"
+    "onClick": "purchasedCardsList"
 },
 
 {
     "iconLeft": "bl_payments",
     "title": "adminHomeScreen.typesCardsMonthlySquareButtonCaption",
     "iconRight": "bl_arrow_forward",
-    "onClick": "monthlyCards"
+    "onClick": "cardTypesList"
+},
+{
+    "iconLeft": "",
+    "title": "flexGrow",
+    "iconRight": "",
+    "onClick": ""
 },
 {
     "iconLeft": "bl_payments",

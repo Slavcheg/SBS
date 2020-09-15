@@ -4,20 +4,19 @@ import { border_boxes, device_width, device_height } from "../../global-helper"
 import { Button } from "../../components/button/button"
 import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
+import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
 import { RequiredWarning } from "../../components"
-import { VisitsCardItem } from "../../models/sub-stores/visits-cards"
+import { translate } from "../../i18n"
 
-export const AddVisitsCardDialog: React.FunctionComponent<{onDismiss}> = props => {
-    const visitsCardStore = useStores().visitsCardStore
-    const [vcard, setVCard] = useState(new VisitsCardItem())
-    const [emailRequiredFlag, setRequiredFlag] = useState(false)
+export const SeeTrainerDialog: React.FunctionComponent<{email, onDismiss}> = props => {
+    const userStore2 = useStores().userStore2
     const { onDismiss } = props
-
     useEffect(() => {
-        visitsCardStore.getMItem()
+        userStore2.getItems()
     }, [])
-
+    let client = userStore2.trainers
+                    .find(cl => cl.item.email === props.email)
     return (
         <View
             key={'full screen'}
@@ -54,48 +53,30 @@ export const AddVisitsCardDialog: React.FunctionComponent<{onDismiss}> = props =
             >
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'име'} 
-                    variable={vcard.name}
-                    setVariable={val => {
-                        setVCard(prevState => ({...prevState, name: val}))
-                        if (val === '') {
-                            setRequiredFlag(true)
-                        } else {
-                            setRequiredFlag(false)
-                        }
-                    }}                    
+                    placeholder={translate('see/add-trainer-dialog.name_field')} 
+                    variable={client.item.email}
+                    setVariable={val => val}
+                    editable = {false}
                 />
-                <RequiredWarning flag={emailRequiredFlag} width={'100%'} />
-                <Input_Hoshi 
+                <Input_Hoshi    
                     width='100%'
-                    placeholder={'Брой посещения'} 
-                    variable={vcard.visits.toString()}
-                    setVariable={val => setVCard(prevState => ({...prevState, visits: +val}))}
+                    placeholder={translate('see/add-trainer-dialog.gyms_field')} 
+                    variable={'?'}
+                    setVariable={val => val}
+                    editable = {false}
                 />
-                <Input_Hoshi 
-                    width='100%'
-                    placeholder={'Месеци валидна'} 
-                    variable={vcard.monthsValid.toString()}
-                    setVariable={val => setVCard(prevState => ({...prevState, monthsValid: +val}))}
-                />
-                <Input_Hoshi 
-                    width='100%'
-                    placeholder={'Цена'} 
-                    variable={vcard.price.toString()}
-                    setVariable={val => setVCard(prevState => ({...prevState, price: +val}))}
-                />
-                
                 <View
                     style={[{
                         width: '100%',
                         paddingVertical: 20,
                         flexDirection: 'row',
-                        justifyContent: 'space-between'
+                        // justifyContent: 'space-between'
+                        justifyContent: 'center'
                     }]}
                 >
                     <Button 
                         onPress={() => onDismiss()} 
-                        text={'Close'}
+                        text={translate('generic.close_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],
@@ -108,10 +89,10 @@ export const AddVisitsCardDialog: React.FunctionComponent<{onDismiss}> = props =
                           }}
                     >                
                     </Button>
-                    <Button 
+                    {/* <Button 
                         onPress={() => {
-                            if(vcard.name !== '') {
-                                visitsCardStore.addMItem(vcard) 
+                            if(user.email !== '') {
+                                userStore.aaddItem(user) 
                                 onDismiss()
                             } else {
                                 setRequiredFlag(true)
@@ -129,10 +110,9 @@ export const AddVisitsCardDialog: React.FunctionComponent<{onDismiss}> = props =
                             fontSize: 16
                           }}
                     >                    
-                    </Button>
-                </View>
-                
-            </View>            
+                    </Button> */}
+                </View>            
+            </View>
         </View>
     )
 }

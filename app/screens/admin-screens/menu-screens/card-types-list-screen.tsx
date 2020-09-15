@@ -9,10 +9,11 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { EditCardyType2Dialog } from "../../../components";
 import { useStores } from "../../../models/root-store";
 import { CardTypesStoreModel2, ICardy_Type_Model } from "../../../models/sub-stores/v2-cardy-types-store";
+import { translate } from "../../../i18n";
 
-interface MonthlyCardsProps extends NavigationProps {}
+interface CardTypesListProps extends NavigationProps {}
 
-export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = observer(props => {
+export const CardTypesListScreen: React.FunctionComponent<CardTypesListProps> = observer(props => {
     const { navigation } = props
     const [seeDialog, setSeeDialog] = useState(false)
     const [seeDeleteConfirmation, setSeeDeleteConfirmation] = useState(false)
@@ -43,7 +44,7 @@ export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = ob
                     backgroundColor: 'white',
                     paddingHorizontal: 25
                 }}
-                title='Типове карти'
+                title={translate('cardTypesList.header_label')}
             />
             <View
                 style={[
@@ -60,7 +61,7 @@ export const MonthlyCardsScreen: React.FunctionComponent<MonthlyCardsProps> = ob
             >
                 <Input_Hoshi    
                     width='75%'      
-                    placeholder={'search'} 
+                    placeholder={translate('generic.search_label')} 
                     variable={searchValue}
                     setVariable={val => setSearchValue(val)}
                     background={'white'}

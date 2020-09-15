@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
@@ -9,6 +9,7 @@ import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from 'react-native-swipe-list-view';
+import { translate } from "../../../i18n/"
 import { border_boxes } from "../../../global-helper";
 
 export const GetClients: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
@@ -53,7 +54,7 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                                     </TouchableOpacity>
                                 </View>
                             
-                                <TouchableOpacity 
+                                <TouchableHighlight
                                     key={key}
                                     style={[                                        
                                         {
@@ -66,28 +67,37 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                                             backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
                                         },
                                     ]}
-                                    onPress={() => {
+                                    onPressOut={() => {
                                         props.setEm(item.email)
                                         props.setSeeDialog(true)
                                     }}
+                                    underlayColor={key % 2 === 1 ? 'white': color.palette.grey_sbs}
                                 >
-                                    <Avatar                
-                                        rounded
-                                        containerStyle={[{
-                                            borderColor: color.palette.blue_sbs,
-                                            borderWidth: 1
+                                    <View
+                                        style={[{
+                                            flexDirection: 'row',
+                                            flex: 1,
+                                            alignItems: 'center'
                                         }]}
-                                        size='medium'
-                                        source={{
-                                            uri: item.picture ||
-                                                    'https://images.assetsdelivery.com/compings_v2/4zevar/4zevar1604/4zevar160400009.jpg',
-                                        }}
-                                    />
-                                    <Text 
-                                        key={key} 
-                                        style={[{color: 'black', marginLeft: '5%'}]}
-                                    >{item.email}</Text>
-                                </TouchableOpacity>
+                                    >
+                                        <Avatar                
+                                            rounded
+                                            containerStyle={[{
+                                                borderColor: color.palette.blue_sbs,
+                                                borderWidth: 1
+                                            }]}
+                                            size='medium'
+                                            source={{
+                                                uri: item.picture ||
+                                                        'https://images.assetsdelivery.com/compings_v2/4zevar/4zevar1604/4zevar160400009.jpg',
+                                            }}
+                                        />
+                                        <Text 
+                                            key={key} 
+                                            style={[{color: 'black', marginLeft: '5%'}]}
+                                        >{item.email}</Text>
+                                    </View>
+                                </TouchableHighlight>
                             </SwipeRow>  
                         )
                     })
@@ -122,7 +132,7 @@ export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = ob
                     backgroundColor: 'white',
                     paddingHorizontal: '5%'
                 }} 
-                title='Списък трениращи'/>
+                title={translate('clients_list_ad.header_label')}/>
             <View
                 style={[
                     {
@@ -138,7 +148,7 @@ export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = ob
             >
                 <Input_Hoshi    
                     width='75%'      
-                    placeholder={'search'} 
+                    placeholder={translate('generic.search_label')} 
                     variable={searchValue}
                     setVariable={val => setSearchValue(val)}
                     background={'white'}

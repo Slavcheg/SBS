@@ -7,6 +7,7 @@ import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { useStores } from "../../models/root-store"
 import { IUser2 } from "../../models/sub-stores/v2-user-store"
 import { RequiredWarning } from "../../components"
+import { translate } from "../../i18n"
 
 export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
     const userStore2 = useStores().userStore2
@@ -61,14 +62,14 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
             >
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'генериран номер'} 
+                    placeholder={translate('see/add-client-dialog.generic_num_field')} 
                     variable={user.client?.generic_number.toString()}
                     setVariable={val => setUser(prevState => ({...prevState, generic_number: val}))}
                     editable = {false}
                 />
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'емайл'} 
+                    placeholder={'* ' + translate('see/add-client-dialog.email_field')} 
                     variable={user.email}
                     setVariable={val => {
                         setUser(prevState => ({...prevState, email: val, isClient: true, isAdmin: false, isTrainer: false}))
@@ -82,19 +83,19 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                 <RequiredWarning flag={emailRequiredFlag} width={'100%'} />
                 <Input_Hoshi 
                     width='100%'
-                    placeholder={'име'} 
+                    placeholder={translate('see/add-client-dialog.name_field')} 
                     variable={user.first}
                     setVariable={val => setUser(prevState => ({...prevState, first: val}))}
                 />
                 <Input_Hoshi 
                     width='100%'
-                    placeholder={'фамилия'} 
+                    placeholder={translate('see/add-client-dialog.family_name_field')} 
                     variable={user.last}
                     setVariable={val => setUser(prevState => ({...prevState, last: val}))}
                 />
                 <Input_Hoshi 
                     width='100%'
-                    placeholder={'препоръчител'} 
+                    placeholder={translate('see/add-client-dialog.referral_field')} 
                     variable={user.referral}
                     setVariable={val => setUser(prevState => ({...prevState, referral: val}))}
                 />
@@ -109,7 +110,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                 >
                     <Button 
                         onPress={() => onDismiss()} 
-                        text={'Close'}
+                        text={translate('generic.close_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],
@@ -131,7 +132,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                                 setRequiredFlag(true)
                             }                            
                         }}
-                        text={'Save'}
+                        text={translate('generic.save_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],
@@ -144,8 +145,7 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                           }}
                     >                    
                     </Button>
-                </View>
-                
+                </View>                
             </View>            
         </View>
     )

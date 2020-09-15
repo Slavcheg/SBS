@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react"
-import { View, Text } from "react-native"
-import { border_boxes, device_width, device_height } from "../../global-helper"
+import React, { useEffect } from "react"
+import { View } from "react-native"
+import {  device_width, device_height } from "../../global-helper"
 import { Button } from "../../components/button/button"
 import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
-import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
-import { RequiredWarning } from "../../components"
+import { translate } from "../../i18n"
 
-export const SeeTrainerDialog: React.FunctionComponent<{email, onDismiss}> = props => {
-    const userStore2 = useStores().userStore2
+export const SeeClientDialog: React.FunctionComponent<{email, onDismiss}> = props => {
+    const userStore = useStores().userStore2
     const { onDismiss } = props
     useEffect(() => {
-        userStore2.getItems()
+        userStore.getItems()
     }, [])
-    let client = userStore2.trainers
+    let client = userStore.clients
                     .find(cl => cl.item.email === props.email)
     return (
         <View
@@ -52,29 +51,44 @@ export const SeeTrainerDialog: React.FunctionComponent<{email, onDismiss}> = pro
             >
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'име'} 
+                    placeholder={translate('see/add-client-dialog.name_field')} 
                     variable={client.item.email}
                     setVariable={val => val}
                     editable = {false}
                 />
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'зали'} 
-                    variable={'?'}
+                    placeholder={translate('see/add-client-dialog.generic_num_field')} 
+                    variable={client.item.client.generic_number.toString()}
                     setVariable={val => val}
                     editable = {false}
                 />
+                <Input_Hoshi    
+                    width='100%'
+                    placeholder={translate('see/add-client-dialog.referral_field')} 
+                    variable={client.item.client.referral}
+                    setVariable={val => val}
+                    editable = {false}
+                />
+                {/* <Input_Hoshi    
+                    width='100%'
+                    placeholder={'треньор'} 
+                    variable={'?'}
+                    setVariable={val => val}
+                    editable = {false}
+                /> */}
                 <View
                     style={[{
                         width: '100%',
                         paddingVertical: 20,
                         flexDirection: 'row',
-                        justifyContent: 'space-between'
+                        // justifyContent: 'space-between'
+                        justifyContent: 'center'
                     }]}
                 >
                     <Button 
                         onPress={() => onDismiss()} 
-                        text={'Close'}
+                        text={translate('generic.close_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],
@@ -87,15 +101,15 @@ export const SeeTrainerDialog: React.FunctionComponent<{email, onDismiss}> = pro
                           }}
                     >                
                     </Button>
-                    <Button 
-                        // onPress={() => {
-                        //     if(user.email !== '') {
-                        //         userStore.aaddItem(user) 
-                        //         onDismiss()
-                        //     } else {
-                        //         setRequiredFlag(true)
-                        //     }                            
-                        // }}
+                    {/* <Button 
+                        onPress={() => {
+                            if(user.email !== '') {
+                                userStore.aaddItem(user) 
+                                onDismiss()
+                            } else {
+                                setRequiredFlag(true)
+                            }                            
+                        }}
                         text={'Save'}
                         style={{
                             width: '45%',
@@ -108,7 +122,7 @@ export const SeeTrainerDialog: React.FunctionComponent<{email, onDismiss}> = pro
                             fontSize: 16
                           }}
                     >                    
-                    </Button>
+                    </Button> */}
                 </View>            
             </View>
         </View>

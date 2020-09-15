@@ -43,7 +43,7 @@ export const PageHeader_Cl: React.FunctionComponent<PageHeaderProps> = props => 
                     }}
                 />
             } 
-            onRightPress={() => navigation.navigate('play')}
+            // onRightPress={() => navigation.navigate('play')}
         />
     )
 }

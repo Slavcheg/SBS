@@ -40,7 +40,7 @@ export function Input_Hoshi ({
                     onFocus={() => onF()}
                     onBlur={() => onB()}
                     label={placeholder}
-                    labelStyle={[styles.inputTextStyle, {marginBottom: 10}]}
+                    labelStyle={[styles.inputTextStyle]}
                     defaultValue={variable}
                     borderColor={color.palette.blue_sbs}
                     inputPadding={3}
@@ -54,11 +54,12 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingLeft: spacing[4],
         borderBottomColor: color.palette.grey_sbs,
-        borderRadius: 4,
+        borderRadius: 4
     },
     inputTextStyle: {
         fontSize: 12,
-        opacity: 0.5
+        opacity: 0.5,
+        // paddingLeft: 10
     }
 })
 

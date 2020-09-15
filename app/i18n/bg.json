@@ -1,4 +1,11 @@
 {
+  "generic": {
+    "search_label": "Търсене",
+    "required_field": "Полето е задължително !",    
+    "required_numeric": "Полето трябвя да е цифрово!",
+    "close_button": "Затвори",
+    "save_button": "Запиши"
+  },
   "welcomeScreen": {
     "registrationBtn": "РЕГИСТРАЦИЯ",
     "entryBtn": "ВХОД"
@@ -35,5 +42,55 @@
     "gymHallsSquareButtonCaption": "Фитнеси",
     "referralsSquareButtonCaption": "Реферали",
     "trainersHomeSquareButtonCaption": "Меню треньори"
+  },
+  "clients_list_ad": {
+    "header_label": "Списък трениращи"
+  },
+  "trainers_list": {
+    "header_label": "Списък треньори"
+  },
+  "purchasedCardsList": {
+    "seeOnlyActiveCardsLabel": "Виж само активни карти?: ",
+    "onlyActiveCards": "само активни",
+    "allCards": "всички карти",
+    "searchByLabel": "Търси по: ",
+    "clients": "клиенти",
+    "trainers": "треньори",
+    "header_label": "Закупени карти",
+    "start_date_from": "Старт дата от",
+    "start_date_to": "Старт дата до"
+  },
+  "cardTypesList": {
+    "header_label": "Типове карти"
+  },
+  "see/add-client-dialog": {
+    "name_field": "име",
+    "family_name_field": "фамилия",
+    "email_field": "имейл",
+    "generic_num_field": "генериран номер",
+    "referral_field": "препоръчител"
+  },
+  "see/add-trainer-dialog": {
+    "name_field": "име",
+    "family_name_field": "фамилия",
+    "email_field": "имейл",
+    "generic_num_field": "генериран номер",
+    "referral_field": "препоръчител",
+    "gyms_field": "зали"
+  },
+  "edit/sbsCardPurchased": {
+    "type_name": "име тим",
+    "type": "тип",
+    "limit_months": "месеци",
+    "limit_visits": "посещения",
+    "clients": "Клиенти:",
+    "trainers": "Треньори:",
+    "dateOfPayment": "дата на плащане",
+    "dateOfStart": "дата на започване",
+    "price": "цена",
+    "realPrice": "реална цена",
+    "card_type_months": "месечна",
+    "card_type_visits": "посещения",
+    "rate": "ставка"
   }
 }

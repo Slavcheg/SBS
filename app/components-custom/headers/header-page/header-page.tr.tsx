@@ -43,7 +43,7 @@ export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => 
                     }}
                 />
             } 
-            onRightPress={() => navigation.navigate('_demo')}
+            // onRightPress={() => navigation.navigate('_demo')}
         />
     )
 }

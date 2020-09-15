@@ -7,6 +7,7 @@ import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { RequiredWarning } from "../../components"
 import { useStores } from "../../models/root-store"
 import { card_types, ICardy_Type, ICardy_Type_Model } from "../../models/sub-stores/v2-cardy-types-store"
+import { translate } from "../../i18n"
 
 interface EditCardyType2Props {
     cardyTypeModel?: ICardy_Type_Model
@@ -90,7 +91,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                             width: '40%',
                             backgroundColor: obj.type === card_types.monthly ? color.palette.blue_sbs : color.palette.grey_sbs
                         }]}
-                        text={'Monthly'}
+                        text={translate('edit/sbsCardPurchased.card_type_months')}
                         textStyle={[{
                             fontSize: 15
                         }]}
@@ -105,7 +106,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                             width: '40%',
                             backgroundColor: obj.type === card_types.per_visits ? color.palette.blue_sbs : color.palette.grey_sbs
                         }]}
-                        text={'Visits'}
+                        text={translate('edit/sbsCardPurchased.card_type_visits')}
                         textStyle={[{
                             fontSize: 15
                         }]}
@@ -116,7 +117,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                 </View>
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'Име'} 
+                    placeholder={translate('edit/sbsCardPurchased.type_name')} 
                     variable={obj.title}
                     setVariable={val => setObj(prevState => ({...prevState, title: val}))}
                     editable = {true}
@@ -125,7 +126,11 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
 
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'Kартов лимит м/п'} 
+                    placeholder={
+                        obj.type === card_types.monthly ? 
+                        translate('edit/sbsCardPurchased.limit_months')
+                        : translate('edit/sbsCardPurchased.limit_visits')
+                    } 
                     variable={obj.card_limit?.toString()}
                     setVariable={val => setObj(prevState => ({...prevState, card_limit: isNaN(+val)? val : +val}))}
                     editable = {true}
@@ -134,7 +139,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                 <RequiredWarning flag={numericFlags.requiredMessage_card_limit_numeric} message={'Полето трябвя да е цифрово!'} width={'100%'} />
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'Цена'} 
+                    placeholder={translate('edit/sbsCardPurchased.price')} 
                     variable={obj.price?.toString()}
                     setVariable={val => setObj(prevState => ({...prevState, price: isNaN(+val)? val : +val}))}
                     editable = {true}
@@ -151,7 +156,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                 >
                     <Button 
                         onPress={() => onDismiss()} 
-                        text={'Close'}
+                        text={translate('generic.close_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],
@@ -187,7 +192,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                                                             : setNumericFlags(prevState => ({...prevState, requiredMessage_price_numeric: false}))
                             }                            
                         }}
-                        text={'Save'}
+                        text={translate('generic.save_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],

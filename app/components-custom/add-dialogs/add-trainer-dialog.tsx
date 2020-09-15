@@ -7,6 +7,7 @@ import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
 import { RequiredWarning } from "../required-warning/required-warning"
+import { translate } from "../../i18n"
 
 export function AddTrainerDialog({onDismiss}) {
     const [user, setUser] = useState(new User())
@@ -53,7 +54,7 @@ export function AddTrainerDialog({onDismiss}) {
             >
                 <Input_Hoshi    
                     width='100%'      
-                    placeholder={'емайл'} 
+                    placeholder={'* ' + translate('see/add-trainer-dialog.email_field')} 
                     variable={user.email}
                     setVariable={val => {
                         setUser(prevState => ({...prevState, email: val, isTrainer: true}))
@@ -68,13 +69,13 @@ export function AddTrainerDialog({onDismiss}) {
                 <RequiredWarning flag={emailRequiredFlag} width={'100%'} />
                 <Input_Hoshi 
                     width='100%'   
-                    placeholder={'име'} 
+                    placeholder={translate('see/add-trainer-dialog.name_field')} 
                     variable={user.first}
                     setVariable={val => setUser(prevState => ({...prevState, first: val}))}
                 />
                 <Input_Hoshi 
                     width='100%'   
-                    placeholder={'фамилия'} 
+                    placeholder={translate('see/add-trainer-dialog.family_name_field')} 
                     variable={user.last}
                     setVariable={val => setUser(prevState => ({...prevState, last: val}))}
                 />
@@ -88,7 +89,7 @@ export function AddTrainerDialog({onDismiss}) {
                 >
                     <Button 
                         onPress={() => onDismiss()} 
-                        text={'Close'}
+                        text={translate('generic.close_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],
@@ -112,7 +113,7 @@ export function AddTrainerDialog({onDismiss}) {
                             }
                             
                         }}
-                        text={'Save'}
+                        text={translate('generic.save_button')}
                         style={{
                             width: '45%',
                             marginTop: spacing[8],

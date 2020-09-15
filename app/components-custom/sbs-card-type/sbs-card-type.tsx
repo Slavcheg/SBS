@@ -7,6 +7,7 @@ import { color } from "../../theme"
 import { observer } from "mobx-react-lite";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faPen, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { translate } from "../../i18n"
 
 interface SbsCardTypeProps {
     cardyTypeModel: ICardy_Type_Model,
@@ -15,15 +16,6 @@ interface SbsCardTypeProps {
 }
 
 export const SbsCardType: React.FunctionComponent<SbsCardTypeProps> = observer(props => {
-    // let cardType: ICardy_Type = {
-    //     title: '2m 200lv',
-    //     type: card_types.monthly,
-    //     card_limit: 2,
-    //     price: 100,
-    //     rate: 50
-
-    // }
-    // let id: number
 
     const { cardyTypeModel, openEditDialog, openDeleteDialog } = props
     return (
@@ -52,7 +44,7 @@ export const SbsCardType: React.FunctionComponent<SbsCardTypeProps> = observer(p
                 }]}
             >
                 <Input_Hoshi 
-                    placeholder={'title'} 
+                    placeholder={translate('edit/sbsCardPurchased.type_name')} 
                     variable={cardyTypeModel.item.title} 
                     setVariable={x => x} 
                     width='30%'                            
@@ -115,23 +107,26 @@ export const SbsCardType: React.FunctionComponent<SbsCardTypeProps> = observer(p
             >
                  
                 <Input_Hoshi 
-                    placeholder={'type'} 
-                    variable={cardyTypeModel.item.type} 
-                    setVariable={x => x} 
+                    placeholder={translate('edit/sbsCardPurchased.type')} 
+                    variable={cardyTypeModel.item.type === card_types.monthly ? 
+                        translate('edit/sbsCardPurchased.card_type_months')
+                        : translate('edit/sbsCardPurchased.card_type_visits') 
+                    }
+                    setVariable={() => {}} 
                     width='30%'                            
                 />
                 <Input_Hoshi 
                     placeholder={
-                        cardyTypeModel.item.type === card_types.monthly?
-                            'months'
-                        : 'visits'
-                    } 
+                        cardyTypeModel.item.type === card_types.monthly ?
+                        translate('edit/sbsCardPurchased.limit_months')
+                        : translate('edit/sbsCardPurchased.limit_visits')
+                } 
                     variable={cardyTypeModel.item.card_limit.toString()} 
                     setVariable={x => x} 
                     width='30%'                            
                 />   
                 <Input_Hoshi 
-                    placeholder={'rate'} 
+                    placeholder={translate('edit/sbsCardPurchased.rate')} 
                     variable={cardyTypeModel.item.rate.toString()} 
                     setVariable={x => x} 
                     width='30%'                            
@@ -146,7 +141,7 @@ export const SbsCardType: React.FunctionComponent<SbsCardTypeProps> = observer(p
             >
                 
                 <Input_Hoshi 
-                    placeholder={'price'} 
+                    placeholder={translate('edit/sbsCardPurchased.price')} 
                     variable={cardyTypeModel.item.price.toString()} 
                     setVariable={x => x} 
                     width='30%'                            

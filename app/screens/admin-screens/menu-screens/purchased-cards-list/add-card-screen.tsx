@@ -1,28 +1,24 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
-import { border_boxes, device_width, device_height, displayDateFromTimestamp, return_todays_datestamp } from "../../global-helper"
-import { Button } from "../../components/button/button"
-import { color, spacing } from "../../theme"
-import { Input_Hoshi } from "../input-hoshi/input-hoshi"
-import { RequiredWarning } from "../../components"
-import { useStores } from "../../models/root-store"
-import { ICardy2, ICardy2_Model } from "../../models/sub-stores/v2-cardy-store"
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { ICardy_Type, card_types } from "../../models/sub-stores/v2-cardy-types-store"
-import { GetCardyTypeSuggestions } from "./edit-cardy2-components/get-cardy-type-suggestions"
-import { GetClientsSuggestions } from "./edit-cardy2-components/get-clients-suggestions"
-import { GetTrainersSuggestions } from "./edit-cardy2-components/get-trainers-suggestions"
-import { DatePicker } from "../date-picker/date-picker"
-import { translate } from "../../i18n"
+import { observer } from "mobx-react-lite";
+import { NavigationProps } from "../../../../models/commomn-navigation-props";
+import { Screen, Button, Input_Hoshi, RequiredWarning } from '../../../../components'
+import { color, spacing } from "../../../../theme";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useStores } from "../../../../models/root-store";
+import { ICardy2 } from "../../../../models/sub-stores/v2-cardy-store";
+import { return_todays_datestamp, displayDateFromTimestamp } from "../../../../global-helper";
+import { translate } from "../../../../i18n";
+import { GetCardyTypeSuggestions } from "../../../../components-custom/edit-dialogs/edit-cardy2-components/get-cardy-type-suggestions";
+import { ICardy_Type, card_types } from "../../../../models/sub-stores/v2-cardy-types-store";
+import { DatePicker } from "../../../../components-custom/date-picker/date-picker";
+import { GetTrainersSuggestions } from "../../../../components-custom/edit-dialogs/edit-cardy2-components/get-trainers-suggestions";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { GetClientsSuggestions } from "../../../../components-custom/edit-dialogs/edit-cardy2-components/get-clients-suggestions";
 
-interface EditCardy2Props {
-    cardyModel?: ICardy2_Model
-    onDismiss: Function
-}
-
-export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props => {
-    const { cardyModel, onDismiss } = props
+interface AddCardScreenProps extends NavigationProps {}
+export const AddCardScreen: React.FunctionComponent<AddCardScreenProps> = observer(props => {
+    const { navigation } = props
     const { cardyStore2 }  = useStores()
     
     const [obj, setObj] = useState<ICardy2>({
@@ -31,10 +27,10 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
         trainers: [],
         datestampPayment: return_todays_datestamp(),
         datestampStart: return_todays_datestamp(),
-    })    
+    })
 
     const [pageHelpers, setPageHelper] = useState({
-        isNewType: false,
+        // isNewType: false,
         clientSearch: '',
         trainerSearch: '',
         seeCardTypeSuggestions: false,
@@ -45,95 +41,67 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
     })
 
     const [requireds, setRequireds] = useState({
-        requiredMessage_type: false,        
+        requiredMessage_type: false,
+        requiredMessage_clients: false,
+        requiredMessage_trainers: false,
+        requiredMessage_realPrice: false 
     })
 
-    // useEffect(() => {
-    //     if(cardyModel?.id){
-    //         setObj(cardyModel.item)
-    //     } else {
-    //         setPageHelper(prState => ({... prState, isNewType: true}))
-    //     }
-    // }, [])
+    const [numericFlags, setNumericFlags] = useState({
+        requiredMessage_realPrice_numeric: false,
+    })
 
     return (
-        <View
-            key={'full screen'}
-            style={[{
-                width: device_width,
-                height: device_height,
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                position: 'absolute',
-                zIndex: 2,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }]}
+        <Screen
+            preset="scroll"
+            unsafe={false} 
+            style={{
+                flexGrow: 1, 
+                flexDirection: 'column',
+                alignItems: 'center', 
+                justifyContent: 'flex-start',
+                backgroundColor: color.palette.transparent,
+                marginHorizontal: '5%'
+            }}
         >
-            <View
-                key={'pop-up container'}
-                style={[
-                    // border_boxes().black,
-                    {
-                        borderColor: color.palette.white,
-                        borderRadius: 20,
-                        backgroundColor: color.palette.white,
-                        width: device_width / 1.2,
-                        paddingVertical: 50,
-                        paddingHorizontal: '5%',
-                        marginBottom: 100,
-                        opacity: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
+            <Input_Hoshi
+                width='100%'
+                placeholder={'* ' + translate('edit/sbsCardPurchased.type_name')}
+                variable={obj.card_type?.title}
+                setVariable={()=>{}}
+                onF={() => setPageHelper(prS => ({...prS, seeCardTypeSuggestions: true}))}
+                onB={() => {
+                    setPageHelper(prS => ({...prS, seeCardTypeSuggestions: false}))
+                    if (obj.card_type?.type) {
+                        setRequireds(prSt => ({...prSt, requiredMessage_type: false}))
+                    } else {
+                        setRequireds(prSt => ({...prSt, requiredMessage_type: true}))
                     }
-                ]}
-            >
-                {/* Type */}
-                <View
-                    style={[{
-                        width: '100%'
-                    }]}
-                >
-                    <Input_Hoshi
-                        width='100%'
-                        placeholder={translate('edit/sbsCardPurchased.type_name')}
-                        variable={obj.card_type?.type}
-                        setVariable={()=>{}}
-                        onF={() => setPageHelper(prS => ({...prS, seeCardTypeSuggestions: true}))}
-                        onB={() => {
-                            setPageHelper(prS => ({...prS, seeCardTypeSuggestions: false}))
-                            if (obj.card_type?.type) {
-                                setRequireds(prSt => ({...prSt, requiredMessage_type: false}))
-                            } else {
-                                setRequireds(prSt => ({...prSt, requiredMessage_type: true}))
-                            }
-                        }}
-                    />
-                    <RequiredWarning flag={requireds.requiredMessage_type} width={'100%'} />
-                    
-                    { pageHelpers.seeCardTypeSuggestions ? 
-                        <GetCardyTypeSuggestions 
-                            onTouch={(_card_type: ICardy_Type) => {
-                                setObj(prSt => ({
-                                    ...prSt,
-                                    realPrice: _card_type.price,
-                                    card_type: _card_type
-                                }))
-                                setPageHelper(prS => ({...prS, seeCardTypeSuggestions: false}))
-                                setRequireds(prSt => ({...prSt, requiredMessage_type: false}))
-                            }} 
-                        />
-                    : null}
-                </View>
-                {/* Clients */}
-                <View
+                }}
+            />
+            <RequiredWarning flag={requireds.requiredMessage_type} width={'100%'} />
+            { pageHelpers.seeCardTypeSuggestions ? 
+                <GetCardyTypeSuggestions 
+                    onTouch={(_card_type: ICardy_Type) => {
+                        setObj(prSt => ({
+                            ...prSt,
+                            realPrice: _card_type.price,
+                            card_type: _card_type
+                        }))
+                        setPageHelper(prS => ({...prS, seeCardTypeSuggestions: false}))
+                        setRequireds(prSt => ({...prSt, requiredMessage_type: false}))
+                    }} 
+                />
+            : null}
+            {/* Clients */}
+            <View
                     style={[{
                         width: '100%',
                         marginVertical: 20
                     }]}
                 >
 
-                    <Text>{translate('edit/sbsCardPurchased.clients') + ':'}</Text>
+                    <Text>{translate('edit/sbsCardPurchased.clients')}</Text>
                     {
                         obj.clients?.map((client, index) => {
                         return  <View
@@ -173,7 +141,7 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                     }
                     <Input_Hoshi    
                         width='100%'
-                        placeholder={translate('edit/sbsCardPurchased.clients')} 
+                        placeholder={'* ' + translate('edit/sbsCardPurchased.clients')} 
                         variable={pageHelpers.clientSearch}
                         setVariable={(val)=>{ setPageHelper(prSt => ({...prSt, clientSearch: val}))}}
                         onF={() => setPageHelper(prS => ({...prS, seeClientsSuggestions: true}))}
@@ -183,13 +151,14 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                                 seeClientsSuggestions: false,
                                 clientSearch: ''
                             }))
-                            if (obj.card_type?.type) {
-                                setRequireds(prSt => ({...prSt, requiredMessage_type: false}))
+                            if (obj.clients.length !== 0) {
+                                setRequireds(prSt => ({...prSt, requiredMessage_clients: false}))
                             } else {
-                                setRequireds(prSt => ({...prSt, requiredMessage_type: true}))
+                                setRequireds(prSt => ({...prSt, requiredMessage_clients: true}))
                             }
                         }}
                     />
+                    <RequiredWarning flag={requireds.requiredMessage_clients} width={'100%'} />
                     { pageHelpers.seeClientsSuggestions ? 
                     <GetClientsSuggestions 
                         searchString={pageHelpers.clientSearch}
@@ -215,7 +184,7 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                     }]}
                 >
 
-                    <Text>{translate('edit/sbsCardPurchased.trainers') + ':'}</Text>
+                    <Text>{translate('edit/sbsCardPurchased.trainers')}</Text>
                     {
                         obj.trainers?.map((trainer, index) => {
                         return  <View
@@ -255,7 +224,7 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                     }
                     <Input_Hoshi    
                         width='100%'
-                        placeholder={translate('edit/sbsCardPurchased.trainers')} 
+                        placeholder={'* ' + translate('edit/sbsCardPurchased.trainers')} 
                         variable={pageHelpers.trainerSearch}
                         setVariable={(val)=>{ setPageHelper(prSt => ({...prSt, trainerSearch: val}))}}
                         onF={() => setPageHelper(prS => ({...prS, seeTrainersSuggestions: true}))}
@@ -265,13 +234,14 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                                 seeTrainersSuggestions: false,
                                 trainerSearch: ''
                             }))
-                            // if (obj.card_type?.type) {
-                            //     setRequireds(prSt => ({...prSt, requiredMessage_type: false}))
-                            // } else {
-                            //     setRequireds(prSt => ({...prSt, requiredMessage_type: true}))
-                            // }
+                            if (obj.trainers.length !== 0) {
+                                setRequireds(prSt => ({...prSt, requiredMessage_trainers: false}))
+                            } else {
+                                setRequireds(prSt => ({...prSt, requiredMessage_trainers: true}))
+                            }
                         }}
                     />
+                    <RequiredWarning flag={requireds.requiredMessage_trainers} width={'100%'} />
                     { pageHelpers.seeTrainersSuggestions ? 
                     <GetTrainersSuggestions 
                         searchString={pageHelpers.trainerSearch}
@@ -372,85 +342,80 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
                     </View>
                     <Input_Hoshi    
                         width='100%'
-                        placeholder={translate('edit/sbsCardPurchased.realPrice')} 
+                        placeholder={'* ' + translate('edit/sbsCardPurchased.realPrice')} 
                         variable={obj.realPrice?.toString()}
                         setVariable={(val)=>{
-                            setObj(prSt => ({...prSt, realPric: +val}))
+                            setObj(prSt => ({...prSt, realPrice: isNaN(+val)? val : +val}))
                         }}
                     />
+                    <RequiredWarning flag={requireds.requiredMessage_realPrice} width={'100%'} />
+                    <RequiredWarning flag={numericFlags.requiredMessage_realPrice_numeric} message={translate('generic.required_numeric')} width={'100%'} />
                 </View>
-                {/* Buttons */}
-                <View
+            <View
                     style={[{
-                        width: '100%',
-                        paddingVertical: 20,
-                        flexDirection: 'row',
-                        justifyContent: 'space-between'
+                        flexGrow: 1
                     }]}
-                >
-                    <Button 
-                        onPress={() => onDismiss()} 
-                        text={'Close'}
-                        style={{
-                            width: '45%',
-                            marginTop: spacing[8],
-                            paddingVertical: spacing[4],
-                            backgroundColor: color.palette.grey_sbs,
-                          }}
-                        textStyle={{
-                            color: 'black',
-                            fontSize: 16
-                          }}
-                    >                
-                    </Button>
-                    <Button 
-                        // onPress={() => {
-                        //     if(obj.title && obj.card_limit && obj.price && !isNaN(Number(obj.card_limit)) && !isNaN(Number(obj.price))) {
-                        //         isNewType ? cardyTypesStore2.addCardType(obj)
-                        //             : cardyTypesStore2.updateItem(cardyTypeModel.id, obj)
-                        //         onDismiss()
-                        //     } else {
-                        //         !obj.title  ? setRequireds(prevState => ({...prevState, requiredMessage_title: true}))
-                        //                     : setRequireds(prevState => ({...prevState, requiredMessage_title: false}))
-
-                        //         !obj.card_limit     ? setRequireds(prevState => ({...prevState, requiredMessage_card_limit: true}))
-                        //                             : setRequireds(prevState => ({...prevState, requiredMessage_card_limit: false}))
-
-                        //         !obj.price  ? setRequireds(prevState => ({...prevState, requiredMessage_price: true}))
-                        //                     : setRequireds(prevState => ({...prevState, requiredMessage_price: false}))
-
-                        //         isNaN(Number(obj.card_limit))   ? setNumericFlags(prevState => ({...prevState, requiredMessage_card_limit_numeric: true}))
-                        //                                         : setNumericFlags(prevState => ({...prevState, requiredMessage_card_limit_numeric: false}))
-
-                        //         isNaN(Number(obj.price))    ? setNumericFlags(prevState => ({...prevState, requiredMessage_price_numeric: true}))
-                        //                                     : setNumericFlags(prevState => ({...prevState, requiredMessage_price_numeric: false}))
-                        //     }                            
-                        // }}
-                        onPress={() => {
-                            if(obj.card_type?.type) {
-                                // pageHelpers.isNewType ? 
-                                    cardyStore2.addItem(obj)
-                                    // : cardyStore2.updateItem(cardyModel.id, obj)
-                                onDismiss()
-                            } else {
-
-                            }
+            ></View>
+            <View
+                style={[{
+                    width: '100%',
+                    paddingVertical: 50,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                }]}
+            >
+                <Button 
+                    onPress={() => navigation.goBack()} 
+                    text={translate('generic.close_button')}
+                    style={{
+                        width: '45%',
+                        marginTop: spacing[8],
+                        paddingVertical: spacing[4],
+                        backgroundColor: color.palette.grey_sbs,
+                        borderWidth: 1,
+                        borderColor: 'black'
                         }}
-                        text={'Save'}
-                        style={{
-                            width: '45%',
-                            marginTop: spacing[8],
-                            paddingVertical: spacing[4],
-                            backgroundColor: color.palette.green_sbs,
-                          }}
-                        textStyle={{
-                            color: 'white',
-                            fontSize: 16
-                          }}
-                    >                    
-                    </Button>
-                </View>                
-            </View>            
-        </View>
+                    textStyle={{
+                        color: 'black',
+                        fontSize: 16
+                        }}
+                />
+                <Button
+                    onPress={() => {
+                        if(obj.card_type?.type && obj.clients.length !== 0 && obj.trainers.length !== 0
+                            && obj.realPrice && !isNaN(Number(obj.realPrice))) {
+                            cardyStore2.addItem(obj)
+                            navigation.goBack()
+                        } else {
+                            !obj.card_type?.type  ? setRequireds(prevState => ({...prevState, requiredMessage_type: true}))
+                                : setRequireds(prevState => ({...prevState, requiredMessage_type: false}))
+    
+                            obj.clients.length !== 0  ? setRequireds(prevState => ({...prevState, requiredMessage_clients: false}))
+                                : setRequireds(prevState => ({...prevState, requiredMessage_clients: true}))
+
+                            obj.trainers.length !== 0  ? setRequireds(prevState => ({...prevState, requiredMessage_trainers: false}))
+                                : setRequireds(prevState => ({...prevState, requiredMessage_trainers: true}))
+                        
+                            !obj.realPrice  ? setRequireds(prevState => ({...prevState, requiredMessage_realPrice: true}))
+                                            : setRequireds(prevState => ({...prevState, requiredMessage_realPrice: false}))
+                            
+                            isNaN(Number(obj.realPrice)) ? setNumericFlags(prevState => ({...prevState, requiredMessage_realPrice_numeric: true}))
+                                : setNumericFlags(prevState => ({...prevState, requiredMessage_realPrice_numeric: false}))
+                        }
+                    }}
+                    text={translate('generic.save_button')}
+                    style={{
+                        width: '45%',
+                        marginTop: spacing[8],
+                        paddingVertical: spacing[4],
+                        backgroundColor: color.palette.green_sbs,
+                        }}
+                    textStyle={{
+                        color: 'white',
+                        fontSize: 16
+                        }}
+                />           
+            </View>
+        </Screen>  
     )
-}
+})

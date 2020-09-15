@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog, AddMonthlyCardDialog, EditCardy2Dialog, SbsCardPurchased } from '../../../components'
+import { Screen, PageHeader_Tr, Button, AddTrainerDialog,
+        Input_Hoshi, EditCardy2Dialog, SbsCardPurchased } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity } from "react-native";
-import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faBroadcastTower } from '@fortawesome/free-solid-svg-icons'
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons'
 import { DataTable } from 'react-native-paper';
-import { SwipeRow } from 'react-native-swipe-list-view';
-import { Hoshi } from 'react-native-textinput-effects';
 import { DatePicker } from '../../../components-custom/date-picker/date-picker';
-// import { return_date_formated} from '../../../global-helper';
 import {exportSpreadSheet} from '../../../services/spreadsheet/spreadsheet';
 import {Snack} from '../../../components-custom/snack/snack';
 import { displayDateFromTimestamp, return_todays_datestamp } from "../../../global-helper";
 import { ICardy2_Model } from "../../../models/sub-stores/v2-cardy-store";
+import { translate } from "../../../i18n";
 
 export const PurchasedCards: React.FunctionComponent<{search: string, startDate: number, endDate: number, setShowSnack: Function}> = observer(props => {
     const cardyStore2 = useStores().cardyStore2
@@ -98,8 +96,8 @@ export const PurchasedCards: React.FunctionComponent<{search: string, startDate:
                     .filter(item => 
                         item.item.type === 'month' 
                         && (props.search !="" ?item.item.client.indexOf(props.search) >= 0:true) == true 
-                        && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
-                        && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
+                        // && (props.startDate != null ? props.startDate < new Date(item.item.dateStart): true 
+                        // && props.endDate != null? props.endDate > new Date(item.item.dateStart): true) == true
                         && item.item.visits.length > 0 )
                     .map((card, key) => {
                     const item = card.item
@@ -164,10 +162,12 @@ export const PurchasedCards: React.FunctionComponent<{search: string, startDate:
     )
 })
 
-interface PurchasedMonthlyCardsProps extends NavigationProps {}
-export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonthlyCardsProps> = observer(props => {
+interface PurchasedCardsListProps extends NavigationProps {}
+export const PurchasedCardsListScreen: React.FunctionComponent<PurchasedCardsListProps> = observer(props => {
     const { navigation } = props
+    const [searchByClient, setSearchByClient] = useState<boolean>(true);
     const [searchValue, setSearchValue] = useState('');
+    const [seeOnlyActiveCards, setSeeOnlyActiveCards] = useState<boolean>(true);
 
     const [filterStartDatestamp, setFilterStartDatestamp] = useState<number>(return_todays_datestamp());
     const [filterEndDatestamp, setFilterEndDatestamp] = useState<number>(return_todays_datestamp());
@@ -175,7 +175,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
     const [seeEndDatePicker, setSeeEndDatePicker] = useState(false);
     const [seeStartDatePicker, setSeeStartDatePicker] = useState(false);
     
-    const [seeDialog, setSeeDialog] = useState(false);
+    // const [seeDialog, setSeeDialog] = useState(false);
     const [editCTM, setECTM] = useState<ICardy2_Model>(null)
 
     const [showSnack, setShowSnack] = useState(false);
@@ -190,7 +190,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
             preset="scroll"
             unsafe={false} 
             style={{
-                flex: 1, 
+                flexGrow: 1, 
                 flexDirection: 'column',
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
@@ -203,7 +203,7 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                     backgroundColor: 'white',
                     paddingHorizontal: 25
                 }}
-                title='Закупени месечни карти'
+                title={translate('purchasedCardsList.header_label')}
             />
             <View
                 style={[
@@ -212,7 +212,6 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         width: '100%',
                         paddingVertical: 30,
                         paddingHorizontal: '5%',
-                        // flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'flex-start'
                     }
@@ -223,21 +222,113 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         [{
                             flexDirection: 'row',
                             width: "100%",
-                            justifyContent: 'center',
-                            // paddingHorizontal: '5%'
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            paddingVertical: 10
+                        }]
+                    }
+                >
+                    <Text>{translate('purchasedCardsList.seeOnlyActiveCardsLabel')}</Text>
+                    <Button
+                        style={[{
+                            width: '30%',
+                            backgroundColor: seeOnlyActiveCards ? color.palette.blue_sbs : color.palette.grey_sbs,
+                            borderColor: seeOnlyActiveCards ? color.palette.blue_sbs : 'black',
+                            borderWidth: 1
+                        }]}
+                        text={translate('purchasedCardsList.onlyActiveCards')}
+                        textStyle={[{
+                            fontSize: 15,
+                            color: seeOnlyActiveCards ? 'white': 'black'
+                        }]}
+                        onPress={()=>{
+                            setSeeOnlyActiveCards(true)
+                        }}
+                    />
+                    <Button
+                        style={[{
+                            width: '30%',
+                            backgroundColor: !seeOnlyActiveCards ? color.palette.blue_sbs : color.palette.grey_sbs,
+                            borderColor: !seeOnlyActiveCards ? color.palette.blue_sbs : 'black',
+                            borderWidth: 1
+                        }]}
+                        text={translate('purchasedCardsList.allCards')}
+                        textStyle={[{
+                            fontSize: 15,
+                            color: !seeOnlyActiveCards? 'white': 'black'
+                        }]}
+                        onPress={()=>{
+                            setSeeOnlyActiveCards(false)
+                        }}
+                    /> 
+
+
+                </View>
+                <View
+                    style={
+                        [{
+                            flexDirection: 'row',
+                            width: "100%",
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            paddingVertical: 10
+                        }]
+                    }
+                >
+                    <Text>{translate('purchasedCardsList.searchByLabel')}</Text>
+                    <Button
+                        style={[{
+                            width: '30%',
+                            backgroundColor: searchByClient ? color.palette.blue_sbs : color.palette.grey_sbs,
+                            borderColor: searchByClient ? color.palette.blue_sbs : 'black',
+                            borderWidth: 1
+                        }]}
+                        text={translate('purchasedCardsList.clients')}
+                        textStyle={[{
+                            fontSize: 15,
+                            color: searchByClient ? 'white': 'black'
+                        }]}
+                        onPress={()=>{
+                            setSearchByClient(true)
+                        }}
+                    />
+                    <Button
+                        style={[{
+                            width: '30%',
+                            backgroundColor: !searchByClient ? color.palette.blue_sbs : color.palette.grey_sbs,
+                            borderColor: !searchByClient ? color.palette.blue_sbs : 'black',
+                            borderWidth: 1
+                        }]}
+                        text={translate('purchasedCardsList.trainers')}
+                        textStyle={[{
+                            fontSize: 15,
+                            color: !searchByClient? 'white': 'black'
+                        }]}
+                        onPress={()=>{
+                            setSearchByClient(false)
+                        }}
+                    /> 
+                </View>
+                <View
+                    style={
+                        [{
+                            flexDirection: 'row',
+                            width: "100%",
+                            justifyContent: 'space-between',
                         }]
                     }
                 >
                     <Input_Hoshi    
                         width = "75%"     
-                        placeholder={'search'} 
+                        placeholder={translate('generic.search_label')} 
                         variable={searchValue}
                         setVariable={val => setSearchValue(val)}
                         background={'white'}
                     />
                     <TouchableOpacity
                         // onPress={() => navigation.navigate('payments')}
-                        onPress={() => setSeeDialog(true)}
+                        // onPress={() => setSeeDialog(true)}
+                        onPress={() => navigation.navigate('addCardScreen')}
                         style={[
                             // border_boxes().green,
                             {
@@ -253,15 +344,17 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         />
                     </TouchableOpacity>
                 </View>
-                <View
+                
+                {/* <View
                     style={[{
                         flexDirection: 'row',
+                        justifyContent: 'space-between',
                         flexGrow: 1,
                         width: "100%"
                     }]}
                 >
                     <Input_Hoshi 
-                        placeholder={'Дата на картата от'}
+                        placeholder={translate('purchasedCardsList.start_date_from')}
                         variable={displayDateFromTimestamp(filterStartDatestamp)}
                         setVariable={(x) => {setFilterStartDatestamp(x)}}
                         onF={() => {
@@ -269,14 +362,14 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                         }}
                     />
                     <Input_Hoshi 
-                        placeholder={'Дата на картата до'}
+                        placeholder={translate('purchasedCardsList.start_date_to')}
                         variable={displayDateFromTimestamp(filterEndDatestamp)}
                         setVariable={(x) => {setFilterEndDatestamp(x)}}
                         onF={() => {
                             setSeeEndDatePicker(true)
                         }}
                     />
-                </View>
+                </View> */}
                 <View
                     style={[{
                         width: '100%'
@@ -303,9 +396,23 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
                 </View>                                 
             </View>
             {
-                cardyStore2.cards.map((card, index) => {
+                cardyStore2.cards
+                .filter(card => !seeOnlyActiveCards? true: cardyStore2.isActiveCard(card.id))
+                .filter(card => {
+                    if(searchValue === '') return true
+                    
+                    if(searchByClient){
+                        let allClients: string = card.item.clients.toString()
+                        return allClients.includes(searchValue)                          
+                    } else {
+                        let allTrainers: string = card.item.trainers.toString()
+                        return allTrainers.includes(searchValue)  
+                    }
+                })
+                .map((card, index) => {
                     return (
                         <SbsCardPurchased 
+                            key={index}
                             cardyModel ={card}
                         />
                     )
@@ -315,14 +422,14 @@ export const PurchasedMonthlyCardsScreen: React.FunctionComponent<PurchasedMonth
             {showSnack ? 
                 <Snack message={'Saved !'} onDismiss={() => {setShowSnack(false)}} duration = {3000}/>
             : null} */}
-            {
+            {/* {
                 seeDialog ?
                     <EditCardy2Dialog cardyModel={editCTM} onDismiss={() => {
                         setSeeDialog(false)
                         setECTM(null)
                     }} />
                 : null
-            }
+            } */}
         </Screen>
     )
 })

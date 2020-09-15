@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { Text, View } from 'react-native';
 import { spacing, color } from '../../../theme';
-import {Screen, MainHeader_Tr, ButtonSquare } from '../../../components'
+import { Screen, MainHeader_Tr, ButtonSquare } from '../../../components'
 import ProgressCircle from 'react-native-progress-circle'
 import { displayDateFromTimestamp, today_vs_last_day } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
-import {useStores } from "../../../models/root-store"
+import { useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
-import crashlytics from '@react-native-firebase/crashlytics';
-import { Button } from "react-native-elements";
-
-import {IUser2} from "../../../models/sub-stores/v2-user-store"
-import { IUser } from "../../../models/user.model";
 
 interface menuProps extends NavigationProps {}
 
@@ -52,15 +47,11 @@ interface HomeScreenTrainerProps extends NavigationProps {}
 export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> = observer(props => {
     const { navigation } = props
     const rootStore = useStores()
-    const User2Strore = useStores().userStore2
     rootStore.hideLoader()
-    
-    
-    const menu = 
 
-    useEffect(() => {
-        User2Strore.getItems()
-    }, [])
+    // useEffect(() => {
+
+    // }, [])
 
     return (
         <Screen
@@ -72,16 +63,15 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                 alignItems: 'center', 
                 justifyContent: 'flex-start',
                 backgroundColor: color.palette.transparent,
-                // paddingHorizontal: 20
             }}
         >
             <MainHeader_Tr navigation={navigation} style={{paddingHorizontal: 25}}/>
             <View 
                 style={[
-                    // boxes.black,
                     {
-                    paddingVertical: spacing[8]
-                }]}
+                        paddingVertical: spacing[8]
+                    }
+                ]}
             >
                 <ProgressCircle
                     percent={today_vs_last_day()*100}
@@ -114,34 +104,10 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                             }}
                         >{translate('trainerHomeScreen.progressCircleTextBottom') + ' ' + displayDateFromTimestamp()}</Text>
                     </View>            
-                </ProgressCircle>
-            <Button 
-                containerStyle={[{
-                    margin: 10
-                }]}
-                raised={true}
-                title={'Create user2'}
-                onPress={()=>{
-                    let user: IUser2 = {
-                        email: 'asdad'
-                    }
-                    user.first = 'asd'
-                    User2Strore.addItem(user)
-                }}
-            />
-            <Button 
-                containerStyle={[{
-                    margin: 10
-                }]}
-                raised={true}
-                title={'List users'}
-                onPress={()=> User2Strore.users.map(i => console.log(i.item.email))}
-            />
-            
+                </ProgressCircle>        
             </View>
             <View 
                 style={[
-                    // boxes.orange,
                     {
                         flex: 1,
                         width: '100%',
@@ -152,9 +118,6 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
                 ]}
             >
                 <MenuButtonsList navigation={navigation}/>
-                
-                {/* <ButtonSquare style={{marginTop: 20}}></ButtonSquare>
-                <ButtonSquare style={{marginTop: 20}}></ButtonSquare> */}
             </View>
         </Screen>     
     )

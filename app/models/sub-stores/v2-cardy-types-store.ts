@@ -43,7 +43,7 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
             card_limit: _card_limit,
             monthly_limit: _card_limit,
             price: _price,
-            rate: _price / _card_limit
+            rate: +(_price / _card_limit).toPrecision(3)
         })
     },
 
@@ -54,7 +54,7 @@ export const CardTypesStoreModel2 = types.model('RootStore').props({
             card_limit: _card_limit,
             monthly_limit: -1,
             price: _price,
-            rate: _price /_card_limit,
+            rate: +(_price / _card_limit).toPrecision(3)
         })
     },
 
