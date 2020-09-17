@@ -117,7 +117,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                 </View>
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={translate('edit/sbsCardPurchased.type_name')} 
+                    placeholder={'* ' + translate('edit/sbsCardPurchased.type_name')} 
                     variable={obj.title}
                     setVariable={val => setObj(prevState => ({...prevState, title: val}))}
                     editable = {true}
@@ -128,24 +128,24 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                     width='100%'
                     placeholder={
                         obj.type === card_types.monthly ? 
-                        translate('edit/sbsCardPurchased.limit_months')
-                        : translate('edit/sbsCardPurchased.limit_visits')
+                        '* ' + translate('edit/sbsCardPurchased.limit_months')
+                        : '* ' + translate('edit/sbsCardPurchased.limit_visits')
                     } 
                     variable={obj.card_limit?.toString()}
                     setVariable={val => setObj(prevState => ({...prevState, card_limit: isNaN(+val)? val : +val}))}
                     editable = {true}
                 />
                 <RequiredWarning flag={requireds.requiredMessage_card_limit} width={'100%'} />
-                <RequiredWarning flag={numericFlags.requiredMessage_card_limit_numeric} message={'Полето трябвя да е цифрово!'} width={'100%'} />
+                <RequiredWarning flag={numericFlags.requiredMessage_card_limit_numeric} message={translate('generic.required_numeric')} width={'100%'} />
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={translate('edit/sbsCardPurchased.price')} 
+                    placeholder={'* ' + translate('edit/sbsCardPurchased.price')} 
                     variable={obj.price?.toString()}
                     setVariable={val => setObj(prevState => ({...prevState, price: isNaN(+val)? val : +val}))}
                     editable = {true}
                 />
                 <RequiredWarning flag={requireds.requiredMessage_price} width={'100%'} />
-                <RequiredWarning flag={numericFlags.requiredMessage_price_numeric} message={'Полето трябвя да е цифрово!'} width={'100%'} />
+                <RequiredWarning flag={numericFlags.requiredMessage_price_numeric} message={translate('generic.required_numeric')} width={'100%'} />
                 <View
                     style={[{
                         width: '100%',
@@ -162,6 +162,8 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
                             marginTop: spacing[8],
                             paddingVertical: spacing[4],
                             backgroundColor: color.palette.grey_sbs,
+                            borderWidth: 1,
+                            borderColor: 'black'
                           }}
                         textStyle={{
                             color: 'black',
