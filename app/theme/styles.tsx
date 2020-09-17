@@ -9,7 +9,8 @@ export const styles = StyleSheet.create({
     },
     standaloneRowBack: {
         alignItems: 'center',
-        backgroundColor: '#8BC645',
+        // backgroundColor: '#8BC645',
+        backgroundColor: 'white',
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddGymHallDialog } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Avatar } from 'react-native-elements';
 import {useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite";
@@ -9,6 +9,7 @@ import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from 'react-native-swipe-list-view';
+import { translate } from "../../../i18n";
 
 export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
     const gymHallStore = useStores().gymHallStore
@@ -24,13 +25,13 @@ export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, s
         >
             {
                 gymHallStore.gymhalls
-                    .filter(trainer => props.search !== ''? trainer.item.name.toLocaleLowerCase().includes(props.search): true)
+                    .filter(gym => props.search !== ''? gym.item.name.toLocaleLowerCase().includes(props.search): true)
                     .map((gym, key) => {
                         const item = gym.item
                         return ( 
                             <SwipeRow 
                                 key={key}
-                                leftOpenValue={75}
+                                // leftOpenValue={75}
                                 rightOpenValue={-75}
                             >
                                 <View style={styles.standaloneRowBack}>
@@ -41,7 +42,8 @@ export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, s
                                         <Text style={styles.backTextWhite}>Delete</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <TouchableOpacity 
+                                
+                                <TouchableHighlight 
                                     key={key}
                                     style={[{
                                         paddingVertical: 15,
@@ -52,16 +54,17 @@ export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, s
                                         alignItems: 'center',
                                         backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
                                     }]}
-                                    onPress={() => {
+                                    onPressOut={() => {
                                         props.setEm(item.name)
                                         props.setSeeDialog(true)
                                     }}
+                                    underlayColor={key % 2 === 1 ? 'white': color.palette.grey_sbs}
                                 >
                                     <Text 
                                         key={key} 
                                         style={[{color: 'black', marginLeft: '5%'}]}
                                     >{item.name}</Text>
-                                </TouchableOpacity>
+                                </TouchableHighlight>
                             </SwipeRow>
                         )
                     })
@@ -96,7 +99,7 @@ export const GymHallsScreen: React.FunctionComponent<GymHallsProps> = observer(p
                     backgroundColor: 'white',
                     paddingHorizontal: 25
                 }}
-                title='Списък зали'
+                title={translate('gymhalls_screen.header_label')}
             />
             <View
                 style={[
@@ -113,7 +116,7 @@ export const GymHallsScreen: React.FunctionComponent<GymHallsProps> = observer(p
             >
                 <Input_Hoshi    
                     width='75%'      
-                    placeholder={'search'} 
+                    placeholder={translate('generic.search_label')} 
                     variable={searchValue}
                     setVariable={val => setSearchValue(val)}
                     background={'white'}

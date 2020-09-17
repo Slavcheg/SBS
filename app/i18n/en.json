@@ -96,5 +96,11 @@
     "card_type_months": "monthly",
     "card_type_visits": "visists",
     "rate": "rate"
+  },
+  "gymhalls_screen": {
+    "header_label": "Gyms list"
+  },
+  "referrals_screen": {
+    "header_label": "Referrals list"
   }
 }

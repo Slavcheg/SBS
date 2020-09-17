@@ -92,5 +92,11 @@
     "card_type_months": "месечна",
     "card_type_visits": "посещения",
     "rate": "ставка"
+  },
+  "gymhalls_screen": {
+    "header_label": "Списък зали"
+  },
+  "referrals_screen": {
+    "header_label": "Списък препоръчители"
   }
 }
