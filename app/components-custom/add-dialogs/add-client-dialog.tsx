@@ -116,6 +116,8 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                             marginTop: spacing[8],
                             paddingVertical: spacing[4],
                             backgroundColor: color.palette.grey_sbs,
+                            borderWidth: 1,
+                            borderColor: 'black'
                           }}
                         textStyle={{
                             color: 'black',
