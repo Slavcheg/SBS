@@ -17,6 +17,7 @@ export * from './trainer-screens/home-screen/home-screen.tr'
 export * from './trainer-screens/clients-list-screen/clients-list-screen.tr'
 export * from './trainer-screens/clients-list-screen/trainings-history-screen.tr'
 export * from './trainer-screens/training-today-screen/training-today-screen.tr'
+export * from './trainer-screens/client-multi-screen/client-multi-screen'
 
 export * from './admin-screens/home-screen/home-screen.ad'
 export * from './admin-screens/menu-screens/trainers-list-screen'

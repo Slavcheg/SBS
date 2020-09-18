@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button, SbsCard } from '../../../components'
+import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button, SbsCard, SbsCardPurchased } from '../../../components'
 import { color } from "../../../theme"
 import { View, Text } from "react-native"
 import { static_cards, border_boxes } from "../../../global-helper"
@@ -10,19 +10,19 @@ import { NavigationProps } from "../../../models/commomn-navigation-props";
 interface CardsHistoryScreenProps extends NavigationProps {}
 
 export const CardsHistoryScreen: React.FunctionComponent<CardsHistoryScreenProps> = observer(props => {
-    const { cardStore, sessionStore } = useStores()
+    const { cardyStore2, sessionStore } = useStores()
     const { navigation } = props
     
     useEffect(() => {
-        cardStore.getCards()
+        cardyStore2.getItems()
     }, [])
 
-    const cards = cardStore.cards
-        .filter(card => card.item.client === sessionStore.userEmail)
+    const cards = cardyStore2.cards
+        .filter(card => card.item.clients.toString().includes(sessionStore.userEmail))
         .map((card, index) => {
             const item = card.item
             return (
-            <SbsCard key={index} index={index} card={item} />
+            <SbsCardPurchased key={index} cardyModel={card} />
             )
         })
 
@@ -49,7 +49,8 @@ export const CardsHistoryScreen: React.FunctionComponent<CardsHistoryScreenProps
                     {
                     flexGrow: 1,
                     width: '100%',
-                    padding: 45,
+                    paddingVertical: 45,
+                    alignItems: 'center',
                     backgroundColor: color.palette.grey_sbs
                 }]}
             >

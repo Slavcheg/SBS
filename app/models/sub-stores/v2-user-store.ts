@@ -37,16 +37,19 @@ const User2 = types.model('User2',{
     diary : types.optional(types.array(diaryItem), [])
 })
 
+const User2_Model = types.model({
+    id: types.identifier,
+    item: User2
+})
+
 export interface IDiaryItem extends SnapshotOut<typeof diaryItem> {}
 export interface IUser2 extends SnapshotIn<typeof User2> {}
+export interface IUser2_Model extends SnapshotIn<typeof User2_Model> {}
 
 
 
 export const UserStoreModel2 = types.model('RootStore').props({
-    users: types.array(types.model({
-        id: types.identifier,
-        item: User2
-    })),
+    users: types.array(User2_Model),
     collection: 'users2'
 })
 

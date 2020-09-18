@@ -3,16 +3,16 @@ import {Screen, MainHeader_Cl, ButtonSquare, PageHeader_Cl, Button } from '../..
 import { color } from "../../../theme"
 import { View, Text } from "react-native"
 import { Cardy } from "../../../models"
-import { static_cards, border_boxes } from "../../../global-helper"
+import { border_boxes, displayDateFromTimestamp } from "../../../global-helper"
 import { Avatar } from "react-native-elements"
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
 
 const Trainings: React.FunctionComponent<{}> = observer(props => {
-    const { cardStore, sessionStore } = useStores()
+    const { cardyStore2, sessionStore } = useStores()
     useEffect(() => {
-        cardStore.getCards()
+        cardyStore2.getItems()
     }, [])
     return (
         <View
@@ -21,8 +21,8 @@ const Trainings: React.FunctionComponent<{}> = observer(props => {
             }]}
         >
             {
-                cardStore.cards
-                    .filter(card => card.item.client === sessionStore.userEmail)
+                cardyStore2.cards
+                    .filter(card => card.item.clients.toString().includes(sessionStore.userEmail))
                     .map((card, k) => {
                         const item = card.item
                         return item.visits.map((v, i) => {
@@ -76,7 +76,7 @@ const Trainings: React.FunctionComponent<{}> = observer(props => {
                                                     color: color.palette.green_sbs,
                                                     fontSize: 10
                                                 }]}
-                                            >{item.dateStart}</Text>
+                                            >{v}</Text>
                                         </View>
                                     </View>
 

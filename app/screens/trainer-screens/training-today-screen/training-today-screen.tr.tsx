@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Progress_Loader } from '../../../components'
+import {Screen, PageHeader_Tr, Progress_Loader, Button } from '../../../components'
 import { color } from '../../../theme';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { CheckBox } from 'react-native-elements'
 import { Snack } from '../../../components'
-import { globalStyles } from "../../../global-helper";
+import { globalStyles, border_boxes } from "../../../global-helper";
 import {useStores } from "../../../models/root-store"
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
@@ -12,6 +12,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCheckSquare   } from '@fortawesome/free-solid-svg-icons'
 import { faSquare   } from '@fortawesome/free-regular-svg-icons'
 import moment from "moment"
+import { card_types } from "../../../models/sub-stores/v2-cardy-types-store";
+import { Avatar } from "react-native-elements";
+
 
 const trainedYesterday = (vis: string[]):boolean => {
     return vis.includes(moment().subtract(1, 'days').format('MMM DD[,] YY').toString())
@@ -62,15 +65,15 @@ const checkBox = (bool, onClick) => {
 interface TrainingTodayScreenProps extends NavigationProps {}
 
 export const TrainingTodayScreen: React.FunctionComponent<TrainingTodayScreenProps> = observer(props => {
-    // const [clients_list, setClients_list] = useState([]);  
     const [showLoader, setShowLoader] = useState(true);  
     const [showSnack, setShowSnack] = useState(false);  
+    const [seeVisitsCards, setSeeVisitsCards] = useState<boolean>(true);
 
-    const {cardStore, sessionStore}  = useStores()
+    const {cardyStore2, sessionStore}  = useStores()
     const { navigation } = props
     
     useEffect(() => {
-        cardStore.getCards()
+        cardyStore2.getItems()
         setShowLoader(false)
     }, [])
 
@@ -100,12 +103,40 @@ export const TrainingTodayScreen: React.FunctionComponent<TrainingTodayScreenPro
                         width: '100%',
                         paddingVertical: 30,
                         flexDirection: 'row',
-                        justifyContent: 'center',
+                        justifyContent: 'space-around',
                         alignItems: 'center'
                     }
                 ]}
             >
-                <Text>{'Клиенти'}</Text>
+                <Button
+                    style={[{
+                        backgroundColor: color.transparent
+                    }]}
+                    onPress={() => setSeeVisitsCards(!seeVisitsCards)}
+                >
+                <Avatar
+                        title={seeVisitsCards? 'V' : 'M'}             
+                        rounded
+                        overlayContainerStyle={
+                            seeVisitsCards? 
+                            {
+                                backgroundColor: color.palette.green_sbs,
+                                borderColor: color.palette.green_sbs,
+                                borderWidth: 1
+                            } :
+                            {
+                                backgroundColor: color.palette.blue_sbs,
+                                borderColor: color.palette.blue_sbs,
+                                borderWidth: 1
+                            }
+                        }
+                        titleStyle={[{
+                            color: 'white'
+                        }]}
+                        size='small'
+                    />
+                </Button>
+                {/* <Text>{'Клиенти'}</Text> */}
                 {getDelimiter()}
                 <Text>{'Вчера'}</Text>
                 {getDelimiter()}
@@ -117,13 +148,13 @@ export const TrainingTodayScreen: React.FunctionComponent<TrainingTodayScreenPro
                 }]}
             >
                 {
-                    console.log(sessionStore.userEmail)
-                }
-                {
-                    cardStore.cards
-                        .filter(card => card.item.trainer === sessionStore.userEmail)
+                    cardyStore2.cards
+                        .filter(card => card.item.trainers.includes(sessionStore.userEmail))
+                        .filter(card => seeVisitsCards? 
+                            card.item.card_type.type === card_types.per_visits
+                            : card.item.card_type.type === card_types.monthly
+                        )
                         .map( (card, index) => {
-                        console.log(card.item.visits)
                         const item = card.item
                         const cardTrainedYesterday = trainedYesterday(item.visits)
                         const cardTrainedToday = trainedToday(item.visits)
@@ -133,35 +164,52 @@ export const TrainingTodayScreen: React.FunctionComponent<TrainingTodayScreenPro
                                     paddingVertical: 5,
                                     width: '100%',
                                     flexDirection: 'row',
-                                    justifyContent: 'center',
+                                    // justifyContent: seeVisitsCards? 'space-around': 'flex-start',
+                                    justifyContent: 'space-around',
                                     backgroundColor: index % 2 !== 1 ? 'white': color.palette.grey_sbs
                                 }]}
                             >
-                                <Text style={[{color: color.palette.blue_sbs, width: '23%', alignSelf: 'center'}]}>{item.client.split('@', 1)}</Text>
-                                {   checkBox(
+                                <TouchableOpacity
+                                    style={[
+                                        // border_boxes().black,
+                                        {
+                                        padding: 10,
+                                        alignSelf: 'center'
+                                    }]}
+                                    onPress={() => navigation.navigate('clientMulti', {clientEmail: item.clients[0]})}
+                                >
+                                    <Text
+                                        style={[{
+                                            color: color.palette.blue_sbs
+                                        }]}
+                                    >{item.clients[0].split('@', 1)}</Text>
+                                </TouchableOpacity>
+                                {   seeVisitsCards?
+                                    checkBox(
                                         cardTrainedYesterday, 
                                         () => {
                                             if (cardTrainedYesterday) {
-                                                cardStore.removeTrainingYesterday(card)
+                                                cardyStore2.removeTrainingYesterday(card)
                                             } else {
-                                                cardStore.addTrainingYesterday(card)
+                                                cardyStore2.addTrainingYesterday(card)
                                             }
                                             setShowSnack(true);
                                         }
-                                    )
+                                    ): null
                                 }
                                 
-                                {   checkBox(
+                                {   seeVisitsCards?
+                                    checkBox(
                                         cardTrainedToday, 
                                         () => {
                                             if (cardTrainedToday) {
-                                                cardStore.removeTrainingToday(card)
+                                                cardyStore2.removeTrainingToday(card)
                                             } else {
-                                                cardStore.addTrainingToday(card)
+                                                cardyStore2.addTrainingToday(card)
                                             }
                                             setShowSnack(true);
                                         }
-                                    )
+                                    ): null
                                 }
                             </View>
                         )

@@ -17,7 +17,6 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
     const { userStore2, sessionStore } = useStores()
 
     useEffect(() => {
-        console.log('this should update')
         userStore2.getItems()
     }, [])
 

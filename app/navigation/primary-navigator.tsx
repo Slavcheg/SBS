@@ -29,7 +29,8 @@ import {
   GymHallsScreen,
   CardTypesListScreen,
   PurchasedCardsListScreen,
-  AddCardScreen
+  AddCardScreen,
+  ClientMultiScreen
 } from "../screens"
 // import { PrimaryParamList } from "./types"
 
@@ -56,6 +57,7 @@ export function PrimaryNavigator() {
       <Stack.Screen name="diary" component={DiaryScreen} />
       <Stack.Screen name="renewCard" component={RenewCardScreen} />
       <Stack.Screen name="home_tr" component={HomeScreenTrainer} />
+      <Stack.Screen name="clientMulti" component={ClientMultiScreen} />
       <Stack.Screen name="payments" component={PaymentsScreen} />
       <Stack.Screen name="clients_list" component={ClientsListScreen} />
       <Stack.Screen name="training_today" component={TrainingTodayScreen} />
