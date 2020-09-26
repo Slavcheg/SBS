@@ -2,7 +2,7 @@
   "generic": {
     "search_label": "Search",
     "required_field": "Field is required !",
-    "required_numeric": "Field must be digital !",  
+    "required_numeric": "Field must be digital !",
     "close_button": "Close",
     "save_button": "Save"
   },
@@ -34,7 +34,8 @@
     "clientsButtonCaption": "Clients",
     "adminSquareButtonCaption": "Admin",
     "progressCircleTextTop": "trainings",
-    "progressCircleTextBottom": "until"
+    "progressCircleTextBottom": "until",
+    "trainingPrograms": "Training programs"
   },
   "adminHomeScreen": {
     "clientsSquareButtonCaption": "Clients",
@@ -45,7 +46,8 @@
     "typesCardsMonthlySquareButtonCaption": "Card types",
     "gymHallsSquareButtonCaption": "Gym Halls",
     "referralsSquareButtonCaption": "Referrals",
-    "trainersHomeSquareButtonCaption": "Trainer home"
+    "trainersHomeSquareButtonCaption": "Trainer home",
+    "other": "Other"
   },
   "clients_list_ad": {
     "header_label": "Clients list"
@@ -75,12 +77,12 @@
     "referral_field": "referral"
   },
   "see/add-trainer-dialog": {
-      "name_field": "name",
-      "family_name_field": "family name",
-      "email_field": "email",
-      "generic_num_field": "generic number",
-      "referral_field": "referral",
-      "gyms_field": "gyms"
+    "name_field": "name",
+    "family_name_field": "family name",
+    "email_field": "email",
+    "generic_num_field": "generic number",
+    "referral_field": "referral",
+    "gyms_field": "gyms"
   },
   "edit/sbsCardPurchased": {
     "type_name": "type name",

@@ -1,51 +1,56 @@
 [
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.clientsSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "clients_list_ad"
-},
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.trainersSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "trainers_list"
-},
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.purchasedCardsMonthlySquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "purchasedCardsList"
-},
-
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.typesCardsMonthlySquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "cardTypesList"
-},
-{
-    "iconLeft": "",
-    "title": "flexGrow",
-    "iconRight": "",
-    "onClick": ""
-},
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.gymHallsSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "gymhalls"
-},
-{
-    "iconLeft": "bl_payments",
-    "title": "adminHomeScreen.referralsSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "referrals"
-},
-{
-    "iconLeft": "bl_stats",
-    "title": "adminHomeScreen.trainersHomeSquareButtonCaption",
-    "iconRight": "bl_arrow_forward",
-    "onClick": "home_tr"
-}
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.clientsSquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "clients_list_ad"
+    },
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.trainersSquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "trainers_list"
+    },
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.purchasedCardsMonthlySquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "purchasedCardsList"
+    },
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.typesCardsMonthlySquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "cardTypesList"
+    },
+    {
+        "iconLeft": "",
+        "title": "flexGrow",
+        "iconRight": "",
+        "onClick": ""
+    },
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.gymHallsSquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "gymhalls"
+    },
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.referralsSquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "referrals"
+    },
+    {
+        "iconLeft": "bl_stats",
+        "title": "adminHomeScreen.trainersHomeSquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "home_tr"
+    },
+    {
+        "iconLeft": "bl_stats",
+        "title": "adminHomeScreen.other",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "admin_other"
+    }
 ]

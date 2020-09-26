@@ -1,15 +1,18 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
-import { values } from "mobx";
-import {CardStoreModel, UserStoreModel} from "../sub-stores"
+import { values } from "mobx"
+import { CardStoreModel, UserStoreModel } from "../sub-stores"
 import { SessionStoreModel } from "../sub-stores/session-store"
-import moment from 'moment'
-import { GymHallStoreModel } from "../sub-stores/gymhall-store";
-import { ReferralStoreModel } from "../sub-stores/referral-store";
-import { MonthlyCardStoreModel } from "../sub-stores/monthly-card-store";
-import { VisitsCardStoreModel } from "../sub-stores/visits-cards";
-import { UserStoreModel2 } from "../sub-stores/v2-user-store";
-import { CardTypesStoreModel2 } from "../sub-stores/v2-cardy-types-store";
-import { CardStoreModel2 } from "../sub-stores/v2-cardy-store";
+import moment from "moment"
+import { GymHallStoreModel } from "../sub-stores/gymhall-store"
+import { ReferralStoreModel } from "../sub-stores/referral-store"
+import { MonthlyCardStoreModel } from "../sub-stores/monthly-card-store"
+import { VisitsCardStoreModel } from "../sub-stores/visits-cards"
+import { UserStoreModel2 } from "../sub-stores/v2-user-store"
+import { CardTypesStoreModel2 } from "../sub-stores/v2-cardy-types-store"
+import { CardStoreModel2 } from "../sub-stores/v2-cardy-store"
+
+import { trainingProgramsStoreModel } from "../sub-stores/trainingPrograms-store"
+import { exerciseDataStoreModel } from "../sub-stores/exerciseData-store"
 
 /**
  * A RootStore model.
@@ -30,6 +33,10 @@ export const RootStoreModel = types.model("RootStore").props({
     
     sessionStore: types.optional(SessionStoreModel,{}),
     progressLoader: types.optional(types.boolean, false),
+
+    trainingProgramsStore: types.optional(trainingProgramsStoreModel, {}),
+    exerciseDataStore: types.optional(exerciseDataStoreModel, {}),
+    
 })
 .actions(self => ({
     showLoader(){
@@ -42,7 +49,7 @@ export const RootStoreModel = types.model("RootStore").props({
 }))
 .views(self => ({
     get loggedUser(){
-        return values(self.userStore.users)
+        return values(self.userStore2.users)
             .find(user => user.item.email == self.sessionStore.userEmail)
     },
     get getProfilePicture(){

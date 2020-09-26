@@ -1,7 +1,7 @@
 {
   "generic": {
     "search_label": "Търсене",
-    "required_field": "Полето е задължително !",    
+    "required_field": "Полето е задължително !",
     "required_numeric": "Полето трябвя да е цифрово!",
     "close_button": "Затвори",
     "save_button": "Запиши"
@@ -30,7 +30,8 @@
     "clientsButtonCaption": "Клиенти",
     "adminSquareButtonCaption": "Админ",
     "progressCircleTextTop": "тренировки",
-    "progressCircleTextBottom": "до"
+    "progressCircleTextBottom": "до",
+    "trainingPrograms": "Тренировъчни програми"
   },
   "adminHomeScreen": {
     "clientsSquareButtonCaption": "Трениращи",
@@ -41,7 +42,8 @@
     "typesCardsMonthlySquareButtonCaption": "Видове месечни карти",
     "gymHallsSquareButtonCaption": "Фитнеси",
     "referralsSquareButtonCaption": "Реферали",
-    "trainersHomeSquareButtonCaption": "Меню треньори"
+    "trainersHomeSquareButtonCaption": "Меню треньори",
+    "other": "Други"
   },
   "clients_list_ad": {
     "header_label": "Списък трениращи"
