@@ -1,5 +1,9 @@
 import { types, SnapshotIn } from "mobx-state-tree"
 import { firebaseFuncs } from "../../services/firebase/firebase.service"
+import {
+  muscleGroups,
+  muscleGroupsObject,
+} from "../../screens/trainer-screens/edit-program-screen/Constants/MuscleGroups"
 
 const Coefs = types.model({
   glutes: types.number,
@@ -73,5 +77,33 @@ export const exerciseDataStoreModel = types
       //   exercises.forEach((exercise, index) => {
       //     self.exercises[index] = exercise)
       //   })
+    },
+  }))
+  .views(self => ({
+    get filteredByMuscleGroup() {
+      let type = muscleGroupsObject()
+      let filtered = type
+      console.log(muscleGroupsObject())
+      self.exercises.forEach(exercise => {
+        if (!exercise.MainMuscleGroup) return
+        if (!exercise.Name) return
+        let newArray = filtered[exercise.MainMuscleGroup] ? filtered[exercise.MainMuscleGroup] : []
+
+        newArray.push(exercise)
+        filtered = {
+          ...filtered,
+          [exercise.MainMuscleGroup]: newArray,
+        }
+      })
+
+      return filtered
+    },
+    getExerciseYouTubeLink: exerciseName => {
+      let exercise = self.exercises.find(element => element.Name === exerciseName)
+      return exercise.YouTubeLink
+    },
+    getExerciseByName: exerciseName => {
+      let exercise = self.exercises.find(element => element.Name === exerciseName)
+      return exercise
     },
   }))

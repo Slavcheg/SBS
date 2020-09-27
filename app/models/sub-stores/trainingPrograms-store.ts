@@ -1,6 +1,7 @@
-import { types, SnapshotIn } from "mobx-state-tree"
+import { types, SnapshotIn, applySnapshot, getSnapshot } from "mobx-state-tree"
 import { firebaseFuncs } from "../../services/firebase/firebase.service"
 import { values } from "mobx"
+import _ from "lodash"
 
 //Това PROGRAM е само за reference, че ми помага по-лесно да си представя структурата. Долу са описани тези, които се ползват реално
 
@@ -70,21 +71,6 @@ const DEFAULT_WEEKS_DATA = types.model({
   Days: types.optional(types.array(DEFAULT_ONE_DAY_DATA), [{ ...DEFAULT_ONE_DAY_DATA }]),
 })
 
-// const EMPTY_PROGRAM_DATA = {
-//   Name: "initial name",
-//   Tags: [],
-//   ClientID: "No client yet",
-//   Trainers: ["No trainers yet"],
-//   isCompleted: false,
-//   Weeks: [
-//     { ...DEFAULT_WEEKS_DATA },
-//     { ...DEFAULT_WEEKS_DATA },
-//     { ...DEFAULT_WEEKS_DATA },
-//     { ...DEFAULT_WEEKS_DATA },
-//     { ...DEFAULT_WEEKS_DATA },
-//   ],
-// }
-
 export const Program = types.model({
   Name: "",
   Tags: types.optional(types.array(types.string), []),
@@ -104,36 +90,6 @@ const Program_Model = types.model({
   id: types.identifier,
   item: Program,
 })
-
-export interface IProgram extends SnapshotIn<typeof Program> {}
-export interface IProgram_Model extends SnapshotIn<typeof Program_Model> {}
-
-export const trainingProgramsStoreModel = types
-  .model("RootStore")
-  .props({
-    programs: types.array(Program_Model),
-    collection: "trainingPrograms",
-  })
-  .actions(self => ({
-    refreshItems(items) {
-      self.programs = items
-    },
-  }))
-  .actions(self => firebaseFuncs<IProgram>(self.refreshItems, self.collection))
-  .actions(self => ({
-    async createProgram(program: any) {
-      // console.log("test", values(self.programs))
-      // let emptyProgram = Program
-      // console.log(emptyProgram)
-      self.addItem({
-        ...EMPTY_PROGRAM_DATA2,
-        ...program,
-      })
-    },
-    async deleteProgram(id: string) {
-      self.deleteItem(id)
-    },
-  }))
 
 //// описваме втори път стойностите, че да ни е точно засега
 
@@ -178,3 +134,71 @@ const EMPTY_PROGRAM_DATA2 = {
     { ...DEFAULT_WEEKS_DATA2 },
   ],
 }
+
+export interface IProgram extends SnapshotIn<typeof Program> {}
+export interface IProgram_Model extends SnapshotIn<typeof Program_Model> {}
+
+export const trainingProgramsStoreModel = types
+  .model("RootStore")
+  .props({
+    programs: types.array(Program_Model),
+    collection: "trainingPrograms",
+  })
+  .actions(self => ({
+    refreshItems(items) {
+      self.programs = items
+    },
+  }))
+  .actions(self => firebaseFuncs<IProgram>(self.refreshItems, self.collection))
+  .actions(self => ({
+    async createProgram(program: any) {
+      // console.log("test", values(self.programs))
+      // let emptyProgram = Program
+      // console.log(emptyProgram)
+      self.addItem({
+        ...EMPTY_PROGRAM_DATA2,
+        ...program,
+      })
+    },
+    async deleteProgram(id: string) {
+      self.deleteItem(id)
+    },
+    async saveProgram(id: string) {
+      let newProgram: any = self.programs.find(program => program.id === id)
+      console.log(newProgram)
+      self.updateItem(id, getSnapshot(newProgram.item))
+    },
+  }))
+  .views(self => ({
+    program(id: string) {
+      let oneProgram = values(self.programs).filter(x => x.id === id)
+      return oneProgram[0]
+    },
+    getProgramIndexByID(id: string) {
+      const findProgram = element => element.id === id
+      let newIndex = self.programs.findIndex(findProgram)
+      return newIndex
+    },
+  }))
+  .actions(self => ({
+    addExercise(programID: string, state: any, exercise: object) {
+      const { currentWeekIndex, currentDayIndex } = state
+      let newDayData = {
+        ...self.programs[self.getProgramIndexByID(programID)].item.Weeks[currentWeekIndex].Days[
+          currentDayIndex
+        ],
+      }
+      newDayData.Exercises.push({
+        ...DEFAULT_EXERCISE_DATA2,
+        Name: exercise.Name,
+        ID: exercise.ID,
+        Position: Math.floor(newDayData.Exercises.length / 2 + 1),
+      })
+      applySnapshot(
+        self.programs[self.getProgramIndexByID(programID)].item.Weeks[currentWeekIndex].Days[
+          currentDayIndex
+        ],
+        { ...newDayData },
+      )
+    },
+  }))

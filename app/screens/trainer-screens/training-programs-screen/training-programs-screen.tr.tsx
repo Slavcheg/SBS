@@ -12,7 +12,7 @@ import { SwipeRow } from "react-native-swipe-list-view"
 
 import { Button } from "react-native-paper"
 
-type ShowProgramsListProps = {
+interface ShowProgramsListProps {
   programs: object[]
   style?: object
   onPressProgram?: Function
