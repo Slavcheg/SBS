@@ -4,7 +4,7 @@ import { View, FlatList, Pressable, Text, StyleSheet } from "react-native"
 import { Button } from "react-native-paper"
 import DraggableFlatList from "react-native-draggable-flatlist"
 import { observer } from "mobx-react-lite"
-import { onSnapshot } from "mobx-state-tree"
+import { onPatch, onSnapshot } from "mobx-state-tree"
 import { YouTubeStandaloneAndroid } from "react-native-youtube"
 import _ from "lodash"
 
@@ -76,7 +76,6 @@ type ShowProgramDaysProps = {
   programID: string
   state: state
   mode: ShowProgramDaysModes
-  testProgram3: any
 }
 
 export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = observer(props => {
@@ -86,16 +85,6 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
   const { mode } = props
   const exercisesStore = useStores().exerciseDataStore
   const programsStore = useStores().trainingProgramsStore
-  const [testProgram3, setTestProgram3] = useState(props.testProgram3)
-
-  useEffect(() => {
-    setTestProgram3(_cloneDeep(props.testProgram3))
-    console.log("went here2")
-  }, [props.testProgram3])
-
-  useEffect(() => {
-    console.log("reRender")
-  }, [programsStore])
 
   let doneTextStyle = iStyles.greyText
   let dayDone = false
@@ -125,7 +114,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
             //   onPressPosition={onEditPositionHandler}
             textStyle={dayDone ? doneTextStyle : null}
             // item={exercise}
-            item={item}
+            item={exercise}
             //   onPressExercise={() =>
             //     dispatch({
             //       type: 'expand exercise info',
@@ -150,11 +139,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
             <Text>Day completed</Text>
           </View>
         )}
-        <FlatList
-          data={testProgram3.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => <Text>{item.Name}</Text>}
-        />
+
         <FlatList
           //   data={program.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises}
           data={program.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises}

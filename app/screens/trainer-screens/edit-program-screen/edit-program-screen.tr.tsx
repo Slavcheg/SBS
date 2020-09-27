@@ -73,27 +73,19 @@ const initialState = {
   autoFocusSearch: false,
 }
 
-const ShowProgram = observer(props => {
+type ShowProgramProps = { programID: string }
+
+const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   const { programID } = props
   const programsStore = useStores().trainingProgramsStore
-  const [testFullProgram, setTestFullProgram] = useState(() => {
-    programsStore.program(programID).item
-  })
+  const [testFullProgram, setTestFullProgram] = useState(programsStore.program(programID).item)
 
   const [state, dispatch] = useReducer(EditProgramReducer, { ...initialState, ...props.state })
 
   useEffect(() => {
-    console.log("went here")
     programsStore.getItems()
+    setTestFullProgram(programsStore.program(programID).item)
   }, [programsStore])
-
-  let fullprogram2 = programsStore.program(programID).item
-  const testProgram3 = programsStore.program(programID).item
-  onSnapshot(programsStore, snapshot => {
-    fullprogram2 = { ...programsStore.program(programID).item }
-
-    // console.log(snapshot)
-  })
 
   type increaseDecrease = "increase" | "decrease"
 
@@ -118,19 +110,20 @@ const ShowProgram = observer(props => {
   return (
     <View>
       <ProgramViewHeadeer
-        program={fullprogram2}
+        program={testFullProgram}
         state={state}
         onChangeWeek={onChangeWeekHandler}
         onChangeProgramName={onChangeProgramNameHandler}
       />
-      <Text>{programsStore.program(programID).item.Weeks[0].Days[0].Exercises.length}</Text>
-      <Text>{test}</Text>
+      {/* <Text>{programsStore.program(programID).item.Weeks[0].Days[0].Exercises.length}</Text>
+      <Text>{test}</Text> */}
       <ShowProgramDays
-        program={fullprogram2}
+        program={testFullProgram}
         programID={programID}
         state={state}
         mode="oneDay"
-        testProgram3={programsStore.program(programID).item}
+        testProgram3={testFullProgram}
+        forceRender={test}
         //  client={client}
       />
     </View>
