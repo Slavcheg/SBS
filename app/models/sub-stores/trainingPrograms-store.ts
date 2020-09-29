@@ -1,3 +1,5 @@
+export const TRAINING_PROGRAMS_COLLECTION = "trainingPrograms"
+
 import { types, SnapshotIn, applySnapshot, getSnapshot } from "mobx-state-tree"
 import { firebaseFuncs } from "../../services/firebase/firebase.service"
 import { values } from "mobx"
@@ -93,14 +95,14 @@ const Program_Model = types.model({
 
 //// описваме втори път стойностите, че да ни е точно засега
 
-const DEFAULT_SET_DATA2 = {
+export const DEFAULT_SET_DATA2 = {
   Reps: 10,
   Weight: "30",
   WeightType: "pureWeight",
   Rest: 60,
 }
 
-const DEFAULT_EXERCISE_DATA2 = {
+export const DEFAULT_EXERCISE_DATA2 = {
   Name: "item.Name",
   ID: "item.ID",
   Position: 1,
@@ -110,19 +112,19 @@ const DEFAULT_EXERCISE_DATA2 = {
   Sets: [{ ...DEFAULT_SET_DATA2 }, { ...DEFAULT_SET_DATA2 }, { ...DEFAULT_SET_DATA2 }],
 }
 
-const DEFAULT_ONE_DAY_DATA2 = {
+export const DEFAULT_ONE_DAY_DATA2 = {
   DayName: "Day 1",
   isCompleted: false,
   Exercises: [],
 }
 
-const DEFAULT_WEEKS_DATA2 = {
+export const DEFAULT_WEEKS_DATA2 = {
   Days: [{ ...DEFAULT_ONE_DAY_DATA2 }],
 }
 
-const EMPTY_PROGRAM_DATA2 = {
+export const EMPTY_PROGRAM_DATA2 = {
   Name: "initial name",
-  Tags: [],
+  Tags: [""],
   Client: "No client yet",
   Trainers: ["No trainers yet"],
   isCompleted: false,
@@ -138,11 +140,20 @@ const EMPTY_PROGRAM_DATA2 = {
 export interface IProgram extends SnapshotIn<typeof Program> {}
 export interface IProgram_Model extends SnapshotIn<typeof Program_Model> {}
 
+export type state = {
+  currentProgram: any
+  currentProgramID: string
+  currentWeekIndex: number
+  currentDayIndex: number
+  currentExerciseIndex: number
+  locked?: boolean
+}
+
 export const trainingProgramsStoreModel = types
   .model("RootStore")
   .props({
     programs: types.array(Program_Model),
-    collection: "trainingPrograms",
+    collection: TRAINING_PROGRAMS_COLLECTION,
   })
   .actions(self => ({
     refreshItems(items) {
@@ -163,16 +174,17 @@ export const trainingProgramsStoreModel = types
     async deleteProgram(id: string) {
       self.deleteItem(id)
     },
-    async saveProgram(id: string) {
-      let newProgram: any = self.programs.find(program => program.id === id)
-      console.log(newProgram)
-      self.updateItem(id, getSnapshot(newProgram.item))
-    },
   }))
   .views(self => ({
     program(id: string) {
+      self.programs.forEach(program => console.log(program.id))
+      console.log("matching id ", id)
       let oneProgram = values(self.programs).filter(x => x.id === id)
+      console.log("oneProgram values", oneProgram)
       return oneProgram[0]
+    },
+    programSnapshot(id: string) {
+      return getSnapshot(self).programs.find(x => x.id === id).item
     },
     getProgramIndexByID(id: string) {
       const findProgram = element => element.id === id
@@ -200,5 +212,40 @@ export const trainingProgramsStoreModel = types
         ],
         { ...newDayData },
       )
+    },
+    changeProgramName(programID: string, newName: string) {
+      self.programs[self.getProgramIndexByID(programID)].item.Name = newName
+    },
+    addNewDay(programID, weekIndex, dayIndex) {
+      console.log("tried adding new day by store")
+      let newWeekData = {
+        ...self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex],
+      }
+
+      console.log(newWeekData)
+      let newDayName = `Day ${newWeekData.Days.length + 1}`
+      newWeekData.Days.push({ ...DEFAULT_ONE_DAY_DATA2, DayName: newDayName })
+      applySnapshot(self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex], {
+        ...newWeekData,
+      })
+    },
+    removeDay(programID, weekIndex, dayIndex) {
+      const helperDays =
+        self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex].Days
+
+      console.log("tried removing ", dayIndex)
+      console.log("currentLength ", helperDays.length)
+      helperDays.splice(dayIndex, 1)
+      helperDays.forEach((day, index) => {
+        console.log(day.DayName)
+      })
+      applySnapshot(
+        self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex].Days,
+        helperDays,
+      )
+    },
+    async saveProgram(id: string, program: any) {
+      applySnapshot(self.programs[self.getProgramIndexByID(id)].item, _.cloneDeep(program))
+      self.updateItem(id, getSnapshot(self.programs[self.getProgramIndexByID(id)].item))
     },
   }))

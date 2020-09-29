@@ -1,8 +1,8 @@
-import {Button, Portal, Modal, TextInput} from 'react-native-paper';
+import { Button, Portal, Modal, TextInput } from "react-native-paper"
 // import crashlytics from '@react-native-firebase/crashlytics';
-import {Picker} from '@react-native-community/picker';
+import { Picker } from "@react-native-community/picker"
 
-import React, {useState, useEffect, useReducer} from 'react';
+import React, { useState, useEffect, useReducer } from "react"
 
 import {
   View,
@@ -23,100 +23,105 @@ import {
   LogBox,
   Modal as Modal2,
   Alert,
-} from 'react-native';
+} from "react-native"
 
-import {GetText} from './index';
-import _ from 'lodash';
+import { GetText } from "./index"
+import _ from "lodash"
 
 type EasyNumberPickerProps = {
-  easyNumbers: number[];
-  isActive?: boolean;
-  currentlySelected?: number;
-  onChange?: any;
-  textStyle?: object;
-  inactiveTextStyle?: object;
-  easyMode?: string;
-  onLongPressMode?: string;
-  validSelection?: number[];
-  convertToNumber?: boolean;
-};
+  easyNumbers: number[]
+  isActive?: boolean
+  currentlySelected?: number
+  onChange?: any
+  textStyle?: object
+  inactiveTextStyle?: object
+  easyMode?: string
+  onLongPressMode?: string
+  validSelection?: number[]
+  convertToNumber?: boolean
+}
 
 const PickerReducer = (state, action) => {
   switch (action.type) {
-    case 'update status': {
+    case "update status": {
       //to fix some bug i do not understand which breaks it sometimes. wasn't intended like that
-      state.printCustom = true;
-      state.customNumber = state.selected;
-      break;
+      state.printCustom = true
+      state.customNumber = state.selected
+      break
     }
 
-    case 'update with custom value matching a recommended one': {
-      state.printCustom = false;
-      state.selected = action.value;
-      state.isLongPressed = false;
-      state.customNumber = action.value;
-      state.isCustomPrintedSelected = false;
-      state.customMatchingOriginals = true;
-      break;
+    case "update with custom value matching a recommended one": {
+      state.printCustom = false
+      state.selected = action.value
+      state.isLongPressed = false
+      state.customNumber = action.value
+      state.isCustomPrintedSelected = false
+      state.customMatchingOriginals = true
+      break
     }
-    case 'update with custom value being unique': {
-      state.printCustom = true;
-      state.selected = action.value;
-      state.isLongPressed = false;
-      state.customNumber = action.value;
-      state.isCustomPrintedSelected = true;
-    }
-
-    case 'toggle long press': {
-      state.isLongPressed = !state.isLongPressed;
-      break;
+    case "update with custom value being unique": {
+      state.printCustom = true
+      state.selected = action.value
+      state.isLongPressed = false
+      state.customNumber = action.value
+      state.isCustomPrintedSelected = true
     }
 
-    case 'press recommended value': {
-      state.selected = action.value;
-      state.isCustomPrintedSelected = false;
-      break;
+    case "toggle long press": {
+      state.isLongPressed = !state.isLongPressed
+      break
     }
 
-    case 'pressed custom value': {
-      state.selected = state.customNumber;
-      state.isCustomPrintedSelected = true;
-      break;
+    case "press recommended value": {
+      state.selected = action.value
+      state.isCustomPrintedSelected = false
+      break
     }
 
-    case 'update with text': {
-      state.printCustom = true;
-      let newValue = action.value;
+    case "pressed custom value": {
+      state.selected = state.customNumber
+      state.isCustomPrintedSelected = true
+      break
+    }
+
+    case "update with text": {
+      state.printCustom = true
+      let newValue = action.value
       if (Number.isNaN(newValue)) {
-        newValue = 0;
+        newValue = 0
       }
-      state.selected = newValue;
-      state.isLongPressed = false;
-      state.customNumber = state.selected;
-      state.isCustomPrintedSelected = true;
-      break;
+      state.selected = newValue
+      state.isLongPressed = false
+      state.customNumber = state.selected
+      state.isCustomPrintedSelected = true
+      break
+    }
+
+    case "refresh active": {
+      state.isActive = action.value
+      break
     }
 
     default:
-      throw new Error('Unexpected action in PickerReducer');
+      throw new Error("Unexpected action in PickerReducer")
   }
 
-  return {...state};
-};
+  return { ...state }
+}
 
 interface State {
-  easyNumbers: number[];
-  inactiveStyle: object;
-  selected: number;
-  activeStyle: object;
-  printCustom: boolean;
-  customNumber: number;
+  easyNumbers: number[]
+  inactiveStyle: object
+  selected: number
+  activeStyle: object
+  printCustom: boolean
+  customNumber: number
 }
 
 type PrintNumberProps = {
-  state: State;
-  number: number;
-};
+  state: State
+  number: number
+}
 
 const PrintNumber = (props: PrintNumberProps) => {
   const {
@@ -126,16 +131,16 @@ const PrintNumber = (props: PrintNumberProps) => {
     activeStyle,
     printCustom,
     customNumber,
-  } = props.state;
+  } = props.state
 
-  let style = inactiveStyle;
-  let pressable = true;
+  let style = inactiveStyle
+  let pressable = true
   if (props.number === selected) {
-    style = activeStyle;
-    pressable = false;
+    style = activeStyle
+    pressable = false
   }
-  return <Text style={style}> {props.number} </Text>;
-};
+  return <Text style={style}> {props.number} </Text>
+}
 
 const SquareList = (props: any) => {
   const {
@@ -145,47 +150,48 @@ const SquareList = (props: any) => {
     activeStyle,
     printCustom,
     customNumber,
-  } = props.state;
+  } = props.state
 
-  let justifyCont: any = printCustom ? 'space-between' : 'center';
+  let justifyCont: any = printCustom ? "space-between" : "center"
 
   return (
     <View>
-      <View style={{justifyContent: justifyCont, flexDirection: 'row'}}>
+      <View style={{ justifyContent: justifyCont, flexDirection: "row" }}>
         <Pressable onLongPress={props.onLongPress}>
           <Pressable
             onLongPress={props.onLongPress}
-            onPress={() => props.onPressRecommended(easyNumbers[0])}>
+            onPress={() => props.onPressRecommended(easyNumbers[0])}
+          >
             <PrintNumber state={props.state} number={easyNumbers[0]} />
           </Pressable>
         </Pressable>
         {printCustom && (
-          <Pressable
-            onLongPress={props.onLongPress}
-            onPress={props.onPressCustom}>
+          <Pressable onLongPress={props.onLongPress} onPress={props.onPressCustom}>
             <PrintNumber state={props.state} number={customNumber} />
           </Pressable>
         )}
       </View>
-      <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+      <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
         <Pressable onLongPress={props.onLongPress}>
           <Pressable
             onLongPress={props.onLongPress}
-            onPress={() => props.onPressRecommended(easyNumbers[1])}>
+            onPress={() => props.onPressRecommended(easyNumbers[1])}
+          >
             <PrintNumber state={props.state} number={easyNumbers[1]} />
           </Pressable>
         </Pressable>
         <Pressable onLongPress={props.onLongPress}>
           <Pressable
             onLongPress={props.onLongPress}
-            onPress={() => props.onPressRecommended(easyNumbers[2])}>
+            onPress={() => props.onPressRecommended(easyNumbers[2])}
+          >
             <PrintNumber state={props.state} number={easyNumbers[2]} />
           </Pressable>
         </Pressable>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const HorizontalList = (props: any) => {
   const {
@@ -195,36 +201,35 @@ const HorizontalList = (props: any) => {
     activeStyle,
     printCustom,
     customNumber,
-  } = props.state;
+  } = props.state
 
   return (
     <Pressable onLongPress={props.onLongPress}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         {!printCustom && (
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: "row" }}>
             {easyNumbers.map((number, index) => {
               return (
                 <Pressable
                   key={index}
                   onLongPress={props.onLongPress}
-                  onPress={() => props.onPressRecommended(number)}>
+                  onPress={() => props.onPressRecommended(number)}
+                >
                   <PrintNumber state={props.state} number={number} />
                 </Pressable>
-              );
+              )
             })}
           </View>
         )}
         {printCustom && (
-          <Pressable
-            onLongPress={props.onLongPress}
-            onPress={props.onPressCustom}>
+          <Pressable onLongPress={props.onLongPress} onPress={props.onPressCustom}>
             <PrintNumber state={props.state} number={customNumber} />
           </Pressable>
         )}
       </View>
     </Pressable>
-  );
-};
+  )
+}
 
 export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
   const initialState = {
@@ -238,24 +243,24 @@ export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
     isFlatlistVisible: false,
     customMatchingOriginals: false, //checking of custom number is included in original suggestions. If it is > we dont print it too
     isActive: props.isActive || true,
-    onLongPressMode: props.onLongPressMode || 'get text',
-    easyMode: props.easyMode || 'horizontal',
+    onLongPressMode: props.onLongPressMode || "get text",
+    easyMode: props.easyMode || "horizontal",
     inactiveStyle: {
-      color: 'grey',
+      color: "grey",
       fontSize: 20,
       opacity: 0.3,
       ...props.inactiveTextStyle,
     },
     activeStyle: {
-      color: 'blue',
+      color: "blue",
       fontSize: 22,
       opacity: 1,
       ...props.textStyle,
     },
-  };
+  }
 
-  const {currentlySelected, onChange, validSelection} = props;
-  const [state, dispatch] = useReducer(PickerReducer, initialState);
+  const { currentlySelected, onChange, validSelection } = props
+  const [state, dispatch] = useReducer(PickerReducer, initialState)
 
   const {
     easyNumbers,
@@ -272,92 +277,97 @@ export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
     easyMode,
     activeStyle,
     inactiveStyle,
-  } = state;
+  } = state
 
-  let customPrintedStyle = isCustomPrintedSelected
-    ? activeStyle
-    : inactiveStyle;
+  useEffect(() => {
+    dispatch({ type: "refresh active", value: props.isActive })
+  }, [props.isActive])
+
+  let customPrintedStyle = isCustomPrintedSelected ? activeStyle : inactiveStyle
   useEffect(() => {
     //to fix some bug i do not understand which breaks it sometimes. wasn't intended like that
     //in case currently selected is different than easy numbers
-    let flag: boolean = true; //dont update if flag stays false
-    easyNumbers.forEach((number) => {
-      if (number === currentlySelected) flag = false;
-    });
+    let flag: boolean = true //dont update if flag stays false
+    easyNumbers.forEach(number => {
+      if (number === currentlySelected) flag = false
+    })
 
-    if (flag === true) dispatch({type: 'update status'});
-  }, []);
+    if (flag === true) dispatch({ type: "update status" })
+  }, [])
 
-  if (props.easyMode === 'square')
+  if (props.easyMode === "square")
     if (props.easyNumbers.length > 3) {
       console.error(
-        'easyMode Square supports only 3 recommended inputs + 1 custom. ',
+        "easyMode Square supports only 3 recommended inputs + 1 custom. ",
         props.easyNumbers.length,
-        ' have been detected',
-      );
+        " have been detected",
+      )
     }
 
-  const onChangeHandler = (value) => {
-    if (props.convertToNumber !== false) value = _.toNumber(value);
-    onChange(value);
-  };
+  const onChangeHandler = value => {
+    if (props.convertToNumber !== false) value = _.toNumber(value)
+    onChange(value)
+  }
 
-  const onNewValueHandler = (value) => {
-    let flag = true;
-    let newValue = value;
+  const onNewValueHandler = value => {
+    let flag = true
+    let newValue = value
 
     easyNumbers.forEach((number: number) => {
       if (number === newValue) {
         dispatch({
-          type: 'update with custom value matching a recommended one',
+          type: "update with custom value matching a recommended one",
           value: newValue,
-        });
-        flag = false;
+        })
+        flag = false
       }
-    });
+    })
     if (flag) {
       dispatch({
-        type: 'update with custom value being unique',
+        type: "update with custom value being unique",
         value: newValue,
-      });
+      })
     }
-    onChangeHandler(newValue);
-  };
+    onChangeHandler(newValue)
+  }
 
   const onLongPressHandler = () => {
-    dispatch({type: 'toggle long press'});
-  };
+    dispatch({ type: "toggle long press" })
+  }
 
-  const onPressRecommendedHandler = (number) => {
-    dispatch({type: 'press recommended value', value: number});
-    onChangeHandler(number);
-  };
+  const onPressRecommendedHandler = number => {
+    dispatch({ type: "press recommended value", value: number })
+    onChangeHandler(number)
+  }
 
   const onPressCustomHandler = () => {
-    dispatch({type: 'pressed custom value'});
-    onChangeHandler(customNumber);
-  };
+    dispatch({ type: "pressed custom value" })
+    onChangeHandler(customNumber)
+  }
 
-  const renderItem = ({item, index}) => {
+  const renderItem = ({ item, index }) => {
     return (
       <Pressable onPress={() => onNewValueHandler(item)}>
         <Text style={activeStyle}>{item}</Text>
       </Pressable>
-    );
-  };
-  if (!isActive)
+    )
+  }
+  if (isActive !== true)
     return (
-      <View style={{flexDirection: 'row'}}>
-        {easyNumbers.map((number) => (
-          <Text style={inactiveStyle}> {number} </Text>
+      <View style={{ flexDirection: "row" }}>
+        {easyNumbers.map(number => (
+          <Text key={number.toString()} style={inactiveStyle}>
+            {" "}
+            {number}{" "}
+          </Text>
         ))}
       </View>
-    );
+    )
   else {
     if (!isLongPressed)
       return (
         <View>
-          {easyMode === 'horizontal' && (
+          {easyMode === "horizontal" && (
             <HorizontalList
               onLongPress={onLongPressHandler}
               state={state}
@@ -367,7 +377,7 @@ export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
               customNumber={customNumber}
             />
           )}
-          {easyMode === 'square' && (
+          {easyMode === "square" && (
             <SquareList
               onLongPress={onLongPressHandler}
               state={state}
@@ -378,11 +388,11 @@ export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
             />
           )}
         </View>
-      );
+      )
     else
       return (
-        <View style={{flexDirection: 'row'}}>
-          {onLongPressMode === 'picker' && (
+        <View style={{ flexDirection: "row" }}>
+          {onLongPressMode === "picker" && (
             // <View style={{height: 250, width: 50}}>
             //   <Portal>
             //     <Modal visible={true}>
@@ -395,33 +405,30 @@ export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
             //   </Portal>
             // </View>
             <Picker
-              mode={'dropdown'}
+              mode={"dropdown"}
               selectedValue={selected}
-              style={{height: 50, width: 100}}
+              style={{ height: 50, width: 100 }}
               itemStyle={activeStyle}
-              onValueChange={(itemValue) => onNewValueHandler(itemValue)}>
-              {validSelection.map((value) => (
-                <Picker.Item
-                  key={value}
-                  label={value.toString()}
-                  value={value}
-                />
+              onValueChange={itemValue => onNewValueHandler(itemValue)}
+            >
+              {validSelection.map(value => (
+                <Picker.Item key={value} label={value.toString()} value={value} />
               ))}
             </Picker>
           )}
-          {onLongPressMode === 'get text' && (
+          {onLongPressMode === "get text" && (
             <GetText
               startingValue={selected}
               style={activeStyle}
               numeric={true}
               autoFocus={true}
-              onEnd={(newValue) => {
-                dispatch({type: 'update with text', value: newValue});
-                onChangeHandler(newValue);
+              onEnd={newValue => {
+                dispatch({ type: "update with text", value: newValue })
+                onChangeHandler(newValue)
               }}
             />
           )}
         </View>
-      );
+      )
   }
-};
+}

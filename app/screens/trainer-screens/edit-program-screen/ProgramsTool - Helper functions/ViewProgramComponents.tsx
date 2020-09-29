@@ -248,7 +248,6 @@ export const ShowExercise = observer(props => {
 
   return (
     <View>
-      {/* <Text>es{item.Position}</Text> */}
       <Pressable onPressIn={onPressIn} delayLongPress={0} disabled={!isClickable}>
         <View
           style={{

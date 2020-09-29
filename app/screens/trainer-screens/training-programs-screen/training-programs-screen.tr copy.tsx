@@ -1,3 +1,5 @@
+// backup с global state. В оригинала ще пробвам само с local state
+
 import React, { useEffect, useState } from "react"
 import { Text, View, TouchableOpacity, Pressable } from "react-native"
 import { spacing, color, styles } from "../../../theme"
