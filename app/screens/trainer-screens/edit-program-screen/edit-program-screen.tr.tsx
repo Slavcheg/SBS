@@ -435,7 +435,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   const initialState = {
     selectedMuscleGroup: "chest",
     // currentProgram: programsStore.programSnapshot(programID),
-    currentProgram: EMPTY_PROGRAM_DATA2,
+    currentProgram: null,
     programID: route.params.programID,
     isExercisePickerShown: false,
     isButtonsRowShown: true,
@@ -479,9 +479,6 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     currentDayIndex,
     currentExerciseIndex,
   } = state
-
-  const windowWidth = useWindowDimensions().width
-  const windowHeight = useWindowDimensions().height
 
   useEffect(() => {
     const onBackPress = () => {
@@ -634,17 +631,18 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
         isVisible={state.isExercisePickerShown}
         autoFocusSearch={state.autoFocusSearch}
       />
-      {currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
-        <EditExerciseModal
-          visible={state.isEditExerciseModalVisible}
-          exercise={
-            currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
-              currentExerciseIndex
-            ]
-          }
-          onClose={onCloseExerciseModal}
-        />
-      )}
+      {currentProgram &&
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
+          <EditExerciseModal
+            visible={state.isEditExerciseModalVisible}
+            exercise={
+              currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
+                currentExerciseIndex
+              ]
+            }
+            onClose={onCloseExerciseModal}
+          />
+        )}
       {currentProgram && (
         <ShowProgram
           state={state}
@@ -664,9 +662,9 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
         />
       )}
 
-      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+      {/* <View style={{ flex: 1, justifyContent: "flex-end" }}>
         <Button onPress={testHandler}>test</Button>
-      </View>
+      </View> */}
     </View>
   )
 })

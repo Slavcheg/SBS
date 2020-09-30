@@ -23,6 +23,7 @@ export * from "./trainer-screens/client-multi-screen/client-multi-screen"
 export * from "./trainer-screens/training-programs-screen/training-programs-screen.tr"
 export * from "./admin-screens/other-screen/other-screen"
 export * from "./trainer-screens/edit-program-screen/edit-program-screen.tr"
+export * from "./trainer-screens/train-clients-screen/train-clients-screen.tr"
 
 export * from "./admin-screens/home-screen/home-screen.ad"
 export * from "./admin-screens/menu-screens/trainers-list-screen"

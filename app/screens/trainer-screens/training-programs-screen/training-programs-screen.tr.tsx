@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Text, View, TouchableOpacity, Pressable } from "react-native"
+import { Text, View, TouchableOpacity, Pressable, Alert } from "react-native"
 import { spacing, color, styles } from "../../../theme"
 import { Screen, MainHeader_Tr, ButtonSquare } from "../../../components"
 import ProgressCircle from "react-native-progress-circle"
@@ -10,15 +10,19 @@ import { useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
 import { SwipeRow } from "react-native-swipe-list-view"
 
-import { Button } from "react-native-paper"
+import { Button, Checkbox } from "react-native-paper"
+
+import iStyles from "../edit-program-screen/Constants/Styles"
 
 interface ShowProgramsListProps {
   programs: object[]
   style?: object
   onPressProgram?: Function
-  selectedProgram?: Number
+  currentProgram?: Number
   onPressDeleteProgram?: Function
   onPressEditProgram?: Function
+  selectedPrograms: string[]
+  onPressCheckbox: Function
 }
 
 const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observer(props => {
@@ -28,8 +32,15 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
       {props.programs.length !== 1 && <Text>Намираме {props.programs.length} програми</Text>}
 
       {/* <Button onPress={() => console.log(props.programs)}>test</Button> */}
-      {props.programs.map((program, index) => {
-        let textStyle = { fontSize: 25, color: props.selectedProgram === index ? "blue" : "black" }
+      {props.programs.map((program: any, index) => {
+        let textStyle = { fontSize: 25, color: props.currentProgram === index ? "blue" : "black" }
+
+        let checkedStatus = false
+        if (props.selectedPrograms.length > 0)
+          props.selectedPrograms.forEach(programIDList => {
+            if (programIDList === program.id) checkedStatus = true
+          })
+
         return (
           <View key={index} style={{ flexDirection: "row" }}>
             <SwipeRow rightOpenValue={-75} leftOpenValue={75}>
@@ -38,7 +49,7 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  width: "80%",
+                  width: "100%",
                 }}
               >
                 {/* <Button onPress={() => props.onPressEditProgram(index)}>Edit</Button> */}
@@ -53,6 +64,11 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
                 </Pressable>
               </View>
             </SwipeRow>
+            <Checkbox
+              color={iStyles.text1.color}
+              status={props.selectedPrograms.includes(program.id) ? "checked" : "unchecked"}
+              onPress={() => props.onPressCheckbox(program, checkedStatus)}
+            />
           </View>
         )
       })}
@@ -71,7 +87,11 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     const exercisesStore = useStores().exerciseDataStore
     const rootStore = useStores()
 
-    const [state, setState] = useState({ selectedProgram: 0, loadedExercises: false })
+    const [state, setState] = useState({
+      currentProgram: 0,
+      loadedExercises: false,
+      selectedPrograms: [],
+    })
 
     useEffect(() => {
       programsStore.getItems()
@@ -197,6 +217,35 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
 
     const getPrograms = async () => {}
 
+    const onStartViewingHandler = () => {
+      if (state.selectedPrograms.length === 0)
+        Alert.alert(
+          "",
+          "Не си избрал нито 1 програма. Цъкни отметка вдясно и пробвай пак",
+          [{ text: "Добре" }],
+          {
+            cancelable: false,
+          },
+        )
+      else {
+        let routeParams = {}
+        state.selectedPrograms.forEach((programID, index) => {
+          routeParams = {
+            ...routeParams,
+            [index]: programID,
+          }
+        })
+        console.log(state.selectedPrograms.length)
+
+        navigation.navigate("TrainClientsScreen", { ...routeParams })
+
+        // store.changeCurrentUser({selectedPrograms: state.selectedPrograms});
+        // console.log('selected program IDs', state.selectedPrograms);
+        // console.log(store.userData);
+        // navigation.navigate('ProgramViewScreen');
+      }
+    }
+
     const addProgramHandler = () => {
       programsStore.createProgram({
         Name: `Program number ${programsStore.programs.length + 1}`,
@@ -207,14 +256,14 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     }
 
     const onPressProgramHandler = newIndex => {
-      setState({ ...state, selectedProgram: newIndex })
+      setState({ ...state, currentProgram: newIndex })
     }
 
     const onPressDeleteProgramHandler = deleteIndex => {
       console.log("tried deleting item ", deleteIndex)
       programsStore.deleteProgram(programsStore.programs[deleteIndex].id)
       programsStore.getItems()
-      setState({ ...state, selectedProgram: 0 })
+      setState({ ...state, currentProgram: 0 })
     }
 
     const onPressEditProgramHandler = editIndex => {
@@ -224,6 +273,16 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       navigation.navigate("EditProgramScreen", {
         programID: programID,
       })
+    }
+
+    const onPressCheckbox = (program, checkedStatus: boolean) => {
+      let arr = state.selectedPrograms
+      if (arr.includes(program.id)) {
+        arr = arr.filter(value => {
+          return value != program.id
+        })
+      } else arr.push(program.id)
+      setState({ ...state, selectedPrograms: [...arr] })
     }
 
     return (
@@ -242,8 +301,10 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         <ShowProgramsList
           programs={programsStore.programs}
           onPressProgram={onPressProgramHandler}
-          selectedProgram={state.selectedProgram}
+          currentProgram={state.currentProgram}
           onPressDeleteProgram={onPressDeleteProgramHandler}
+          selectedPrograms={state.selectedPrograms}
+          onPressCheckbox={onPressCheckbox}
           // onPressEditProgram={onPressEditProgramHandler}
         />
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
@@ -253,9 +314,17 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         >
           Test
         </Button> */}
-
           <Button
-            onPress={() => onPressEditProgramHandler(state.selectedProgram)}
+            onPress={onStartViewingHandler}
+            mode="contained"
+            color={iStyles.text1.color}
+            loading={!state.loadedExercises}
+            disabled={!state.loadedExercises}
+          >
+            Тренирай
+          </Button>
+          <Button
+            onPress={() => onPressEditProgramHandler(state.currentProgram)}
             loading={!state.loadedExercises}
             disabled={!state.loadedExercises}
           >

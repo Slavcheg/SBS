@@ -32,6 +32,7 @@ import {
   TrainingProgramsScreen,
   AdminOtherScreen,
   EditProgramScreen,
+  TrainClientsScreen,
 } from "../screens"
 // import { PrimaryParamList } from "./types"
 
@@ -79,6 +80,7 @@ export function PrimaryNavigator() {
       <Stack.Screen name="trainingProgramsScreen" component={TrainingProgramsScreen} />
       <Stack.Screen name="EditProgramScreen" component={EditProgramScreen} />
       <Stack.Screen name="admin_other" component={AdminOtherScreen} />
+      <Stack.Screen name="TrainClientsScreen" component={TrainClientsScreen} />
     </Stack.Navigator>
   )
 }
