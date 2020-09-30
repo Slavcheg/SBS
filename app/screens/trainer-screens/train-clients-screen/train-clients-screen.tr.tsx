@@ -233,13 +233,14 @@ const ProgramView = props => {
   }
 
   const saveProgram = () => {
-    fb.updateItem(props.programID, currentProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
-      console.error(error),
-    )
+    if (currentProgram)
+      fb.updateItem(props.programID, currentProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
+        console.error(error),
+      )
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ height: "90%", flex: 1 }}>
       <Header
         //   client={client}
         state={state}

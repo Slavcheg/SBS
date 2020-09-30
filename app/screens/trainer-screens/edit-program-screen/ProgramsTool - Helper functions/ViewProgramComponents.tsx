@@ -137,7 +137,8 @@ export const getAverageWeight = sets => {
     averageWeight += parseFloat(set.Weight)
   })
   averageWeight /= sets.length
-  return Math.round(averageWeight)
+  if (Math.round(averageWeight) === averageWeight) return Math.round(averageWeight)
+  else return averageWeight.toPrecision(3)
 }
 
 export const ShowAllSets = props => {
@@ -211,7 +212,7 @@ export const SetsAndReps = props => {
               {props.showAllSetsReps ? (
                 <ShowAllSets sets={item.Sets} isActive={props.isActive} />
               ) : (
-                <Text>{item.Sets[0].Reps}</Text>
+                <Text style={textStyle}>{item.Sets[0].Reps}</Text>
               )}
             </Text>
             {showItemRepsProgression && <Text style={textStyle}>+{item.increaseReps}</Text>}
@@ -259,7 +260,7 @@ export const ShowExercise = observer(props => {
             // height: EXERCISE_ITEM_HEIGHT,
           }}
         >
-          <View style={{ width: "3%", justifyContent: "center" }}>
+          <View style={{ width: "10%", justifyContent: "center", alignItems: "center" }}>
             <Pressable
               onPress={onPressPosition}
               onLongPress={onPressIn}
@@ -278,7 +279,7 @@ export const ShowExercise = observer(props => {
               </Text>
             </Pressable>
           </View>
-          <View style={{ width: "50%", alignItems: "flex-start" }}>
+          <View style={{ width: "45%", alignItems: "flex-start" }}>
             <Pressable
               onPress={onPressExercise}
               onLongPress={onPressIn}
@@ -308,9 +309,12 @@ export const ShowExercise = observer(props => {
 
           <View
             style={{
-              width: "40%",
+              width: "45%",
 
-              justifyContent: "flex-end",
+              justifyContent: "center",
+              alignItems: "center",
+              // borderWidth: 1,
+
               // right: 5,
               // borderWidth: 2,
               // borderColor: 'red',
@@ -321,7 +325,11 @@ export const ShowExercise = observer(props => {
               showAllSetsReps={getAverageRepsAndReturnFlag(item)}
               isActive={isDragged}
               exercise={item}
-              textStyle={{ ...textStyle, textAlign: "right" }}
+              textStyle={{
+                ...textStyle,
+                textAlign: "right",
+                textAlignVertical: "bottom",
+              }}
               isClickable={!isClickable}
             />
           </View>

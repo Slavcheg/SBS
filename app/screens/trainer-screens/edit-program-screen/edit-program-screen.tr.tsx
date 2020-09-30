@@ -29,7 +29,7 @@ LogBox.ignoreLogs([
   "VirtualizedLists should never be nested", // TODO: Remove when fixed
 ])
 
-import { spacing, color, styles } from "../../../theme"
+import { spacing, color } from "../../../theme"
 import { Screen, MainHeader_Tr, ButtonSquare } from "../../../components"
 import ProgressCircle from "react-native-progress-circle"
 import { displayDateFromTimestamp, today_vs_last_day } from "../../../global-helper"
@@ -100,11 +100,13 @@ const EditExerciseModal = (props: EditExerciseModalProps) => {
   const windowWidth = useWindowDimensions().width
   const windowHeight = useWindowDimensions().height
 
-  const [exerciseState, setExerciseState] = useState(props.exercise)
+  const [exerciseState, setExerciseState] = useState(_.cloneDeep(props.exercise))
 
-  useEffect(() => {
-    setExerciseState({ ...props.exercise })
-  }, [props.exercise])
+  React.useMemo(() => {
+    const newEx = _.cloneDeep(props.exercise)
+    setExerciseState(newEx)
+    console.log("went here")
+  }, [visible])
 
   const onChangeNumberOfSets = newNumberOfSets => {
     const newSets = []
@@ -156,7 +158,7 @@ const EditExerciseModal = (props: EditExerciseModalProps) => {
   const onUpdateWeightProgression = newValue => {
     setExerciseState({ ...exerciseState, increaseWeight: newValue })
   }
-  if (!visible) return <View></View>
+  if (!visible || !exerciseState) return <View></View>
   else
     return (
       <Modal visible={visible}>
@@ -197,7 +199,8 @@ const EditExerciseModal = (props: EditExerciseModalProps) => {
               >
                 <Button
                   onPress={() => {
-                    props.onClose(exerciseState)
+                    props.onClose(_.cloneDeep(exerciseState))
+                    setExerciseState(null)
                   }}
                 >
                   ok
@@ -396,7 +399,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <ProgramViewHeader
         state={state}
         onChangeProgramName={onChangeProgramName}
@@ -516,7 +519,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
 
   const onSaveProgramHandler = () => {
     console.log("currentProgram", currentProgram)
-    fb.updateItem(programID, currentProgram, TRAINING_PROGRAMS_COLLECTION)
+    if (currentProgram) fb.updateItem(programID, currentProgram, TRAINING_PROGRAMS_COLLECTION)
 
     // programsStore.saveProgram(programID, currentProgram)
   }
@@ -644,22 +647,24 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
           />
         )}
       {currentProgram && (
-        <ShowProgram
-          state={state}
-          onChangeDay={onChangeDay}
-          onRemoveDay={onRemoveDayHandler}
-          onAddNewDay={onAddNewDayHandler}
-          onChangeDayName={onChangeDayNameHandler}
-          onToggleDayCompleted={onToggleDayCompletedHandler}
-          onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercisesHandler}
-          onDragEndHandler={onDragEndHandler}
-          onDeleteExerciseHandler={onDeleteExerciseHandler}
-          onEditPositionHandler={onEditPositionHandler}
-          onEditSetsRepsHandler={onEditSetsRepsHandler}
-          onExpandExerciseInfo={onExpandExerciseInfo}
-          onChangeProgramName={onChangeProgramName}
-          onChangeWeek={onChangeWeek}
-        />
+        <View style={styles.programStyle}>
+          <ShowProgram
+            state={state}
+            onChangeDay={onChangeDay}
+            onRemoveDay={onRemoveDayHandler}
+            onAddNewDay={onAddNewDayHandler}
+            onChangeDayName={onChangeDayNameHandler}
+            onToggleDayCompleted={onToggleDayCompletedHandler}
+            onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercisesHandler}
+            onDragEndHandler={onDragEndHandler}
+            onDeleteExerciseHandler={onDeleteExerciseHandler}
+            onEditPositionHandler={onEditPositionHandler}
+            onEditSetsRepsHandler={onEditSetsRepsHandler}
+            onExpandExerciseInfo={onExpandExerciseInfo}
+            onChangeProgramName={onChangeProgramName}
+            onChangeWeek={onChangeWeek}
+          />
+        </View>
       )}
 
       {/* <View style={{ flex: 1, justifyContent: "flex-end" }}>
@@ -667,4 +672,12 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
       </View> */}
     </View>
   )
+})
+
+const styles = StyleSheet.create({
+  programStyle: {
+    minHeight: 150,
+    maxHeight: "100%",
+    flex: 1,
+  },
 })
