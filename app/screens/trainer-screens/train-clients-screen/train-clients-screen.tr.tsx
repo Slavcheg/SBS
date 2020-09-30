@@ -130,6 +130,7 @@ const DaysBox = props => {
 
 const Header = props => {
   // const {client, program} = props;
+
   const { currentWeekIndex, currentDayIndex } = props.state
   const program = props.state.currentProgram
   let greyStyle = iStyles.greyText
@@ -275,6 +276,7 @@ const ProgramView = props => {
 
 export const TrainClientsScreen = ({ navigation, route }) => {
   const [programs, setPrograms] = useState([])
+  const rootStore = useStores()
 
   const getPrograms = async () => {
     let programIDsArray = []

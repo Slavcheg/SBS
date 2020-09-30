@@ -191,6 +191,9 @@ export const trainingProgramsStoreModel = types
       let newIndex = self.programs.findIndex(findProgram)
       return newIndex
     },
+    trainersPrograms(id: string) {
+      return self.programs.filter(program => program.item.Trainers.includes(id))
+    },
   }))
   .actions(self => ({
     addExercise(programID: string, state: any, exercise: object) {
