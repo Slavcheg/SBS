@@ -17,17 +17,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   BackHandler,
-  YellowBox,
-  LogBox,
   Modal,
   Alert,
 } from "react-native"
 
 import _ from "lodash"
-
-LogBox.ignoreLogs([
-  "VirtualizedLists should never be nested", // TODO: Remove when fixed
-])
 
 import { spacing, color } from "../../../theme"
 import { Screen, MainHeader_Tr, ButtonSquare } from "../../../components"
@@ -87,6 +81,24 @@ const removeDayAlert = (currentDaysLength: number, onRemove: Function) => {
       ],
       { cancelable: true },
     )
+}
+
+const changeUserAlert = (onRemove: Function) => {
+  Alert.alert(
+    "Внимание",
+    "Сигурен ли си, че искаш да смениш трениращия? Той вече има приключени дни",
+    [
+      {
+        text: "Не искам",
+        // style: 'cancel',
+      },
+      {
+        text: "Да!",
+        onPress: onRemove,
+      },
+    ],
+    { cancelable: true },
+  )
 }
 
 type EditExerciseModalProps = {
@@ -377,6 +389,7 @@ type ShowProgramProps = {
   onEditSetsRepsHandler: Function
   onExpandExerciseInfo: Function
   onChangeProgramName: Function
+  onChangeClient: Function
 }
 
 const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
@@ -394,6 +407,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
     onExpandExerciseInfo,
     onChangeWeek,
     onChangeProgramName,
+    onChangeClient,
     state,
   } = props
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
@@ -404,6 +418,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         state={state}
         onChangeProgramName={onChangeProgramName}
         onChangeWeek={onChangeWeek}
+        onChangeClient={onChangeClient}
       />
 
       <ShowProgramDays
@@ -472,6 +487,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     const unsubscribe = navigation.addListener("focus", () => {
       getPrograms()
     })
+    console.log("refreshed with navigation")
     return unsubscribe
   }, [navigation])
 
@@ -503,7 +519,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   }, [state.isExercisePickerShown, state.isEditExerciseModalVisible])
 
   const testHandler = () => {
-    console.log("test complete")
+    console.log("test complete", currentProgram.Client)
   }
 
   const onGoBackHandler = () => {
@@ -613,6 +629,12 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     dispatch({ type: "close modal and update exercise", value: newExercise })
   }
 
+  const onChangeClient = newClientID => {
+    if (!currentProgram.Weeks[0].Days[0].isCompleted)
+      dispatch({ type: "change client", value: newClientID })
+    else changeUserAlert(() => dispatch({ type: "change client", value: newClientID }))
+  }
+
   return (
     <View
       style={{
@@ -663,13 +685,14 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
             onExpandExerciseInfo={onExpandExerciseInfo}
             onChangeProgramName={onChangeProgramName}
             onChangeWeek={onChangeWeek}
+            onChangeClient={onChangeClient}
           />
         </View>
       )}
 
-      {/* <View style={{ flex: 1, justifyContent: "flex-end" }}>
+      <View style={{ flex: 1, justifyContent: "flex-end" }}>
         <Button onPress={testHandler}>test</Button>
-      </View> */}
+      </View>
     </View>
   )
 })

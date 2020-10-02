@@ -12,20 +12,23 @@ import { SwipeRow } from "react-native-swipe-list-view"
 
 import { Button, Checkbox } from "react-native-paper"
 
+import _ from "lodash"
+
 import iStyles from "../edit-program-screen/Constants/Styles"
 
 interface ShowProgramsListProps {
   programs: object[]
   style?: object
-  onPressProgram?: Function
-  currentProgram?: string
+  onPressEdit?: Function
   onPressDeleteProgram?: Function
   onPressEditProgram?: Function
   selectedPrograms: string[]
   onPressCheckbox: Function
+  onPressItem: Function
 }
 
 const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observer(props => {
+  const userStore2 = useStores().userStore2
   return (
     <View style={props.style}>
       {props.programs.length === 1 && <Text>Намираме {props.programs.length} програмa</Text>}
@@ -33,9 +36,14 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
 
       {/* <Button onPress={() => console.log(props.programs)}>test</Button> */}
       {props.programs.map((program: any, index) => {
+        const programName =
+          props.programs[index].item.Client === "No client yet"
+            ? "No client yet"
+            : userStore2.getUserByID(props.programs[index].item.Client).item.first
+        let programSelected = props.selectedPrograms.includes(program.id) ? true : false
         let textStyle = {
-          fontSize: 25,
-          color: props.currentProgram === program.id ? "blue" : "black",
+          fontSize: 19,
+          color: programSelected ? iStyles.text1.color : "black",
         }
 
         let checkedStatus = false
@@ -51,29 +59,24 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
-              width: Dimensions.get("window").width,
             }}
           >
-            {/* <Button onPress={() => props.onPressEditProgram(index)}>Edit</Button> */}
-            <Button
-              onPress={() => props.onPressDeleteProgram(program.id)}
-              color="red"
-              compact={true}
-            >
-              del
-            </Button>
-
             <View style={{ backgroundColor: "white" }}>
-              <Pressable activeOpacity={0.6} onPress={() => props.onPressProgram(program.id)}>
-                <Text style={textStyle}>{props.programs[index].item.Name}</Text>
+              <Pressable
+                activeOpacity={0.6}
+                onLongPress={() => props.onPressDeleteProgram(program.id)}
+                onPress={() => props.onPressCheckbox(program, checkedStatus)}
+              >
+                <Text style={textStyle}>{programName}</Text>
               </Pressable>
             </View>
-
-            <Checkbox
-              color={iStyles.text1.color}
-              status={props.selectedPrograms.includes(program.id) ? "checked" : "unchecked"}
-              onPress={() => props.onPressCheckbox(program, checkedStatus)}
-            />
+            <Button
+              icon="square-edit-outline"
+              onPress={() => props.onPressEditProgram(program.id)}
+              color={textStyle.color}
+              labelStyle={{ fontSize: 20 }}
+              // color={"transparent"}
+            ></Button>
           </View>
         )
       })}
@@ -91,6 +94,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     const programsStore = useStores().trainingProgramsStore
     const exercisesStore = useStores().exerciseDataStore
     const rootStore = useStores()
+    const cardStore2 = useStores().cardyStore2
 
     const [state, setState] = useState({
       currentProgram: "",
@@ -100,6 +104,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
 
     useEffect(() => {
       programsStore.getItems()
+      cardStore2.getItems()
     }, [programsStore])
 
     useEffect(() => {
@@ -238,13 +243,9 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         Name: `Program number ${programsStore.trainersPrograms(rootStore.loggedUser.id).length +
           1}`,
         Trainers: [rootStore.loggedUser.id],
-        Client: rootStore.loggedUser.id,
+        Client: "No client yet",
       })
       programsStore.getItems()
-    }
-
-    const onPressProgramHandler = newIndex => {
-      setState({ ...state, currentProgram: newIndex })
     }
 
     const onPressDeleteProgramHandler = deleteID => {
@@ -261,8 +262,6 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
             onPress: () => {
               programsStore.deleteProgram(deleteID)
               programsStore.getItems()
-              let newID = programsStore.trainersPrograms(rootStore.loggedUser.id)
-              setState({ ...state, currentProgram: newID[0].id })
             },
           },
         ],
@@ -278,12 +277,26 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
 
     const onPressCheckbox = (program, checkedStatus: boolean) => {
       let arr = state.selectedPrograms
+
+      //проверка за check. ако вече е чекнато - връщаме списък без него. ако го няма - добавяме го
+
       if (arr.includes(program.id)) {
         arr = arr.filter(value => {
           return value != program.id
         })
       } else arr.push(program.id)
       setState({ ...state, selectedPrograms: [...arr] })
+    }
+
+    const onPressItem = program => {
+      setState({ ...state, selectedPrograms: [program.id] })
+    }
+
+    const testHandler = () => {
+      let mailArr = _.uniq(cardStore2.getYouClientsEmails("dobrev.jordan@gmail.com"))
+      console.log(mailArr)
+      let idArr = mailArr.map(mail => userStore2.getUserIDByEmail(mail))
+      console.log(idArr)
     }
 
     return (
@@ -301,13 +314,21 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         <MainHeader_Tr navigation={navigation} style={{ paddingHorizontal: 25 }} />
         <ShowProgramsList
           programs={programsStore.trainersPrograms(rootStore.loggedUser.id)}
-          onPressProgram={onPressProgramHandler}
-          currentProgram={state.currentProgram}
+          onPressEditProgram={onPressEditProgramHandler}
           onPressDeleteProgram={onPressDeleteProgramHandler}
           selectedPrograms={state.selectedPrograms}
           onPressCheckbox={onPressCheckbox}
+          onPressItem={onPressItem}
           // onPressEditProgram={onPressEditProgramHandler}
         />
+        <Button
+          onPress={addProgramHandler}
+          loading={!state.loadedExercises}
+          disabled={!state.loadedExercises}
+          color={iStyles.text2.color}
+        >
+          Добави нова програма
+        </Button>
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
           {/* <Button
           // onPress={() => console.log(exercisesStore.exercises[0].item.Name)}
@@ -325,21 +346,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           >
             Тренирай
           </Button>
-          <Button
-            onPress={() => onPressEditProgramHandler(state.currentProgram)}
-            loading={!state.loadedExercises}
-            disabled={!state.loadedExercises}
-          >
-            Edit
-          </Button>
-          <Button
-            onPress={addProgramHandler}
-            loading={!state.loadedExercises}
-            disabled={!state.loadedExercises}
-            color={iStyles.text2.color}
-          >
-            Добави нова програма
-          </Button>
+          {/* <Button onPress={testHandler}>test</Button> */}
         </View>
       </Screen>
     )

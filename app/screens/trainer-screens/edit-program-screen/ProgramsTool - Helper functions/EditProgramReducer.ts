@@ -59,7 +59,7 @@ const updateFollowingWeeks = state => {
     }
 
   //block for updating exercises by their +reps +weight values
-  //на магия се получи, дано не се налага да се пипа
+
   for (
     let i = currentWeekIndex + 1;
     i < currentProgram.Weeks.length;
@@ -285,7 +285,7 @@ export const EditProgramReducer = (state, action) => {
     }
 
     case "change client": {
-      state.currentProgram.ClientID = action.value
+      state.currentProgram.Client = action.value
       return { ...state }
     }
 

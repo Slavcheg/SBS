@@ -51,6 +51,7 @@ import {
   ProgramViewHeader,
   EasyNumberPicker,
   GetText,
+  ClientName,
 } from "../edit-program-screen/ProgramsTool - Helper functions"
 
 import iStyles from "../edit-program-screen/Constants/Styles"
@@ -145,7 +146,8 @@ const Header = props => {
     <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 2 }}>
       <View>
         {/* <Text style={{...text2, fontWeight: 'bold'}}>{client.Name}</Text> */}
-        <Text style={style1}>{program.Name}</Text>
+        {/* <Text style={style1}>{program.Name}</Text> */}
+        <ClientName clientID={program.Client} disabled={true} style={iStyles.text1} />
         <View style={{ flexDirection: "row" }}>
           <Text style={style1}>Completed?</Text>
           <Checkbox
@@ -180,7 +182,7 @@ const Header = props => {
 //find first uncompleted day
 const getInitialState = program => {
   let state = {
-    locked: false,
+    locked: true,
     currentWeekIndex: 0,
     currentDayIndex: 0,
     currentExerciseIndex: 0,
@@ -194,7 +196,7 @@ const getInitialState = program => {
       if (breakFlag) break
       if (program.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
         breakFlag = true
-        state = { ...state, locked: false, currentWeekIndex: weekIndex, currentDayIndex: dayIndex }
+        state = { ...state, locked: true, currentWeekIndex: weekIndex, currentDayIndex: dayIndex }
       }
     }
   }

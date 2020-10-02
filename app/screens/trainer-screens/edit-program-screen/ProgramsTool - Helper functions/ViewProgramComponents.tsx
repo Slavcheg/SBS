@@ -2,6 +2,8 @@ import { Button, Portal, Modal, TextInput } from "react-native-paper"
 
 import React, { useState, useEffect, useReducer } from "react"
 
+import { useStores } from "../../../../models/root-store"
+
 import {
   View,
   Text,
@@ -91,30 +93,98 @@ export const zeroMuscleVolume = () => {
   return currentDayMuscleVolume
 }
 
-export const ClientName = props => {
+type ClientNameProps = {
+  clientID: string
+  style?: any
+  onChange?: Function
+  disabled?: boolean
+}
+
+export const ClientName: React.FunctionComponent<ClientNameProps> = props => {
   // const store: any = React.useContext(StoreContext)
-  let clientName = props.client.Name
-  const [state, setState] = useState({ isPicking: false })
+
+  const { disabled } = props
+
+  const sessionStore = useStores().sessionStore
+  const userStore2 = useStores().userStore2
+  const programsStore = useStores().trainingProgramsStore
+  const exercisesStore = useStores().exerciseDataStore
+  const rootStore = useStores()
+  const cardStore2 = useStores().cardyStore2
+  const trainerEmail = sessionStore.userEmail
+  const [state, setState] = useState({
+    isPicking: false,
+    clientName:
+      props.clientID === "No client yet"
+        ? "No client yet"
+        : userStore2.getUserByID(props.clientID).item.first,
+    allClients: [],
+  })
+
+  useEffect(() => {
+    const clientName =
+      props.clientID === "No client yet"
+        ? "No client yet"
+        : userStore2.getUserByID(props.clientID).item.first
+    const allClientsEmails = [...cardStore2.getYouClientsEmails(trainerEmail), trainerEmail]
+    const allClients = _.uniq(
+      allClientsEmails
+        .map(email => userStore2.getUserByEmail(email))
+        .filter(client => client !== null),
+    )
+    setState({
+      ...state,
+      clientName: clientName,
+      allClients: [...allClients, { id: "No client yet", item: { first: "No client yet" } }],
+    })
+  }, [props])
+
   // props.client.Name
   //   ? (clientName = props.client.Name)
   //   : (clientName = 'no client yet');
+
+  //   <View>
+  //   {state.isPicking && (
+  //     <View>
+  //       {props.allClients.map(client => {
+  //         if (client === props.client.ID) return
+  //         return (
+  //           <TouchableOpacity key={client} onPress={() => props.onChange(client)}>
+  //             {/* <Text style={iStyles.text1}>{store.getClient(client).Name}</Text> */}
+  //           </TouchableOpacity>
+  //         )
+  //       })}
+  //     </View>
+  //   )}
+  // </View>
+
   return (
     <View>
+      {!state.isPicking && (
+        <TouchableOpacity
+          onPress={() => setState({ ...state, isPicking: !state.isPicking })}
+          disabled={disabled}
+        >
+          <Text style={props.style}>{state.clientName}</Text>
+        </TouchableOpacity>
+      )}
       {state.isPicking && (
         <View>
-          {props.allClients.map(client => {
-            if (client === props.client.ID) return
+          {state.allClients.map(client => {
             return (
-              <TouchableOpacity key={client} onPress={() => props.onChange(client)}>
-                {/* <Text style={iStyles.text1}>{store.getClient(client).Name}</Text> */}
+              <TouchableOpacity
+                key={client.id}
+                onPress={() => {
+                  setState({ ...state, isPicking: false })
+                  props.onChange(client.id)
+                }}
+              >
+                <Text style={props.style}>{client.item.first}</Text>
               </TouchableOpacity>
             )
           })}
         </View>
       )}
-      <TouchableOpacity onPress={() => setState({ ...state, isPicking: !state.isPicking })}>
-        <Text style={props.style}>{clientName}</Text>
-      </TouchableOpacity>
     </View>
   )
 }

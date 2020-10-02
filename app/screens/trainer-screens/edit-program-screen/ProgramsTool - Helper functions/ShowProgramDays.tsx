@@ -20,6 +20,7 @@ type HeaderProps = {
   state: state
   onChangeWeek: Function
   onChangeProgramName: Function
+  onChangeClient: Function
 }
 
 export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(props => {
@@ -27,28 +28,38 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
   return (
     <View>
       <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
-        <EditableText
+        {/* <EditableText
           textStyle={{ ...iStyles.text1, fontSize: 21 }}
           onEnd={(newValue: string) => props.onChangeProgramName(newValue)}
         >
           {currentProgram.Name}
-        </EditableText>
+        </EditableText> */}
 
-        <View style={{ flexDirection: "row" }}>
-          <Button icon="arrow-left" compact={true} onPress={() => props.onChangeWeek("decrease")}>
-            {""}
-          </Button>
-          <Text style={iStyles.text1}>Week {currentWeekIndex + 1}</Text>
-          <Button icon="arrow-right" compact={true} onPress={() => props.onChangeWeek("increase")}>
-            {""}
-          </Button>
-          {/* <ClientName
-            client={store.getClient(currentProgram.ClientID)}
-            // client={{Name: 'Iwo'}}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            width: "100%",
+          }}
+        >
+          <ClientName
+            clientID={currentProgram.Client}
             style={{ ...iStyles.text2 }}
-            allClients={store.userData.Clients}
-            onChange={clientID => dispatch({ type: "change client", value: clientID })}
-          /> */}
+            onChange={clientID => props.onChangeClient(clientID)}
+          />
+          <View style={{ flexDirection: "row" }}>
+            <Button icon="arrow-left" compact={true} onPress={() => props.onChangeWeek("decrease")}>
+              {""}
+            </Button>
+            <Text style={iStyles.text1}>Week {currentWeekIndex + 1}</Text>
+            <Button
+              icon="arrow-right"
+              compact={true}
+              onPress={() => props.onChangeWeek("increase")}
+            >
+              {""}
+            </Button>
+          </View>
         </View>
       </View>
     </View>
@@ -395,6 +406,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
           renderItem={({ item, index, drag, isActive }) =>
             renderExercises({ item, index, drag, isActive }, true)
           }
+          scrollEnabled={false}
           initialNumToRender={10}
           keyExtractor={(item: any, index) => `${item.ID}-${index}`}
           onDragEnd={({ data }) => onDragEndHandler(data)}
@@ -414,6 +426,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
           renderItem={({ item, index, drag, isActive }) =>
             renderExercises({ item, index, drag, isActive }, false)
           }
+          scrollEnabled={false}
           initialNumToRender={10}
           keyExtractor={(item, index) => `${item.ID}-${index}`}
           // getItemLayout={(data, index) => ({
