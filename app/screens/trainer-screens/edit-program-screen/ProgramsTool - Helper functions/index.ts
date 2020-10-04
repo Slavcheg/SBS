@@ -1,5 +1,6 @@
 export { ExercisePicker } from "./ExercisePicker"
 export { ButtonsRow } from "./ButtonsRow"
+export { EditExerciseModal } from "./EditExerciseModal"
 export * from "./ShowProgramDays"
 export { getFilteredExercises } from "./GetAndSortExercises"
 export { EditProgramReducer } from "./EditProgramReducer"

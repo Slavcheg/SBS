@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react"
 import { View, ScrollView, TouchableOpacity, Text, FlatList } from "react-native"
 import { Button } from "react-native-paper"
 
+import { translate } from "../../../../i18n"
 import iStyles from "../Constants/Styles"
 
 // const ExerciseButton = React.memo(function ExerciseButton(props) {
@@ -79,66 +80,66 @@ export const ButtonsRow = React.memo(function ButtonsRow(props: any) {
                 {""}
               </Button>
               <ExerciseButton
-                title="chest"
+                title={translate("muscleGroups.Chest")}
                 onPress={props.onPressMuscleGroup.bind(this, "chest")}
                 // muscleVolume={props.muscleVolume['chest']}
               />
               <ExerciseButton
-                title="shoulders"
+                title={translate("muscleGroups.Shoulders")}
                 onPress={props.onPressMuscleGroup.bind(this, "shoulders")}
                 // muscleVolume={props.muscleVolume['shoulders']}
               />
               <ExerciseButton
-                title="back"
+                title={translate("muscleGroups.Back")}
                 onPress={props.onPressMuscleGroup.bind(this, "back")}
                 // muscleVolume={props.muscleVolume['back']}
               />
               {/* </View>
             <View style={{flexDirection: 'row'}}> */}
               <ExerciseButton
-                title="glutes"
+                title={translate("muscleGroups.Glutes")}
                 passedColor={mainColorRow2}
                 onPress={props.onPressMuscleGroup.bind(this, "glutes")}
                 // muscleVolume={props.muscleVolume['glutes']}
               />
               <ExerciseButton
-                title="quads"
+                title={translate("muscleGroups.Quads")}
                 passedColor={mainColorRow2}
                 onPress={props.onPressMuscleGroup.bind(this, "quads")}
                 // muscleVolume={props.muscleVolume['quads']}
               />
               <ExerciseButton
-                title="hams"
+                title={translate("muscleGroups.Hams")}
                 passedColor={mainColorRow2}
                 onPress={props.onPressMuscleGroup.bind(this, "hams")}
                 // muscleVolume={props.muscleVolume['hams']}
               />
               <ExerciseButton
-                title="biceps"
+                title={translate("muscleGroups.Biceps")}
                 passedColor={mainColorRow3}
                 onPress={props.onPressMuscleGroup.bind(this, "biceps")}
                 // muscleVolume={props.muscleVolume['biceps']}
               />
               <ExerciseButton
-                title="triceps"
+                title={translate("muscleGroups.Triceps")}
                 passedColor={mainColorRow3}
                 onPress={props.onPressMuscleGroup.bind(this, "triceps")}
                 // muscleVolume={props.muscleVolume['triceps']}
               />
               <ExerciseButton
-                title="core"
+                title={translate("muscleGroups.Core")}
                 passedColor={mainColorRow3}
                 onPress={props.onPressMuscleGroup.bind(this, "core")}
                 // muscleVolume={props.muscleVolume['core']}
               />
               <ExerciseButton
-                title="traps"
+                title={translate("muscleGroups.Traps")}
                 passedColor={mainColorRow3}
                 onPress={props.onPressMuscleGroup.bind(this, "traps")}
                 // muscleVolume={props.muscleVolume['traps']}
               />
               <ExerciseButton
-                title="calves"
+                title={translate("muscleGroups.Calves")}
                 passedColor={mainColorRow3}
                 onPress={props.onPressMuscleGroup.bind(this, "calves")}
                 // muscleVolume={props.muscleVolume['calves']}

@@ -33,6 +33,51 @@
     "progressCircleTextBottom": "до",
     "trainingPrograms": "Тренировъчни програми"
   },
+  "selectPrograms": {
+    "TrainButton": "Тренирай",
+    "Header": "Тренировъчни програми",
+    "ProgramsFound1": "Намираме",
+    "ProgramsFound2": "програма",
+    "ProgramsFound2-Plural": "програми",
+    "AddNewProgram": "Добави нова програма",
+    "NoClientYet": "Няма клиент",
+    "alertDeleteProgram": "Сигурен ли си, че искаш да изтриеш програмата?"
+  },
+  "alerts": {
+    "yes": "Да",
+    "no": "Не искам"
+  },
+  "trainClientsScreen": {
+    "Completed": "Завършена",
+    "Lock": "Заключи",
+    "Unlock": "Отключи",
+    "Day": "Ден",
+    "W": "С",
+    "ArrangePrograms": "Подреди програмите"
+  },
+  "muscleGroups": {
+    "Chest": "Гърди",
+    "Shoulders": "Рамо",
+    "Back": "Гръб",
+    "Glutes": "Дупе",
+    "Quads": "Предни бедра",
+    "Hams": "Задни бедра",
+    "Biceps": "Бицепс",
+    "Triceps": "Трицепс",
+    "Core": "Коремни",
+    "Traps": "Трапец",
+    "Calves": "Прасец"
+  },
+  "editProgramScreen": {
+    "Week": "Седмица",
+    "Day": "Ден",
+    "ChooseExerciseFromAbove": "Избери упражнение от горе",
+    "Warning": "Внимание",
+    "alertDeleteWholeDay": "Сигурен ли си, че искаш да изтриеш целия ден?",
+    "alertDayNo": "Не искам",
+    "alertDayYes": "Да",
+    "searchForAnExercise": "Търси упражнение"
+  },
   "adminHomeScreen": {
     "clientsSquareButtonCaption": "Трениращи",
     "trainersSquareButtonCaption": "Треньори",

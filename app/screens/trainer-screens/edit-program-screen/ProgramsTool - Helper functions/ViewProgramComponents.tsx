@@ -270,7 +270,7 @@ export const SetsAndReps = props => {
   }
   return (
     <View>
-      <Pressable disabled={props.isClickable} onPress={props.onPress}>
+      <Pressable disabled={!props.isClickable} onPress={props.onPress}>
         <View
           style={{
             flexDirection: "row",
@@ -400,7 +400,7 @@ export const ShowExercise = observer(props => {
                 textAlign: "right",
                 textAlignVertical: "bottom",
               }}
-              isClickable={!isClickable}
+              isClickable={isClickable}
             />
           </View>
         </View>

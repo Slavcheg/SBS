@@ -137,7 +137,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
             //     })
             //   }
             //   onDeleteExercise={onDeleteExerciseHandler}
-            //   onPressSetsAndReps={onEditSetsRepsHandler}
+            onPressSetsAndReps={() => onEditSetsRepsHandler(index)}
             //   isDragged={isActive}
             showDeleteButton={false}
             isClickable={!locked}

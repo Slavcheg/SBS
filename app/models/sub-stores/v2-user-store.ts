@@ -129,5 +129,7 @@ export const UserStoreModel2 = types
     },
     getUserByID(id) {
       return self.users.find(user => user.id === id)
+        ? self.users.find(user => user.id === id)
+        : null
     },
   }))
