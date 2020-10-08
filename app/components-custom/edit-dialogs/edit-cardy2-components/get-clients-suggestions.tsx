@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
-import { color, spacing } from "../../../theme"
+import React, { useEffect } from "react"
+import { View, Text, TouchableOpacity } from "react-native"
 import { useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite"
 import {styles} from '../styles'
@@ -35,7 +34,7 @@ export const GetClientsSuggestions: React.FunctionComponent<GetClientsSuggestion
                                         paddingVertical: 10
                                     }
                                 ]}
-                                key={index}
+                                key={client.item.email}
                                 onPress={() => onTouch(client.item.email)}
                             >
                             <Text
