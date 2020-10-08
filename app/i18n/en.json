@@ -72,7 +72,8 @@
     "family_name_field": "family name",
     "email_field": "email",
     "generic_num_field": "generic number",
-    "referral_field": "referral"
+    "referral_field": "referral",
+    "isEmailValidMessage": "Email is invalid!"
   },
   "see/add-trainer-dialog": {
       "name_field": "name",

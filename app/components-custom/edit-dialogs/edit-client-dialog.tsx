@@ -1,35 +1,69 @@
 import React, { useEffect, useState } from "react"
 import { View, Text } from "react-native"
-import { border_boxes, device_width, device_height } from "../../global-helper"
+import { border_boxes, device_width, device_height, regexMailValidator } from "../../global-helper"
 import { Button } from "../../components/button/button"
 import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { useStores } from "../../models/root-store"
-import { IUser2 } from "../../models/sub-stores/v2-user-store"
-import { RequiredWarning } from "../../components"
+import { GetReferralSuggestions, RequiredWarning } from "../../components"
 import { translate } from "../../i18n"
+import { getSnapshot } from "mobx-state-tree"
 
-export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
-    const userStore2 = useStores().userStore2
-    const [user, setUser] = useState<IUser2>({})
-    const [emailRequiredFlag, setRequiredFlag] = useState(false)
-    const { onDismiss } = props
-    let gen_num = 1000 + userStore2.clientsCount + 1
+interface EditClientDialogProps {
+    // setUser(getSnapshot(incommingUserModel.item))
+    // line above doesnt work if incomingUSer is defined
+    incommingUserModel?: any
+    onDismiss: Function
+    seeDailog: boolean
+}
+
+export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = props => {
+    const { onDismiss, incommingUserModel, seeDailog } = props
+    const { userStore2 } = useStores()
+
+    const [user, setUser] = useState<any>({
+        email: ''
+    })
+    const resetHelpers = {
+        isNewUser: false,
+        validMailFlag: false,
+        emailRequiredFlag: false,
+        referralSearch: '',
+        seeReferralSuggestions: false
+    }
+    const [pageHelpers, setPageHelper] = useState(resetHelpers)
+
     useEffect(() => {
         userStore2.getItems()
-        setUser(prevState => ({
-            ...prevState, 
-            client: {
-                generic_number: 1000 + userStore2.clientsCount + 1,
-                password: 'admin123'
-            }
-        }))
-    }, [])
+        if(incommingUserModel?.id){
+            setUser(getSnapshot(incommingUserModel.item))
+            setPageHelper(resetHelpers)
+        } else {
+            setUser({
+                email: '',
+                diary: [],
+                client: {
+                    generic_number: 1000 + userStore2.clientsCount + 1,
+                    password: 'admin123'
+                }
+            })
+            setPageHelper(prSt => ({...prSt, isNewUser: true}))
+        }
+    }, [incommingUserModel])
+
+    useEffect(() => {
+        try{ 
+            setPageHelper(prSt => ({...prSt, 
+                validMailFlag: !regexMailValidator.test(String(user.email).toLocaleLowerCase()) && user?.email !== ''
+            }))
+        } catch(e) {console.log(e)}
+    }, [user.email])
 
     return (
         <View
             key={'full screen'}
             style={[{
+                display: seeDailog? 'flex' : 'none',
                 width: device_width,
                 height: device_height,
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -46,11 +80,9 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     // border_boxes().black,
                     {
                         borderColor: color.palette.white,
-                        // borderWidth: 2,
                         borderRadius: 20,
                         backgroundColor: color.palette.white,
                         width: device_width / 1.2,
-                        // height: device_width / 2,
                         paddingVertical: 50,
                         paddingHorizontal: '5%',
                         marginBottom: 100,
@@ -74,13 +106,14 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     setVariable={val => {
                         setUser(prevState => ({...prevState, email: val, isClient: true, isAdmin: false, isTrainer: false}))
                         if (val === '') {
-                            setRequiredFlag(true)
+                            setPageHelper(prSt => ({...prSt, emailRequiredFlag: true}))
                         } else {
-                            setRequiredFlag(false)
+                            setPageHelper(prSt => ({...prSt, emailRequiredFlag: false}))
                         }
                     }}                    
                 />
-                <RequiredWarning flag={emailRequiredFlag} width={'100%'} />
+                <RequiredWarning flag={pageHelpers.emailRequiredFlag} width={'100%'} />
+                <RequiredWarning flag={pageHelpers.validMailFlag} message={translate("see/add-client-dialog.isEmailValidMessage")} width={'100%'} />
                 <Input_Hoshi 
                     width='100%'
                     placeholder={translate('see/add-client-dialog.name_field')} 
@@ -93,13 +126,51 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     variable={user.last}
                     setVariable={val => setUser(prevState => ({...prevState, last: val}))}
                 />
+                <View
+                    style={[{
+                        width: '100%',
+                        marginVertical: 20,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between'
+                    }]}
+                >
+                    <Text>{translate('see/add-client-dialog.referral_field') + ':'}</Text>
+                    <Text>{user.client?.referral}</Text>
+                </View>
                 <Input_Hoshi 
                     width='100%'
                     placeholder={translate('see/add-client-dialog.referral_field')} 
-                    variable={user.referral}
-                    setVariable={val => setUser(prevState => ({...prevState, referral: val}))}
+                    variable={pageHelpers.referralSearch}
+                    setVariable={val => setPageHelper(prSt => ({...prSt, referralSearch: val}))}
+                    onF={() => setPageHelper(prSt => ({...prSt, seeReferralSuggestions: true}))}
+                    onB={() => {
+                        setPageHelper(prS => ({
+                            ...prS,
+                            seeReferralSuggestions: false,
+                            referralSearch: ''
+                        }))
+                    }}
                 />
                 
+                <GetReferralSuggestions 
+                    searchString={pageHelpers.referralSearch}
+                    isVisible={pageHelpers.seeReferralSuggestions}
+                    onTouch={(refName: string) => {
+                        setUser(prSt => ({
+                            ...prSt,
+                            client: {
+                                ...prSt.client,
+                                referral: refName
+                            }
+                        }))
+                        setPageHelper(prSt => ({
+                            ...prSt,
+                            seeReferralSuggestions: false,
+                            referralSearch: ''
+                        }))
+                    }}
+                />
+
                 <View
                     style={[{
                         width: '100%',
@@ -109,7 +180,10 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     }]}
                 >
                     <Button 
-                        onPress={() => onDismiss()} 
+                        onPress={() => {
+                            setPageHelper(prSt => ({...prSt, referralSearch: ''}))
+                            onDismiss()
+                        }} 
                         text={translate('generic.close_button')}
                         style={{
                             width: '45%',
@@ -127,11 +201,15 @@ export const AddClientDialog: React.FunctionComponent<{onDismiss}> = props => {
                     </Button>
                     <Button 
                         onPress={() => {
-                            if(user.email) {
-                                userStore2.addItem(user) 
+                            if(user.email && !pageHelpers.validMailFlag) {
+                                pageHelpers.isNewUser ? userStore2.addItem(user)
+                                    : userStore2.updateItem(incommingUserModel.id, user)
+                                setPageHelper(prSt => ({...prSt, referralSearch: ''}))
                                 onDismiss()
                             } else {
-                                setRequiredFlag(true)
+                                setPageHelper(prSt => ({...prSt,
+                                    emailRequiredFlag: !user.email? true: null
+                                }))
                             }                            
                         }}
                         text={translate('generic.save_button')}

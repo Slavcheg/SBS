@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog } from '../../../components'
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, EditClientDialog } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Avatar } from 'react-native-elements';
@@ -11,9 +11,17 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { translate } from "../../../i18n/"
 import { border_boxes } from "../../../global-helper";
+import { IUser2_Model } from "../../../models/sub-stores/v2-user-store";
 
-export const GetClients: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
-    const userStore2 = useStores().userStore2    
+interface GetClientsProps {
+    searchStream: string,
+    setSeeDialog: Function
+}
+
+export const GetClients: React.FunctionComponent<GetClientsProps> = observer(props => {
+    const userStore2 = useStores().userStore2
+    const {searchStream, setSeeDialog} = props
+    
     useEffect(() => {
         userStore2.getItems()
     }, [])
@@ -26,14 +34,19 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
         >
             {
                 userStore2.clients
-                    .filter(trainer => props.search !== ''? trainer.item.email.toLocaleLowerCase().includes(props.search): true)
+                    .filter(trainer => searchStream !== ''? 
+                        (trainer.item.first + trainer.item.last || trainer.item.email).toLocaleLowerCase().includes(searchStream): true
+                    )
                     .map((user, key) => {
                         const item = user.item
+                        let nickname = item.first + ' ' + item.last
+                        nickname = nickname === ' ' ? item.email :  nickname
                         return  (
                             <SwipeRow 
                                 key={key}
                                 // leftOpenValue={75} 
                                 rightOpenValue={-75}
+                                
                             >
                                 <View 
                                     style={[
@@ -68,8 +81,8 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                                         },
                                     ]}
                                     onPressOut={() => {
-                                        props.setEm(item.email)
-                                        props.setSeeDialog(true)
+                                        
+                                        setSeeDialog(user)
                                     }}
                                     underlayColor={key % 2 === 1 ? 'white': color.palette.grey_sbs}
                                 >
@@ -95,7 +108,7 @@ export const GetClients: React.FunctionComponent<{search: string, setEm: any, se
                                         <Text 
                                             key={key} 
                                             style={[{color: 'black', marginLeft: '5%'}]}
-                                        >{item.email}</Text>
+                                        >{nickname}</Text>
                                     </View>
                                 </TouchableHighlight>
                             </SwipeRow>  
@@ -109,10 +122,10 @@ interface ClientsListProps extends NavigationProps {}
 
 export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = observer(props => {
     const { navigation} = props
-    const [seeDialog, setSeeDialog] = useState(false)
     const [searchValue, setSearchValue] = useState('')
-    const [seeClientDialog, setSeeClientDialog] = useState(false)
-    const [email, setEmail] = useState('') 
+
+    const [seeDialog, setSeeDialog] = useState(false)
+    const [editUser, setUserToEdit] = useState<IUser2_Model>(null) 
 
     return (
         <Screen
@@ -160,7 +173,10 @@ export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = ob
                     }]}
                 ></View>
                 <TouchableOpacity
-                    onPress={() => setSeeDialog(true)}
+                    onPress={() => {
+                        setUserToEdit(null)
+                        setSeeDialog(true)
+                    }}
                     style={[
                         // border_boxes().green,
                         {
@@ -177,17 +193,20 @@ export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = ob
                 </TouchableOpacity>
             </View>
             
-            <GetClients search={searchValue} setEm={setEmail} setSeeDialog={setSeeClientDialog}/>
-            {
-                seeDialog ?
-                    <AddClientDialog onDismiss={() => {setSeeDialog(false)}} />
-                : null
-            }
-            {
-                seeClientDialog ?
-                    <SeeClientDialog email={email} onDismiss={() => {setSeeClientDialog(false)}} />
-                : null
-            }
+            <GetClients
+                searchStream={searchValue}
+                setSeeDialog={(newUserToEdit) => {
+                    setUserToEdit(newUserToEdit)
+                    setSeeDialog(true)
+                }}
+            />
+
+            <EditClientDialog
+                incommingUserModel={editUser}
+                seeDailog={seeDialog}
+                onDismiss={() => {setSeeDialog(false)}} 
+            />
+
         </Screen>
     )
 })
