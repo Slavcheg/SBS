@@ -34,8 +34,8 @@ export const GetClients: React.FunctionComponent<GetClientsProps> = observer(pro
         >
             {
                 userStore2.clients
-                    .filter(trainer => searchStream !== ''? 
-                        (trainer.item.first + trainer.item.last || trainer.item.email).toLocaleLowerCase().includes(searchStream.toLocaleLowerCase()): true
+                    .filter(client => searchStream !== ''? 
+                        (client.item.first + client.item.last || client.item.email).toLocaleLowerCase().includes(searchStream.toLocaleLowerCase()): true
                     )
                     .map((user, key) => {
                         const item = user.item
@@ -81,7 +81,6 @@ export const GetClients: React.FunctionComponent<GetClientsProps> = observer(pro
                                         },
                                     ]}
                                     onPressOut={() => {
-                                        
                                         setSeeDialog(user)
                                     }}
                                     underlayColor={key % 2 === 1 ? 'white': color.palette.grey_sbs}

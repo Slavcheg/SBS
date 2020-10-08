@@ -8,6 +8,7 @@ import { useStores } from "../../models/root-store"
 import { GetReferralSuggestions, RequiredWarning } from "../../components"
 import { translate } from "../../i18n"
 import { getSnapshot } from "mobx-state-tree"
+import { observer } from "mobx-react-lite"
 
 interface EditClientDialogProps {
     // setUser(getSnapshot(incommingUserModel.item))
@@ -17,7 +18,7 @@ interface EditClientDialogProps {
     seeDailog: boolean
 }
 
-export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = props => {
+export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = observer(props => {
     const { onDismiss, incommingUserModel, seeDailog } = props
     const { userStore2 } = useStores()
 
@@ -100,7 +101,7 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                     width='100%'
                     placeholder={translate('see/add-client-dialog.generic_num_field')} 
                     variable={user.client?.generic_number.toString()}
-                    setVariable={val => setUser(prevState => ({...prevState, generic_number: val}))}
+                    setVariable={val => setUser(prSt => ({...prSt, generic_number: val}))}
                     editable = {false}
                 />
                 <Input_Hoshi    
@@ -108,7 +109,7 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                     placeholder={translate('see/add-client-dialog.email_field')} 
                     variable={user.email}
                     setVariable={val => {
-                        setUser(prevState => ({...prevState, email: val}))
+                        setUser(prSt => ({...prSt, email: val}))
                     }}                    
                 />
                 <RequiredWarning flag={pageHelpers.validMailFlag} message={translate("see/add-client-dialog.isEmailValidMessage")} width={'100%'} />
@@ -117,7 +118,7 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                     placeholder={'* ' + translate('see/add-client-dialog.name_field')} 
                     variable={user.first}
                     setVariable={val => {
-                        setUser(prevState => ({...prevState, first: val}))
+                        setUser(prSt => ({...prSt, first: val}))
                         val === '' ? setPageHelper(prSt => ({...prSt, firstReqField: true}))
                             : setPageHelper(prSt => ({...prSt, firstReqField: false}))
                     }}
@@ -128,7 +129,7 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                     placeholder={'* ' + translate('see/add-client-dialog.family_name_field')} 
                     variable={user.last}
                     setVariable={val => {
-                        setUser(prevState => ({...prevState, last: val}))
+                        setUser(prSt => ({...prSt, last: val}))
                         val === '' ? setPageHelper(prSt => ({...prSt, lastReqField: true}))
                             : setPageHelper(prSt => ({...prSt, lastReqField: false}))
                     }}
@@ -244,4 +245,4 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
             </View>            
         </View>
     )
-}
+})
