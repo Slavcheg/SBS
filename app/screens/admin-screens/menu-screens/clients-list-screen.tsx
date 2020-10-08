@@ -35,7 +35,7 @@ export const GetClients: React.FunctionComponent<GetClientsProps> = observer(pro
             {
                 userStore2.clients
                     .filter(trainer => searchStream !== ''? 
-                        (trainer.item.first + trainer.item.last || trainer.item.email).toLocaleLowerCase().includes(searchStream): true
+                        (trainer.item.first + trainer.item.last || trainer.item.email).toLocaleLowerCase().includes(searchStream.toLocaleLowerCase()): true
                     )
                     .map((user, key) => {
                         const item = user.item

@@ -26,8 +26,9 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
     })
     const resetHelpers = {
         isNewUser: false,
-        validMailFlag: false,
-        emailRequiredFlag: false,
+        validMailFlag: true,
+        firstReqField: false,
+        lastReqField: false,
         referralSearch: '',
         seeReferralSuggestions: false
     }
@@ -42,6 +43,9 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
             setUser({
                 email: '',
                 diary: [],
+                isClient: true, 
+                isAdmin: false, 
+                isTrainer: false,
                 client: {
                     generic_number: 1000 + userStore2.clientsCount + 1,
                     password: 'admin123'
@@ -101,31 +105,35 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                 />
                 <Input_Hoshi    
                     width='100%'
-                    placeholder={'* ' + translate('see/add-client-dialog.email_field')} 
+                    placeholder={translate('see/add-client-dialog.email_field')} 
                     variable={user.email}
                     setVariable={val => {
-                        setUser(prevState => ({...prevState, email: val, isClient: true, isAdmin: false, isTrainer: false}))
-                        if (val === '') {
-                            setPageHelper(prSt => ({...prSt, emailRequiredFlag: true}))
-                        } else {
-                            setPageHelper(prSt => ({...prSt, emailRequiredFlag: false}))
-                        }
+                        setUser(prevState => ({...prevState, email: val}))
                     }}                    
                 />
-                <RequiredWarning flag={pageHelpers.emailRequiredFlag} width={'100%'} />
                 <RequiredWarning flag={pageHelpers.validMailFlag} message={translate("see/add-client-dialog.isEmailValidMessage")} width={'100%'} />
                 <Input_Hoshi 
                     width='100%'
-                    placeholder={translate('see/add-client-dialog.name_field')} 
+                    placeholder={'* ' + translate('see/add-client-dialog.name_field')} 
                     variable={user.first}
-                    setVariable={val => setUser(prevState => ({...prevState, first: val}))}
+                    setVariable={val => {
+                        setUser(prevState => ({...prevState, first: val}))
+                        val === '' ? setPageHelper(prSt => ({...prSt, firstReqField: true}))
+                            : setPageHelper(prSt => ({...prSt, firstReqField: false}))
+                    }}
                 />
+                <RequiredWarning flag={pageHelpers.firstReqField} width={'100%'} />
                 <Input_Hoshi 
                     width='100%'
-                    placeholder={translate('see/add-client-dialog.family_name_field')} 
+                    placeholder={'* ' + translate('see/add-client-dialog.family_name_field')} 
                     variable={user.last}
-                    setVariable={val => setUser(prevState => ({...prevState, last: val}))}
+                    setVariable={val => {
+                        setUser(prevState => ({...prevState, last: val}))
+                        val === '' ? setPageHelper(prSt => ({...prSt, lastReqField: true}))
+                            : setPageHelper(prSt => ({...prSt, lastReqField: false}))
+                    }}
                 />
+                <RequiredWarning flag={pageHelpers.lastReqField} width={'100%'} />
                 <View
                     style={[{
                         width: '100%',
@@ -201,15 +209,22 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                     </Button>
                     <Button 
                         onPress={() => {
-                            if(user.email && !pageHelpers.validMailFlag) {
+                            if((user.first && user.last) && !pageHelpers.validMailFlag) {
                                 pageHelpers.isNewUser ? userStore2.addItem(user)
                                     : userStore2.updateItem(incommingUserModel.id, user)
                                 setPageHelper(prSt => ({...prSt, referralSearch: ''}))
                                 onDismiss()
                             } else {
-                                setPageHelper(prSt => ({...prSt,
-                                    emailRequiredFlag: !user.email? true: null
-                                }))
+                                if(!user.first){
+                                    setPageHelper(prSt => ({...prSt,
+                                        firstReqField: true
+                                    }))
+                                }
+                                if(!user.last){
+                                    setPageHelper(prSt => ({...prSt,
+                                        lastReqField: true
+                                    }))
+                                }
                             }                            
                         }}
                         text={translate('generic.save_button')}
