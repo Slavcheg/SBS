@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { color, spacing } from "../../../theme";
+import { color, spacing } from "../../theme";
 
 export const styles = StyleSheet.create({
     rowSpace: {
