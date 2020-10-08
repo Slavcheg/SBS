@@ -14,7 +14,7 @@ import { translate } from "../../../i18n";
 export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
     const gymHallStore = useStores().gymHallStore
     useEffect(() => {
-        gymHallStore.getGymHalls()
+        gymHallStore.getItems()
     }, [])
 
     return (
@@ -37,7 +37,7 @@ export const GetGymHalls: React.FunctionComponent<{search: string, setEm: any, s
                                 <View style={styles.standaloneRowBack}>
                                     <TouchableOpacity
                                         style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
-                                        onPress={() => gymHallStore.deleteGymHall(gym.id)}
+                                        onPress={() => gymHallStore.deleteItem(gym.id)}
                                     >
                                         <Text style={styles.backTextWhite}>Delete</Text>
                                     </TouchableOpacity>

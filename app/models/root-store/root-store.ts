@@ -20,6 +20,7 @@ export const RootStoreModel = types.model("RootStore").props({
     userStore: types.optional(UserStoreModel,{}),
     monthlyCardStore: types.optional(MonthlyCardStoreModel,{}),
     visitsCardStore: types.optional(VisitsCardStoreModel,{}),
+    
     gymHallStore: types.optional(GymHallStoreModel,{}),
     referralStore: types.optional(ReferralStoreModel,{}),
 
