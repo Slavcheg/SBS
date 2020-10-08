@@ -31,6 +31,7 @@ export * from "../components-custom/add-dialogs/add-referral-dialog"
 export * from "../components-custom/add-dialogs/add-trainer-dialog"
 export * from "../components-custom/edit-dialogs/edit-client-dialog"
 export * from "../components-custom/edit-dialogs/edit-client-components/get-referral-suggestions"
+export * from "../components-custom/edit-dialogs/edit-trainer-components/get-gymhall-suggestions"
 export * from "../components-custom/sbs-card-type/sbs-card-type"
 
 export * from "../components-custom/edit-dialogs/edit-cardy-type2"
