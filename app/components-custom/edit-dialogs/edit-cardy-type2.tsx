@@ -40,6 +40,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
     useEffect(() => {
         if(cardyTypeModel?.id){
             setObj(cardyTypeModel.item)
+            setIsNewType(false)
         } else {
             setObj({
                 type: card_types.monthly,

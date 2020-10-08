@@ -48,14 +48,6 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
         requiredMessage_type: false,        
     })
 
-    // useEffect(() => {
-    //     if(cardyModel?.id){
-    //         setObj(cardyModel.item)
-    //     } else {
-    //         setPageHelper(prState => ({... prState, isNewType: true}))
-    //     }
-    // }, [])
-
     return (
         <View
             key={'full screen'}
