@@ -64,11 +64,12 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
         } catch(e) {console.log(e)}
     }, [user.email])
 
-    return (
+    const dialog = (
         <View
             key={'full screen'}
-            style={[{
-                display: seeDailog? 'flex' : 'none',
+            style={[
+                {               
+                // display: seeDailog? 'flex' : 'none', 
                 width: device_width,
                 height: device_height,
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -245,4 +246,5 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
             </View>            
         </View>
     )
+    return seeDailog? dialog: <View></View>
 })

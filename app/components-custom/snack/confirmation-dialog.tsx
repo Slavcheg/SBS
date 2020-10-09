@@ -13,10 +13,10 @@ interface ConfirmationDialogProps {
 
 export const ConfirmationDialog: React.FunctionComponent<ConfirmationDialogProps> = props  => {
     const {message, onDismiss, seeDailog} = props
-    return (        
+    const dialog = (    
         <View
             style={[{
-                display: seeDailog? 'flex' : 'none',
+                // display: seeDailog? 'flex' : 'none',
                 width: device_width,
                 height: device_height,
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -93,9 +93,9 @@ export const ConfirmationDialog: React.FunctionComponent<ConfirmationDialogProps
 
                 </View>
             </View>
-
         </View>
     )
+    return seeDailog? dialog: <View></View>
 }
 
 // export function ExampleUseofSnack() {

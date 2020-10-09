@@ -52,7 +52,7 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
         }
     }, [cardyTypeModel])
 
-    return (
+    const dialog = (
         <View
             key={'full screen'}
             style={[{
@@ -220,4 +220,5 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
             </View>            
         </View>
     )
+    return seeDailog? dialog: <View></View>
 }
