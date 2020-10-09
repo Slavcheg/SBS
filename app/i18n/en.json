@@ -2,7 +2,7 @@
   "generic": {
     "search_label": "Search",
     "required_field": "Field is required !",
-    "required_numeric": "Field must be digital !",  
+    "required_numeric": "Field must be digital !",
     "close_button": "Close",
     "save_button": "Save"
   },
@@ -34,7 +34,53 @@
     "clientsButtonCaption": "Clients",
     "adminSquareButtonCaption": "Admin",
     "progressCircleTextTop": "trainings",
-    "progressCircleTextBottom": "until"
+    "progressCircleTextBottom": "until",
+    "trainingPrograms": "Training programs"
+  },
+  "selectPrograms": {
+    "TrainButton": "Train",
+    "Header": "Training Programs",
+    "ProgramsFound1": "We found",
+    "ProgramsFound2": "program",
+    "ProgramsFound2-Plural": "programs",
+    "AddNewProgram": "Add new program",
+    "NoClientYet": "No client yet",
+    "alertDeleteProgram": "Are you sure you want to delete this program?"
+  },
+  "alerts": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "trainClientsScreen": {
+    "Completed": "Day completed",
+    "Lock": "Lock",
+    "Unlock": "Unlock",
+    "Day": "Day",
+    "W": "W",
+    "ArrangePrograms": "Arrange programs"
+  },
+  "muscleGroups": {
+    "Chest": "Chest",
+    "Shoulders": "Shoulders",
+    "Back": "Back",
+    "Glutes": "Glutes",
+    "Quads": "Quads",
+    "Hams": "Hams",
+    "Biceps": "Biceps",
+    "Triceps": "Triceps",
+    "Core": "Core",
+    "Traps": "Traps",
+    "Calves": "Calves"
+  },
+  "editProgramScreen": {
+    "Week": "Week",
+    "Day": "Day",
+    "ChooseExerciseFromAbove": "Choose exercise from above",
+    "Warning": "Warning",
+    "alertDeleteWholeDay": "Are you sure you want to delete the whole day?",
+    "alertDayNo": "I don't want",
+    "alertDayYes": "I do",
+    "searchForAnExercise": "Search for an exercise"
   },
   "adminHomeScreen": {
     "clientsSquareButtonCaption": "Clients",
@@ -45,7 +91,8 @@
     "typesCardsMonthlySquareButtonCaption": "Card types",
     "gymHallsSquareButtonCaption": "Gym Halls",
     "referralsSquareButtonCaption": "Referrals",
-    "trainersHomeSquareButtonCaption": "Trainer home"
+    "trainersHomeSquareButtonCaption": "Trainer home",
+    "other": "Other"
   },
   "clients_list_ad": {
     "header_label": "Clients list"
@@ -76,12 +123,12 @@
     "isEmailValidMessage": "Email is invalid!"
   },
   "see/add-trainer-dialog": {
-      "name_field": "name",
-      "family_name_field": "family name",
-      "email_field": "email",
-      "generic_num_field": "generic number",
-      "referral_field": "referral",
-      "gyms_field": "gyms"
+    "name_field": "name",
+    "family_name_field": "family name",
+    "email_field": "email",
+    "generic_num_field": "generic number",
+    "referral_field": "referral",
+    "gyms_field": "gyms"
   },
   "edit/sbsCardPurchased": {
     "type_name": "type name",
