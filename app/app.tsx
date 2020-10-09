@@ -4,7 +4,7 @@
 
 import "./i18n"
 import React, { useState, useEffect, useRef } from "react"
-import { YellowBox } from "react-native"
+import { LogBox } from "react-native"
 import { NavigationContainerRef } from "@react-navigation/native"
 import { contains } from "ramda"
 import { enableScreens } from "react-native-screens"
@@ -15,11 +15,11 @@ import { useBackButtonHandler } from "./navigation/use-back-button-handler"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models/root-store"
 import * as storage from "./utils/storage"
 import getActiveRouteName from "./navigation/get-active-routename"
-import Icon from 'react-native-vector-icons/FontAwesome'
-import * as Ic from 'react-native-vector-icons/MaterialIcons'
+import Icon from "react-native-vector-icons/FontAwesome"
+import * as Ic from "react-native-vector-icons/MaterialIcons"
 
-Icon.loadFont();
-Ic.default.loadFont();
+Icon.loadFont()
+Ic.default.loadFont()
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
 // https://github.com/kmagiera/react-native-screens#using-native-stack-navigator
@@ -29,7 +29,7 @@ enableScreens()
  * Ignore some yellowbox warnings. Some of these are for deprecated functions
  * that we haven't gotten around to replacing yet.
  */
-YellowBox.ignoreWarnings([
+LogBox.ignoreLogs([
   "componentWillMount is deprecated",
   "componentWillReceiveProps is deprecated",
   "Require cycle:",
@@ -104,8 +104,8 @@ const App: React.FunctionComponent<{}> = () => {
   }, [isRestoringNavigationState])
 
   useEffect(() => {
-    if (!(rootStore?.sessionStore?.userEmail !== '')){
-      navigationRef.current?.navigate('welcome')
+    if (!(rootStore?.sessionStore?.userEmail !== "")) {
+      navigationRef.current?.navigate("welcome")
     }
   }, [])
 
