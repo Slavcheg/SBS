@@ -1,13 +1,15 @@
 import React from "react"
 
 import { createNativeStackNavigator } from "react-native-screens/native-stack"
-import {
-  _WelcomeScreen,
+import { 
+  _WelcomeScreen, 
   _DemoScreen,
   _PlayScreen,
+  
   WelcomeScreen,
-  SignInScreen,
+  SignInScreen, 
   RegistrationScreen,
+
   HomeScreenClient,
   HomeScreenTrainer,
   RenewCardScreen,
@@ -28,11 +30,7 @@ import {
   CardTypesListScreen,
   PurchasedCardsListScreen,
   AddCardScreen,
-  ClientMultiScreen,
-  TrainingProgramsScreen,
-  AdminOtherScreen,
-  EditProgramScreen,
-  TrainClientsScreen,
+  ClientMultiScreen
 } from "../screens"
 // import { PrimaryParamList } from "./types"
 
@@ -64,10 +62,10 @@ export function PrimaryNavigator() {
       <Stack.Screen name="clients_list" component={ClientsListScreen} />
       <Stack.Screen name="training_today" component={TrainingTodayScreen} />
       <Stack.Screen name="trainings_history" component={TrainingsHistoryScreen} />
-      <Stack.Screen name="contact_us" component={ContactUsScreen} />
-      <Stack.Screen name="trainings_history_cl" component={TrainingsHistoryScreen_Cl} />
+      <Stack.Screen name="contact_us" component={ContactUsScreen} />     
+      <Stack.Screen name="trainings_history_cl" component={TrainingsHistoryScreen_Cl} />  
       <Stack.Screen name="cards_history_cl" component={CardsHistoryScreen} />
-      <Stack.Screen name="home_ad" component={HomeScreenAdmin} />
+      <Stack.Screen name="home_ad" component={HomeScreenAdmin} /> 
       <Stack.Screen name="trainers_list" component={TrainersListScreen} />
       <Stack.Screen name="clients_list_ad" component={ClientsListScreenAd} />
       <Stack.Screen name="reports" component={ReportScreen} />
@@ -76,11 +74,6 @@ export function PrimaryNavigator() {
       <Stack.Screen name="cardTypesList" component={CardTypesListScreen} />
       <Stack.Screen name="purchasedCardsList" component={PurchasedCardsListScreen} />
       <Stack.Screen name="addCardScreen" component={AddCardScreen} />
-
-      <Stack.Screen name="trainingProgramsScreen" component={TrainingProgramsScreen} />
-      <Stack.Screen name="EditProgramScreen" component={EditProgramScreen} />
-      <Stack.Screen name="admin_other" component={AdminOtherScreen} />
-      <Stack.Screen name="TrainClientsScreen" component={TrainClientsScreen} />
     </Stack.Navigator>
   )
 }

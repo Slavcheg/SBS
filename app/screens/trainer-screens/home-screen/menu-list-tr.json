@@ -1,34 +1,24 @@
-[
-    {
-        "iconLeft": "bl_trainings_today",
-        "title": "trainerHomeScreen.trainingsTodaySquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "training_today",
-        "show": true,
-        "needsAdminRights": false
-    },
-    {
-        "iconLeft": "bl_clients",
-        "title": "trainerHomeScreen.clientsButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "clients_list",
-        "show": false,
-        "needsAdminRights": false
-    },
-    {
-        "iconLeft": "gr_schedule",
-        "title": "trainerHomeScreen.trainingPrograms",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "trainingProgramsScreen",
-        "show": true,
-        "needsAdminRights": false
-    },
-    {
-        "iconLeft": "bl_payments",
-        "title": "trainerHomeScreen.adminSquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "home_ad",
-        "show": true,
-        "needsAdminRights": true
-    }
-]
+[{
+    "iconLeft": "bl_trainings_today",
+    "title": "trainerHomeScreen.trainingsTodaySquareButtonCaption",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "training_today",
+    "show": true,
+    "needsAdminRights": false
+},
+{
+    "iconLeft": "bl_clients",
+    "title": "trainerHomeScreen.clientsButtonCaption",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "clients_list",
+    "show": false,
+    "needsAdminRights": false
+},
+{
+    "iconLeft": "bl_payments",
+    "title": "trainerHomeScreen.adminSquareButtonCaption",
+    "iconRight": "bl_arrow_forward",
+    "onClick": "home_ad",
+    "show": true,
+    "needsAdminRights": true
+}]
