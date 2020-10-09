@@ -20,7 +20,8 @@ interface EditCardy2Props {
     cardyModel?: ICardy2_Model
     onDismiss: Function
 }
-
+// THIS IS NOT IN USE
+// REPLACED BY ADD CARD SCREEN
 export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props => {
     const { cardyModel, onDismiss } = props
     const { cardyStore2 }  = useStores()
@@ -47,14 +48,6 @@ export const EditCardy2Dialog: React.FunctionComponent<EditCardy2Props> = props 
     const [requireds, setRequireds] = useState({
         requiredMessage_type: false,        
     })
-
-    // useEffect(() => {
-    //     if(cardyModel?.id){
-    //         setObj(cardyModel.item)
-    //     } else {
-    //         setPageHelper(prState => ({... prState, isNewType: true}))
-    //     }
-    // }, [])
 
     return (
         <View

@@ -10,9 +10,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { SwipeRow } from "react-native-swipe-list-view";
 import { translate } from "../../../i18n";
+import { IUser2_Model } from "../../../models/sub-stores/v2-user-store";
+import { EditTrainerDialog } from "../../../components-custom/edit-dialogs/edit-trainer-dialog";
 
-export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, setSeeDialog: any}> = observer(props => {
+interface GetTrainersProps {
+    searchStream: string,
+    setSeeDialog: Function
+}
+
+export const GetTrainers: React.FunctionComponent<GetTrainersProps> = observer(props => {
     const userStore2 = useStores().userStore2
+    const {searchStream, setSeeDialog} = props
+
     useEffect(() => {
         userStore2.getItems()
     }, [])
@@ -25,9 +34,12 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
         >
             {
                 userStore2.trainers
-                    .filter(trainer => props.search !== ''? trainer.item.email.toLocaleLowerCase().includes(props.search): true)
+                    .filter(trainer => searchStream !== ''?
+                        (trainer.item.first + trainer.item.last || trainer.item.email).toLocaleLowerCase().includes(searchStream.toLocaleLowerCase()): true)
                     .map((user, key) => {
                         const item = user?.item
+                        let nickname = item.first + ' ' + item.last
+                        nickname = nickname === ' ' ? item.email :  nickname
                         return (
                             <SwipeRow 
                                 key={key}
@@ -71,8 +83,7 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
                                         backgroundColor: key % 2 !== 1 ? 'white': color.palette.grey_sbs
                                     }]}
                                     onPressOut={() => {
-                                        props.setEm(item.email)
-                                        props.setSeeDialog(true)
+                                        setSeeDialog(user)
                                     }}
                                     underlayColor={key % 2 === 1 ? 'white': color.palette.grey_sbs}
                                 >
@@ -98,7 +109,7 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
                                         <Text 
                                             key={key} 
                                             style={[{color: 'black', marginLeft: '5%'}]}
-                                        >{item.email}</Text>
+                                        >{nickname}</Text>
                                     </View>
                                 </TouchableHighlight>
                             </SwipeRow>  
@@ -113,11 +124,11 @@ export const GetTrainers: React.FunctionComponent<{search: string,  setEm: any, 
 interface TrainersListProps extends NavigationProps {}
 
 export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = observer(props => {
-    const { navigation} = props
-    const [seeDialog, setSeeDialog] = useState(false)
+    const { navigation} = props    
     const [searchValue, setSearchValue] = useState('')
-    const [seeTrainerDialog, setSeeTrainerDialog] = useState(false)
-    const [email, setEmail] = useState('') 
+
+    const [seeDialog, setSeeDialog] = useState(false)
+    const [editUser, setUserToEdit] = useState<IUser2_Model>(null) 
 
     return (
         <Screen
@@ -166,7 +177,10 @@ export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = ob
                     }]}
                 ></View>
                 <TouchableOpacity
-                    onPress={() => setSeeDialog(true)}
+                    onPress={() => {
+                        setUserToEdit(null)
+                        setSeeDialog(true)
+                    }}
                     style={[
                         // border_boxes().green,
                         {
@@ -183,17 +197,19 @@ export const TrainersListScreen: React.FunctionComponent<TrainersListProps> = ob
                 </TouchableOpacity>
             </View>
             
-            <GetTrainers search={searchValue} setEm={setEmail} setSeeDialog={setSeeTrainerDialog}/>
-            {
-                seeDialog ?
-                    <AddTrainerDialog onDismiss={() => {setSeeDialog(false)}} />
-                : null
-            }
-            {
-                seeTrainerDialog ?
-                    <SeeTrainerDialog email={email} onDismiss={() => {setSeeTrainerDialog(false)}} />
-                : null
-            }
+            <GetTrainers 
+                searchStream={searchValue} 
+                setSeeDialog={(newUserToEdit) => {
+                    setUserToEdit(newUserToEdit)
+                    setSeeDialog(true)
+                }}
+            />
+
+            <EditTrainerDialog 
+                incommingUserModel={editUser}
+                seeDailog={seeDialog}
+                onDismiss={() => {setSeeDialog(false)}} 
+            />
         </Screen>
     )
 })

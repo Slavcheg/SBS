@@ -11,11 +11,12 @@ import { translate } from "../../i18n"
 
 interface EditCardyType2Props {
     cardyTypeModel?: ICardy_Type_Model
-    onDismiss: Function
+    onDismiss: Function,
+    seeDailog: boolean
 }
 
 export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> = props => {
-    const { cardyTypeModel, onDismiss } = props
+    const { cardyTypeModel, onDismiss, seeDailog } = props
     const { cardyTypesStore2 }  = useStores()
     const [isNewType, setIsNewType] = useState(false)
     const [obj, setObj] = useState<ICardy_Type>({
@@ -39,15 +40,23 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
     useEffect(() => {
         if(cardyTypeModel?.id){
             setObj(cardyTypeModel.item)
+            setIsNewType(false)
         } else {
+            setObj({
+                type: card_types.monthly,
+                title: undefined,
+                card_limit: undefined,
+                price: undefined
+            })
             setIsNewType(true)
         }
-    }, [])
+    }, [cardyTypeModel])
 
-    return (
+    const dialog = (
         <View
             key={'full screen'}
             style={[{
+                display: seeDailog? 'flex' : 'none',
                 width: device_width,
                 height: device_height,
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -211,4 +220,5 @@ export const EditCardyType2Dialog: React.FunctionComponent<EditCardyType2Props> 
             </View>            
         </View>
     )
+    return seeDailog? dialog: <View></View>
 }

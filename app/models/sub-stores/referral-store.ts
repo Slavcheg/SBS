@@ -1,38 +1,24 @@
-import { types, getSnapshot } from "mobx-state-tree"
-import { addItem, updateItem, deleteItem, firebaseSnapShot } from "../../services/firebase/firebase.service"
-import { values } from "mobx";
+import { types, SnapshotIn } from "mobx-state-tree"
+import { firebaseFuncs } from '../../services/firebase/firebase.service'
 
-export const ReferralItem = types.model({
+export const Referral = types.model({
     name : ''
 })
 
-export const Referral = types.model({
+export const ReferralModel = types.model({
     id: "",
-    item: ReferralItem
+    item: Referral
 })
 
+export interface IReferral2 extends SnapshotIn<typeof Referral> {}
+
 export const ReferralStoreModel = types.model("RootStore").props({
-    referrals: types.array(Referral),
+    referrals: types.array(ReferralModel),
     collection: 'referrals'
 })
 .actions(self => ({
-
-    async addReferral(newItem){
-        await addItem(newItem, self.collection);
-    },
-
-    async updateReferral(id, newItem){
-        await updateItem(id, newItem, self.collection);
-    },
     refreshItems(items){
         self.referrals = items
     },
-
-    async deleteReferral(id){
-        await deleteItem(id, self.collection);
-    },
-
-    async getReferrals(){
-        firebaseSnapShot({Type: self.collection, RefreshHandler: this.refreshItems});  
-    },
 }))
+.actions(self => firebaseFuncs<IReferral2>(self.refreshItems, self.collection))

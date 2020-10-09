@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import { color, spacing } from "../../../theme"
 import { useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite"
-import {styles} from './styles'
+import {styles} from '../styles'
 
 interface GetTrainersSuggestionsProps {
     searchString: string

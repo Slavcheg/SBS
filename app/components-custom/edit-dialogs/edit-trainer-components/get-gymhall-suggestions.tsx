@@ -4,29 +4,31 @@ import { useStores } from "../../../models/root-store"
 import { observer } from "mobx-react-lite"
 import {styles} from '../styles'
 
-interface GetClientsSuggestionsProps {
+interface GetGymhallSuggestionsProps {
     searchString: string
+    isVisible: boolean,
     onTouch: Function
 }
 
-export const GetClientsSuggestions: React.FunctionComponent<GetClientsSuggestionsProps> = observer(props => {
-    const { userStore2 } = useStores()
-    const { onTouch, searchString } = props
-
+export const GetGymhallSuggestions: React.FunctionComponent<GetGymhallSuggestionsProps> = observer(props => {
+    const { gymHallStore } = useStores()
+    const { onTouch, searchString, isVisible } = props
+    
     useEffect(() => {
-        userStore2.getItems()
-    }, [])    
+        gymHallStore.getItems()
+    }, [])   
 
-    return (
+    return(
         <View
             style={[{
+                display: isVisible? 'flex': 'none',
                 width: '100%'
             }]}
         >
             {
-                userStore2.clients?.filter(cl => cl.item.email.includes(searchString))
-                .map((client, index) => {
-                    return  <TouchableOpacity
+                gymHallStore.gymhalls?.filter(ref => ref.item.name.includes(searchString))
+                    .map(ref => {
+                        return  <TouchableOpacity
                                 style={[
                                     styles.inputContainerStyle,
                                     {
@@ -34,16 +36,16 @@ export const GetClientsSuggestions: React.FunctionComponent<GetClientsSuggestion
                                         paddingVertical: 10
                                     }
                                 ]}
-                                key={client.item.email}
-                                onPress={() => onTouch(client.item.email)}
+                                key={ref.item.name}
+                                onPress={() => onTouch(ref.item.name)}
                             >
                             <Text
                                     style={[
                                         styles.inputTextStyle
                                     ]}
-                                >{client.item.email}</Text>
+                                >{ref.item.name}</Text>
                             </TouchableOpacity>
-                })
+                    })
             }
         </View>
     )

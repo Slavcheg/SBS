@@ -16,7 +16,7 @@ export const AddGymHallDialog: React.FunctionComponent<{onDismiss}> = props => {
     const { onDismiss } = props
 
     useEffect(() => {
-        gymHallStore.getGymHalls()
+        gymHallStore.getItems()
     
     }, [])
 
@@ -95,7 +95,7 @@ export const AddGymHallDialog: React.FunctionComponent<{onDismiss}> = props => {
                     <Button 
                         onPress={() => {
                             if(gymhall.name !== '') {
-                                gymHallStore.addGymHall(gymhall) 
+                                gymHallStore.addItem(gymhall) 
                                 onDismiss()
                             } else {
                                 setRequiredFlag(true)

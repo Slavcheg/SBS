@@ -10,6 +10,7 @@ import { EditCardyType2Dialog } from "../../../components";
 import { useStores } from "../../../models/root-store";
 import { CardTypesStoreModel2, ICardy_Type_Model } from "../../../models/sub-stores/v2-cardy-types-store";
 import { translate } from "../../../i18n";
+import { values } from "mobx";
 
 interface CardTypesListProps extends NavigationProps {}
 
@@ -73,7 +74,10 @@ export const CardTypesListScreen: React.FunctionComponent<CardTypesListProps> = 
                     }]}
                 ></View>
                 <TouchableOpacity
-                    onPress={() => setSeeDialog(true)}
+                    onPress={() => {
+                        setECTM(null)
+                        setSeeDialog(true)
+                    }}
                     style={[
                         // border_boxes().green,
                         {
@@ -105,26 +109,24 @@ export const CardTypesListScreen: React.FunctionComponent<CardTypesListProps> = 
                             />
                 })
             }
-            {
-                seeDialog ?
-                    <EditCardyType2Dialog cardyTypeModel={editCTM} onDismiss={() => {
-                        setSeeDialog(false)
-                        setECTM(null)
-                    }} />
-                : null
-            }
-            {
-                seeDeleteConfirmation ? 
-                    <ConfirmationDialog 
-                        message={'Delete card type?'}
-                        onDismiss={(delFl) => {
-                            setSeeDeleteConfirmation(false)
-                            delFl ? cardyTypesStore2.deleteItem(editCTM.id) : null
-                            setECTM(null)
-                        }}
-                    />
-                : null
-            }
+            <EditCardyType2Dialog
+                cardyTypeModel={editCTM}
+                seeDailog={seeDialog}
+                onDismiss={() => {
+                    setSeeDialog(false)
+                    setECTM(null)
+                }}
+            />
+
+            <ConfirmationDialog 
+                message={'Delete card type?'}
+                seeDailog={seeDeleteConfirmation}
+                onDismiss={(delFl) => {
+                    setSeeDeleteConfirmation(false)
+                    delFl ? cardyTypesStore2.deleteItem(editCTM.id) : null
+                    setECTM(null)
+                }}
+            />
         </Screen>
     )
 })

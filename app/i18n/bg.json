@@ -115,7 +115,8 @@
     "family_name_field": "фамилия",
     "email_field": "имейл",
     "generic_num_field": "генериран номер",
-    "referral_field": "препоръчител"
+    "referral_field": "препоръчител",
+    "isEmailValidMessage": "Имейлът е невалиден!"
   },
   "see/add-trainer-dialog": {
     "name_field": "име",

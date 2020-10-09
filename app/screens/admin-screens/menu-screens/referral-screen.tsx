@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddClientDialog, SeeClientDialog, AddReferralDialog } from '../../../components'
+import {Screen, PageHeader_Tr, Button, AddTrainerDialog, Input_Hoshi, AddReferralDialog } from '../../../components'
 import { color, spacing, styles } from "../../../theme"
 import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Avatar } from 'react-native-elements';
@@ -14,7 +14,7 @@ import { translate } from "../../../i18n";
 export const GetReferrals: React.FunctionComponent<{search: string, setEm: any, setSeeDialog: any}> = observer(props => {
     const referralStore = useStores().referralStore
     useEffect(() => {
-        referralStore.getReferrals()
+        referralStore.getItems()
     }, [])
 
     return (
@@ -37,7 +37,7 @@ export const GetReferrals: React.FunctionComponent<{search: string, setEm: any, 
                                 <View style={styles.standaloneRowBack}>
                                     <TouchableOpacity
                                         style={[styles.standaloneRowBack, styles.backRightBtn, styles.backRightBtnRight]}
-                                        onPress={() => referralStore.deleteReferral(gym.id)}
+                                        onPress={() => referralStore.deleteItem(gym.id)}
                                     >
                                         <Text style={styles.backTextWhite}>Delete</Text>
                                     </TouchableOpacity>

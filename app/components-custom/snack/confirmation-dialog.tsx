@@ -5,12 +5,18 @@ import { color } from "../../theme";
 import { Button } from "../../components/button/button";
 import { globalStyles, device_width, device_height } from "../../global-helper";
 
+interface ConfirmationDialogProps {
+    message: string,
+    onDismiss: Function,
+    seeDailog: boolean
+}
 
-export function ConfirmationDialog({onDismiss, message}) {
-
-    return (        
+export const ConfirmationDialog: React.FunctionComponent<ConfirmationDialogProps> = props  => {
+    const {message, onDismiss, seeDailog} = props
+    const dialog = (    
         <View
             style={[{
+                // display: seeDailog? 'flex' : 'none',
                 width: device_width,
                 height: device_height,
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -87,9 +93,9 @@ export function ConfirmationDialog({onDismiss, message}) {
 
                 </View>
             </View>
-
         </View>
     )
+    return seeDailog? dialog: <View></View>
 }
 
 // export function ExampleUseofSnack() {

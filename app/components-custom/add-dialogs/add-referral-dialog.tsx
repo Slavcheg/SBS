@@ -16,7 +16,7 @@ export const AddReferralDialog: React.FunctionComponent<{onDismiss}> = props => 
     const { onDismiss } = props
 
     useEffect(() => {
-        referralStore.getReferrals()
+        referralStore.getItems()
     
     }, [])
 
@@ -95,7 +95,7 @@ export const AddReferralDialog: React.FunctionComponent<{onDismiss}> = props => 
                     <Button 
                         onPress={() => {
                             if(gymhall.name !== '') {
-                                referralStore.addReferral(gymhall) 
+                                referralStore.addItem(gymhall) 
                                 onDismiss()
                             } else {
                                 setRequiredFlag(true)
