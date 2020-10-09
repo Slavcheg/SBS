@@ -9,7 +9,8 @@ const Client = types.model({
 })
 
 const Trainer = types.model({
-  clients: types.optional(types.array(types.string), []),
+  // clients: types.optional(types.array(types.string), []),
+  gymhalls: types.optional(types.array(types.string), []),
 })
 
 const diaryItem = types.model({
