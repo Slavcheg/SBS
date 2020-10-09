@@ -173,19 +173,22 @@ export const EditProgramReducer = (state, action) => {
 
       state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = newArray
 
-      state.currentDayIndex = action.value
+      if (state.currentDayIndex === action.value) {
+        state.deselectAllDays = !state.deselectAllDays
+      } else {
+        state.deselectAllDays = false
+        state.currentDayIndex = action.value
+      }
       state.currentExerciseIndex = 0
-      // state.shownProgramExercises = action.value2;
+
       return { ...state }
     }
     case "remove day": {
-      // console.log('currentProgram', state.currentProgram);
-      // // state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex]
       const helperDays = _.cloneDeep(state.currentProgram.Weeks[state.currentWeekIndex].Days)
       helperDays.splice(currentDayIndex, 1)
       state.currentProgram.Weeks[state.currentWeekIndex].Days = helperDays
       state.currentDayIndex = 0
-      // state.currentProgram = updateFollowingWeeks(state)
+
       return { ...state }
     }
 

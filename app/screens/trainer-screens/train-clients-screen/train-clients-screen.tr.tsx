@@ -412,7 +412,7 @@ const ProgramView = props => {
   }
 
   return (
-    <View style={{ height: "90%", flex: 1 }}>
+    <ScrollView style={{ height: "100%" }}>
       <Header
         //   client={client}
         state={state}
@@ -451,7 +451,7 @@ const ProgramView = props => {
           This day is empty. Go to program and add some exercises
         </Text>
       )}
-    </View>
+    </ScrollView>
   )
 }
 

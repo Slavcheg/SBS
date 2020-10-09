@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer, useCallback } from "react"
 import { useFocusEffect } from "@react-navigation/native"
 import { Picker } from "@react-native-community/picker"
 
-import { View, StyleSheet, BackHandler, Alert } from "react-native"
+import { View, StyleSheet, BackHandler, Alert, Dimensions } from "react-native"
 
 import _ from "lodash"
 
@@ -167,6 +167,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     currentWeekIndex: 0,
     currentDayIndex: 0,
     currentExerciseIndex: 0,
+    deselectAllDays: false,
     isEditExerciseModalVisible: false,
     isManuallySearchingExercises: false,
     isKeyboardActive: false,
@@ -403,8 +404,10 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
 
 const styles = StyleSheet.create({
   programStyle: {
-    minHeight: 150,
-    maxHeight: "100%",
-    flex: 1,
+    // minHeight: 350,
+    // maxHeight: "100%",
+    // minHeight: Dimensions.get("window").height,
+    height: "100%",
+    flexGrow: 1,
   },
 })

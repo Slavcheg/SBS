@@ -437,7 +437,7 @@ export const ShowDayName = props => {
   if (isCurrent) {
     return (
       <View style={{ marginHorizontal: 2 }}>
-        <EditableText onEnd={props.onEdit} textStyle={dayStyleSelected}>
+        <EditableText onEnd={props.onEdit} textStyle={dayStyleSelected} onPress={onPress}>
           {day.DayName}
         </EditableText>
       </View>

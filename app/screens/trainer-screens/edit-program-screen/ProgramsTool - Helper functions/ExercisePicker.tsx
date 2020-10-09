@@ -126,6 +126,7 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
           }}
           initialNumToRender={15}
           renderItem={renderExerciseDB}
+          keyboardShouldPersistTaps="always"
           getItemLayout={(data, index) => ({
             length: EXERCISE_ITEM_HEIGHT,
             offset: EXERCISE_ITEM_HEIGHT * index,
