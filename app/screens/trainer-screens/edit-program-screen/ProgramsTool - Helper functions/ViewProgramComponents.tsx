@@ -19,8 +19,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   BackHandler,
-  YellowBox,
-  LogBox,
   Modal as Modal2,
   Alert,
 } from "react-native"

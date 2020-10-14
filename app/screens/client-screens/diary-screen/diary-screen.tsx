@@ -22,11 +22,11 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
 
     return(
         <DataTable>
-            <DataTable.Header accessibilityValue={''} focusable={true}>
-                <DataTable.Title accessibilityValue={''}>Дата</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Тегло (кг)</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Калории</DataTable.Title>
-                <DataTable.Title accessibilityValue={''} >Протейн</DataTable.Title>
+            <DataTable.Header focusable={true}>
+                <DataTable.Title >Дата</DataTable.Title>
+                <DataTable.Title  >Тегло (кг)</DataTable.Title>
+                <DataTable.Title  >Калории</DataTable.Title>
+                <DataTable.Title  >Протейн</DataTable.Title>
             </DataTable.Header>
 
             {
@@ -53,20 +53,20 @@ export const LoadDiary: React.FunctionComponent<{}> = observer(props => {
                                         </TouchableOpacity>
                                     </View>
                                     <DataTable.Row 
-                                        accessibilityValue={''}
+                                        
                                         style={styles.standaloneRowFront}
                                         key={index}
                                     >
-                                        <DataTable.Cell accessibilityValue={''}>
+                                        <DataTable.Cell >
                                             {displayDateFromTimestamp(diaryItem.date)}
                                         </DataTable.Cell>
-                                        <DataTable.Cell accessibilityValue={''}>
+                                        <DataTable.Cell >
                                             {diaryItem.weight}
                                         </DataTable.Cell>
-                                        <DataTable.Cell accessibilityValue={''}>
+                                        <DataTable.Cell >
                                             {diaryItem.calories}
                                         </DataTable.Cell>
-                                        <DataTable.Cell accessibilityValue={''}>
+                                        <DataTable.Cell >
                                             {diaryItem.protein}
                                         </DataTable.Cell>
                                     </DataTable.Row>
@@ -125,7 +125,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                     style={[{
                         width: '25%',
                     }]}
-                    accessibilityValue={''}
+                    // accessibilityValue={''}
                     focusable={true}
                     showSoftInputOnFocus={true}
                     label="Дата"
@@ -137,7 +137,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                     style={[{
                         width: '25%'
                     }]}
-                    accessibilityValue={''}
+                    // accessibilityValue={''}
                     focusable={true}
                     showSoftInputOnFocus={true}
                     label="Тегло"
@@ -148,7 +148,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                     style={[{
                         width: '25%'
                     }]}
-                    accessibilityValue={''}
+                    // accessibilityValue={''}
                     focusable={true}
                     showSoftInputOnFocus={true}
                     label="Калории"
@@ -159,7 +159,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                     style={[{
                         width: '25%'
                     }]}
-                    accessibilityValue={''}
+                    accessibilityValue=''
                     focusable={true}
                     showSoftInputOnFocus={true}
                     label="Протеин"

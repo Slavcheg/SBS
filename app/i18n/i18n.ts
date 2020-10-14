@@ -9,7 +9,7 @@ i18n.fallbacks = true
 i18n.translations = { en }
 
 // uncomment bg for PROD
-i18n.translations = { bg }
+// i18n.translations = { bg }
 
 const fallback = { languageTag: "en", isRTL: false }
 // const fallback = { languageTag: "bg", isRTL: false }

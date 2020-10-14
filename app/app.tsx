@@ -4,7 +4,7 @@
 
 import "./i18n"
 import React, { useState, useEffect, useRef } from "react"
-import { LogBox } from "react-native"
+// import { LogBox } from "react-native"
 import { NavigationContainerRef } from "@react-navigation/native"
 import { contains } from "ramda"
 import { enableScreens } from "react-native-screens"
@@ -29,11 +29,11 @@ enableScreens()
  * Ignore some yellowbox warnings. Some of these are for deprecated functions
  * that we haven't gotten around to replacing yet.
  */
-LogBox.ignoreLogs([
-  "componentWillMount is deprecated",
-  "componentWillReceiveProps is deprecated",
-  "Require cycle:",
-])
+// LogBox.ignoreLogs([
+//   "componentWillMount is deprecated",
+//   "componentWillReceiveProps is deprecated",
+//   "Require cycle:",
+// ])
 
 /**
  * Are we allowed to exit the app?  This is called when the back button
