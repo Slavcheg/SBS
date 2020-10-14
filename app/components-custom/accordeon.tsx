@@ -13,7 +13,6 @@ import { ICardy, Cardy } from '../models';
 import { addItem} from '../services/firebase/firebase.service';
 import { observer } from "mobx-react-lite";
 import { useStores } from "../models/root-store"
-import { AddClientDialog } from '../components';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 
@@ -769,9 +768,9 @@ export class Accordeon extends Component<{trainers}, {AccordionData, showSnack, 
                 {showSnack ? 
                     <Snack message={'Saved !'} onDismiss={() => {this.setState({showSnack: false})}}/>
                 : null}
-                {seeClDialog ? 
+                {/* {seeClDialog ? 
                     <AddClientDialog onDismiss={() => {this.setState({seeClDialog: false})}}/>
-                : null}
+                : null} */}
             </View>
             <Progress_Loader flag={this.state.showLoader} />
             {this.state.AccordionData?.map((item, key) => {
