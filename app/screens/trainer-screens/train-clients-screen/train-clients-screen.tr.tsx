@@ -481,7 +481,7 @@ export const TrainClientsScreen = ({ navigation, route }) => {
   }, [navigation])
 
   const testHandler = () => {
-    console.log("hi")
+    console.log("hii")
   }
 
   const onReArrange = newOrder => {

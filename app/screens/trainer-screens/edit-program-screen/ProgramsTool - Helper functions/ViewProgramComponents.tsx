@@ -51,7 +51,7 @@ export const ExerciseMoreInfoButtons = props => {
           disabled={!props.isClickable}
           color={iStyles.text1.color}
         >
-          {""}
+      
         </Button>
       )}
 

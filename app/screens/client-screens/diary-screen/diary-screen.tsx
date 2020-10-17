@@ -159,7 +159,7 @@ export const DiaryScreen: React.FunctionComponent<DiaryScreenProps> = observer(p
                     style={[{
                         width: '25%'
                     }]}
-                    accessibilityValue=''
+                    // accessibilityValue=''
                     focusable={true}
                     showSoftInputOnFocus={true}
                     label="Протеин"

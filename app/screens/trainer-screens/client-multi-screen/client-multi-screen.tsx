@@ -32,11 +32,11 @@ export const DiaryDisplay: React.FunctionComponent<DiaryDisplayProps> = observer
     
     return (
         <DataTable>
-        <DataTable.Header accessibilityValue={''} focusable={true}>
-            <DataTable.Title accessibilityValue={''}>Дата</DataTable.Title>
-            <DataTable.Title accessibilityValue={''} >Тегло (кг)</DataTable.Title>
-            <DataTable.Title accessibilityValue={''} >Калории</DataTable.Title>
-            <DataTable.Title accessibilityValue={''} >Протейн</DataTable.Title>
+        <DataTable.Header focusable={true}>
+            <DataTable.Title >Дата</DataTable.Title>
+            <DataTable.Title  >Тегло (кг)</DataTable.Title>
+            <DataTable.Title  >Калории</DataTable.Title>
+            <DataTable.Title  >Протейн</DataTable.Title>
         </DataTable.Header>
 
         {
@@ -63,20 +63,20 @@ export const DiaryDisplay: React.FunctionComponent<DiaryDisplayProps> = observer
                                     </TouchableOpacity>
                                 </View>
                                 <DataTable.Row 
-                                    accessibilityValue={''}
+                                    
                                     style={styles.standaloneRowFront}
                                     key={index}
                                 >
-                                    <DataTable.Cell accessibilityValue={''}>
+                                    <DataTable.Cell >
                                         {displayDateFromTimestamp(diaryItem.date)}
                                     </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
+                                    <DataTable.Cell >
                                         {diaryItem.weight}
                                     </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
+                                    <DataTable.Cell >
                                         {diaryItem.calories}
                                     </DataTable.Cell>
-                                    <DataTable.Cell accessibilityValue={''}>
+                                    <DataTable.Cell >
                                         {diaryItem.protein}
                                     </DataTable.Cell>
                                 </DataTable.Row>
