@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react"
 import { Text, View, Linking } from 'react-native';
 import { spacing, color } from '../../../theme';
-import {Screen, MainHeader_Cl, ButtonSquare } from '../../../components'
+import {Screen, MainHeader_Cl, ButtonSquare, EditClientDialog } from '../../../components'
 import ProgressCircle from 'react-native-progress-circle'
 import { border_boxes } from "../../../global-helper";
 import { NavigationProps } from "../../../models/commomn-navigation-props";
 import { observer } from "mobx-react-lite";
 import {useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
+import { IUser2_Model } from "../../../models/sub-stores/v2-user-store";
 
 interface HomeScreenClientProps extends NavigationProps {}
 
 export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = observer(props => {
     const { navigation } = props
-    const rootStore = useStores()    
+    const {sessionStore, userStore2} = useStores()
+    const rootStore = useStores()
+
+    const [seeEditClientDialog, setSeeClientDialog] = useState<boolean>(false)
+    const [editUser, setUserToEdit] = useState<IUser2_Model>(null) 
     
     const menuList = require('./menu-list-cl.json');
     const menu = menuList.map((el, i) => {
@@ -36,6 +41,9 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
     })
 
     useEffect(() => {
+        setUserToEdit(
+            userStore2.users.find(user => user.item.email === sessionStore.userEmail)
+        )
     }, [])
     // const {counterDone, counterTotal} = rootStore.numberOfTrainingsForLoggedClientForActiveCards
     return (
@@ -51,7 +59,11 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
                 // paddingHorizontal: 20
             }}
         >
-            <MainHeader_Cl navigation={navigation} style={{paddingHorizontal: 25}}/>
+            <MainHeader_Cl
+                navigation={navigation}
+                style={{paddingHorizontal: 25}}
+                openDialogFromAvatar={setSeeClientDialog}
+            />
             <View 
                 style={[
                     // boxes.black,
@@ -112,6 +124,12 @@ export const HomeScreenClient: React.FunctionComponent<HomeScreenClientProps> = 
                     menu
                 }
             </View>
+            <EditClientDialog
+                incommingUserModel={editUser}
+                seeDailog={seeEditClientDialog}
+                onDismiss={() => {setSeeClientDialog(false)}} 
+                seeReferral={false}
+            />
         </Screen>     
     )
 })

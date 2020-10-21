@@ -10,7 +10,7 @@ import {useStores } from "../../../models/root-store"
 import { Avatar } from 'react-native-elements'
 
 export const MainHeader_Cl: React.FunctionComponent<MainHeaderProps> = props => {
-const {navigation, style} = props
+const {navigation, style, openDialogFromAvatar} = props
 const rootStore = useStores()
 return (
     <CustomHeader 
@@ -30,6 +30,7 @@ return (
         rightIcon={
             <Avatar                
                 rounded
+                onPress={() => openDialogFromAvatar(true)}
                 containerStyle={[{
                     borderColor: color.palette.green_sbs,
                     borderWidth: 1
