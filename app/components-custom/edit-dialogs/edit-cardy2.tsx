@@ -4,7 +4,7 @@ import { border_boxes, device_width, device_height, displayDateFromTimestamp, re
 import { Button } from "../../components/button/button"
 import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
-import { RequiredWarning } from "../../components"
+import { RequiredWarning } from "../required-warning/required-warning"
 import { useStores } from "../../models/root-store"
 import { ICardy2, ICardy2_Model } from "../../models/sub-stores/v2-cardy-store"
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react"
-import { Input_Hoshi, ActiveInactiveCardAvatar } from '../../components'
+import { Input_Hoshi } from '../../components-custom/input-hoshi/input-hoshi'
+import { ActiveInactiveCardAvatar } from '../../components-custom/active-inactive-card-avatar/active-inactive-card-avatar'
 import { color } from "../../theme"
 import { View, Text } from "react-native"
 import { observer } from "mobx-react-lite";
 import { ICardy2_Model } from "../../models/sub-stores/v2-cardy-store"
 import { translate } from "../../i18n";
 import { card_types } from "../../models/sub-stores/v2-cardy-types-store";
-import { displayDateFromTimestamp, return_todays_datestamp } from "../../global-helper";
-import moment from "moment";
+import { displayDateFromTimestamp } from "../../global-helper";
 
 interface SbsCardPurchasedProps {
     cardyModel: ICardy2_Model

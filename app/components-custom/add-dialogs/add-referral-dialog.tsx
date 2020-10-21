@@ -6,7 +6,7 @@ import { color, spacing } from "../../theme"
 import { Input_Hoshi } from "../input-hoshi/input-hoshi"
 import { User } from "../../models/user.model"
 import {useStores } from "../../models/root-store"
-import { RequiredWarning } from "../../components"
+import { RequiredWarning } from "../required-warning/required-warning"
 import { GymHallItem } from "../../models/sub-stores/gymhall-store"
 
 export const AddReferralDialog: React.FunctionComponent<{onDismiss}> = props => {
