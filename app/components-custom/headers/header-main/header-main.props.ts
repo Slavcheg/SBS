@@ -10,4 +10,9 @@ export interface MainHeaderProps {
      * Container style overrides.
      */
     style?: ViewStyle
+
+    /**
+     * Change boolean for dialogs
+     */
+    openDialogFromAvatar?: Function
 }

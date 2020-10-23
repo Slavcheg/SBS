@@ -17,10 +17,11 @@ interface EditClientDialogProps {
     incommingUserModel?: any
     onDismiss: Function
     seeDailog: boolean
+    seeReferral?: boolean
 }
 
 export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = observer(props => {
-    const { onDismiss, incommingUserModel, seeDailog } = props
+    const { onDismiss, incommingUserModel, seeDailog, seeReferral } = props
     const { userStore2 } = useStores()
 
     const [user, setUser] = useState<any>({
@@ -137,50 +138,63 @@ export const EditClientDialog: React.FunctionComponent<EditClientDialogProps> = 
                     }}
                 />
                 <RequiredWarning flag={pageHelpers.lastReqField} width={'100%'} />
-                <View
-                    style={[{
-                        width: '100%',
-                        marginVertical: 20,
-                        flexDirection: 'row',
-                        justifyContent: 'space-between'
-                    }]}
-                >
-                    <Text>{translate('see/add-client-dialog.referral_field') + ':'}</Text>
-                    <Text>{user.client?.referral}</Text>
-                </View>
-                <Input_Hoshi 
-                    width='100%'
-                    placeholder={translate('see/add-client-dialog.referral_field')} 
-                    variable={pageHelpers.referralSearch}
-                    setVariable={val => setPageHelper(prSt => ({...prSt, referralSearch: val}))}
-                    onF={() => setPageHelper(prSt => ({...prSt, seeReferralSuggestions: true}))}
-                    onB={() => {
-                        setPageHelper(prS => ({
-                            ...prS,
-                            seeReferralSuggestions: false,
-                            referralSearch: ''
-                        }))
-                    }}
-                />
-                
-                <GetReferralSuggestions 
-                    searchString={pageHelpers.referralSearch}
-                    isVisible={pageHelpers.seeReferralSuggestions}
-                    onTouch={(refName: string) => {
-                        setUser(prSt => ({
-                            ...prSt,
-                            client: {
-                                ...prSt.client,
-                                referral: refName
-                            }
-                        }))
-                        setPageHelper(prSt => ({
-                            ...prSt,
-                            seeReferralSuggestions: false,
-                            referralSearch: ''
-                        }))
-                    }}
-                />
+                {
+                    seeReferral?
+                    <View
+                        style={[{
+                            // flex: 1
+                            width: '100%',
+                        }]}
+                    >
+                    
+                        <View
+                            style={[{
+                                width: '100%',
+                                marginVertical: 20,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between'
+                            }]}
+                        >
+                            <Text>{translate('see/add-client-dialog.referral_field') + ':'}</Text>
+                            <Text>{user.client?.referral}</Text>
+                        </View>
+                        <Input_Hoshi 
+                            width='100%'
+                            placeholder={translate('see/add-client-dialog.referral_field')} 
+                            variable={pageHelpers.referralSearch}
+                            setVariable={val => setPageHelper(prSt => ({...prSt, referralSearch: val}))}
+                            onF={() => setPageHelper(prSt => ({...prSt, seeReferralSuggestions: true}))}
+                            onB={() => {
+                                setPageHelper(prS => ({
+                                    ...prS,
+                                    seeReferralSuggestions: false,
+                                    referralSearch: ''
+                                }))
+                            }}
+                        />
+                        
+                        <GetReferralSuggestions 
+                            searchString={pageHelpers.referralSearch}
+                            isVisible={pageHelpers.seeReferralSuggestions}
+                            onTouch={(refName: string) => {
+                                setUser(prSt => ({
+                                    ...prSt,
+                                    client: {
+                                        ...prSt.client,
+                                        referral: refName
+                                    }
+                                }))
+                                setPageHelper(prSt => ({
+                                    ...prSt,
+                                    seeReferralSuggestions: false,
+                                    referralSearch: ''
+                                }))
+                            }}
+                        />
+                    </View>
+                    : null
+                }
+            
 
                 <View
                     style={[{

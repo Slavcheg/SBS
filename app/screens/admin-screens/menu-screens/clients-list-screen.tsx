@@ -204,6 +204,7 @@ export const ClientsListScreenAd: React.FunctionComponent<ClientsListProps> = ob
                 incommingUserModel={editUser}
                 seeDailog={seeDialog}
                 onDismiss={() => {setSeeDialog(false)}} 
+                seeReferral={true}
             />
 
         </Screen>
