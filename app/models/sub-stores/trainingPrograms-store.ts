@@ -148,6 +148,7 @@ export type state = {
   currentExerciseIndex: number
   locked?: boolean
   deselectAllDays?: boolean
+  isReordering?: boolean
 }
 
 export const trainingProgramsStoreModel = types

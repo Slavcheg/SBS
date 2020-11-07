@@ -45,7 +45,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
   React.useMemo(() => {
     const newEx = _.cloneDeep(props.exercise)
     setExerciseState(newEx)
-    console.log("went here")
+    console.log("new Exercise loaded in ExerciseModal")
   }, [visible])
 
   const onChangeNumberOfSets = newNumberOfSets => {

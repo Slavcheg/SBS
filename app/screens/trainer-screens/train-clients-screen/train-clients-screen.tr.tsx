@@ -56,6 +56,8 @@ import {
   EasyNumberPicker,
   GetText,
   ClientName,
+  EditExerciseModal,
+  updateFollowingWeeks
 } from "../edit-program-screen/ProgramsTool - Helper functions"
 
 import iStyles from "../edit-program-screen/Constants/Styles"
@@ -341,6 +343,7 @@ const getInitialState = program => {
     currentDayIndex: 0,
     currentExerciseIndex: 0,
     currentProgram: program,
+    isExerciseModalVisible: false,
   }
 
   let breakFlag = false
@@ -360,7 +363,7 @@ const getInitialState = program => {
 const ProgramView = props => {
   // const client = store.getClient(program.ClientID);
   const [state, setState] = useState(() => getInitialState(props.program))
-  const { currentWeekIndex, currentDayIndex, locked, currentProgram } = state
+  const { currentWeekIndex, currentDayIndex, currentExerciseIndex, isExerciseModalVisible, locked, currentProgram } = state
 
   const dayEmpty =
     state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length === 0
@@ -369,7 +372,7 @@ const ProgramView = props => {
 
   useEffect(() => {
     const onBackPress = () => {
-      saveProgram()
+      saveProgram(currentProgram)
 
       return false
     }
@@ -393,9 +396,9 @@ const ProgramView = props => {
     setState({ ...state, currentProgram: { ...newState } })
   }
 
-  const saveProgram = () => {
-    if (currentProgram)
-      fb.updateItem(props.programID, currentProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
+  const saveProgram = (updatedProgram) => {
+    if (updatedProgram)
+      fb.updateItem(props.programID, updatedProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
         console.error(error),
       )
   }
@@ -408,11 +411,32 @@ const ProgramView = props => {
   }
 
   const onEditSetsRepsHandler = exerciseIndex => {
-    console.log("tried editing", exerciseIndex)
+    setState({...state, isExerciseModalVisible: true, currentExerciseIndex: exerciseIndex})
+
   }
+
+const onCloseExerciseModal = newExercise => {
+  let newProgram = currentProgram;
+  newProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex] = newExercise;
+  newProgram = updateFollowingWeeks({...state, currentProgram: newProgram})
+  setState({...state, isExerciseModalVisible: false, currentProgram: newProgram})
+  saveProgram(newProgram);
+}
 
   return (
     <ScrollView style={{ height: "100%" }}>
+      {currentProgram &&
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
+          <EditExerciseModal
+            visible={state.isExerciseModalVisible}
+            exercise={
+              currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
+                currentExerciseIndex
+              ]
+            }
+            onClose={onCloseExerciseModal}
+          />
+        )}
       <Header
         //   client={client}
         state={state}
@@ -444,6 +468,7 @@ const ProgramView = props => {
           // onEditPositionHandler={onEditPositionHandler}
           onEditSetsRepsHandler={onEditSetsRepsHandler}
           // onExpandExerciseInfo={onExpandExerciseInfo}
+          
         />
       )}
       {dayEmpty && (

@@ -33,14 +33,22 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
     }
   }, [props.shownArray])
 
+  useEffect(() => {
+    setSearchText("")
+    setCurrentArray(props.shownArray)
+  },[props.isVisible])
+
   const onCancelHandler = useCallback(() => {
     setSearchText("")
     setCurrentArray(props.shownArray)
   }, [])
+  
   const onChangeTextHandler = useCallback(text => {
     setCurrentArray(currentArray => filterExercises(text, allExercises))
     setSearchText(searchText => text)
   }, [])
+
+
 
   const renderExerciseDB = ({ item }) => {
     return (

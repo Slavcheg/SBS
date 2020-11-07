@@ -80,6 +80,7 @@ const iStyles = StyleSheet.create({
     width: 50,
     height: 20,
     borderRadius: 10,
+    marginHorizontal: 1,
   },
   mediumRoundIcon: {
     alignItems: 'center',
@@ -89,6 +90,7 @@ const iStyles = StyleSheet.create({
     height: 25,
     borderRadius: 10,
     margin: 2,
+    marginHorizontal: 1,
   },
 });
 

@@ -7,7 +7,9 @@ import React, {
   ReactNode,
   ReactChildren,
 } from "react"
-import { View, Text, TextInput as TextInput2, Pressable } from "react-native"
+import { View, Text, TextInput as TextInput2, Pressable, ImageBackground } from "react-native"
+import { Button } from "react-native-paper"
+import { RNCamera } from "react-native-camera"
 
 type GetTextProps = {
   startingValue?: any
@@ -18,6 +20,94 @@ type GetTextProps = {
   isNumber?: boolean
   convertToString?: boolean
   editable?: boolean
+}
+
+type ToggleButtonProps = {
+  onPress: Function
+  status: Boolean
+  color?: string
+  colorFalse?: string
+  icon?: string
+  iconFalse?: string
+  text?: string
+  style?: any
+  compact?: boolean
+}
+
+export const ToggleButton: React.FC<ToggleButtonProps> = ({
+  onPress,
+  status,
+  color,
+  children,
+  colorFalse,
+  icon,
+  iconFalse,
+  text,
+  style,
+  compact,
+}) => {
+  return (
+    <View style={{ justifyContent: "center", alignItems: "center" }}>
+      {status && (
+        <Button
+          onPress={onPress}
+          icon={icon}
+          color={color ? color : "dodgerblue"}
+          style={style}
+          compact={compact}
+        >
+          {text ? text : ""}
+        </Button>
+      )}
+      {!status && (
+        <Button
+          onPress={onPress}
+          icon={iconFalse ? iconFalse : icon}
+          color={colorFalse ? colorFalse : "grey"}
+          style={style}
+          compact={compact}
+        >
+          {text ? text : ""}
+        </Button>
+      )}
+    </View>
+  )
+}
+
+type ImageBackgroundToggleProps = {
+  status: Boolean
+  imageURL: string
+  tintColor?: string
+  opacity?: number
+  children: any
+}
+
+export const ImageBackgroundToggle: React.FC<ImageBackgroundToggleProps> = ({
+  status,
+  imageURL,
+  tintColor,
+  opacity,
+  children,
+}) => {
+  if (status)
+    return (
+      <View>
+        <ImageBackground
+          imageStyle={{
+            tintColor: tintColor ? tintColor : "dodgerblue",
+            opacity: opacity ? opacity : 1,
+            resizeMode: "contain",
+          }}
+          source={{
+            uri: imageURL,
+          }}
+          style={{ width: "100%", height: "100%" }}
+        >
+          {children}
+        </ImageBackground>
+      </View>
+    )
+  else return <View>{children}</View>
 }
 
 export const GetText = (props: GetTextProps) => {

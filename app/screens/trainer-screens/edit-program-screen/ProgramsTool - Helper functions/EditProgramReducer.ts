@@ -11,89 +11,10 @@ import {
   DEFAULT_ONE_DAY_DATA2,
 } from "../../../../models/sub-stores"
 
+import {updateFollowingWeeks} from './index'
+
 import _ from "lodash"
 
-const updateFollowingWeeks = state => {
-  const {
-    currentWeekIndex,
-    currentDayIndex,
-    currentProgram,
-    currentExerciseIndex,
-    isEditExerciseModalVisible,
-    isKeyboardActive,
-    isButtonsRowShown,
-    isProgramSaving,
-    isProgramSaved,
-  } = state
-  let newProgram = _.cloneDeep(currentProgram)
-
-  console.log("currentWeekIndex", currentWeekIndex)
-  console.log("currentDayIndex", currentDayIndex)
-  console.log("currentProgram.Weeks.length", currentProgram.Weeks.length)
-
-  if (
-    //ако операцията е била добавяне на нов ден - само копираме дните. Ако нещо друго се е ъпдейтвало - упражнение по упражнение
-    newProgram.Weeks[currentWeekIndex + 1].Days.length !==
-    currentProgram.Weeks[currentWeekIndex].Days.length
-  )
-    for (
-      let i = currentWeekIndex + 1;
-      i < currentProgram.Weeks.length;
-      i++ // i = weekIndex
-    )
-      newProgram.Weeks[i].Days = _.cloneDeep(currentProgram.Weeks[currentWeekIndex].Days)
-  else
-    for (
-      let i = currentWeekIndex + 1;
-      i < currentProgram.Weeks.length;
-      i++ // i = weekIndex
-    ) {
-      // всяка седмица напред се копира да е същата, като настоящата, освен 'Days[x].isCompleted
-      newProgram.Weeks[i].Days.forEach((day, dayIndex) => {
-        newProgram.Weeks[i].Days[dayIndex].Exercises = _.cloneDeep(
-          currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises,
-        )
-        newProgram.Weeks[i].Days[dayIndex].DayName =
-          currentProgram.Weeks[currentWeekIndex].Days[dayIndex].DayName
-      })
-    }
-
-  //block for updating exercises by their +reps +weight values
-
-  for (
-    let i = currentWeekIndex + 1;
-    i < currentProgram.Weeks.length;
-    i++ // i = weekIndex
-  ) {
-    if (newProgram.Weeks[i].Days[currentDayIndex].Exercises.length > 0) {
-      newProgram.Weeks[i].Days.forEach((day, dayIndex: number) => {
-        newProgram.Weeks[i].Days[dayIndex].Exercises.forEach((exercise, exerciseIndex: number) => {
-          let currentExercise =
-            currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises[exerciseIndex]
-          newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets.forEach(
-            (set, setIndex) => {
-              newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex].Reps =
-                newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
-                  .Reps + currentExercise.increaseReps
-              if (
-                newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
-                  .WeightType === "pureWeight"
-              )
-                newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[
-                  setIndex
-                ].Weight = `${parseFloat(
-                  newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
-                    .Weight,
-                ) + parseFloat(currentExercise.increaseWeight)}`
-            },
-          )
-        })
-      })
-    }
-  }
-
-  return { ...newProgram }
-}
 
 export const EditProgramReducer = (state, action) => {
   const {
@@ -173,13 +94,23 @@ export const EditProgramReducer = (state, action) => {
 
       state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = newArray
 
-      if (state.currentDayIndex === action.value) {
-        state.deselectAllDays = !state.deselectAllDays
-      } else {
-        state.deselectAllDays = false
-        state.currentDayIndex = action.value
-      }
+//turning off deselectAllDays option for now
+
+      // if (state.currentDayIndex === action.value) {
+      //   state.deselectAllDays = !state.deselectAllDays
+      // } else {
+      //   state.deselectAllDays = false
+      //   state.currentDayIndex = action.value
+      // }
+
+// dummy so it's always false. Use top one and delete these 2 lines in case you need it again
+state.deselectAllDays = false
+state.currentDayIndex = action.value
+
+
       state.currentExerciseIndex = 0
+
+      state.isReordering = false
 
       return { ...state }
     }
@@ -262,6 +193,11 @@ export const EditProgramReducer = (state, action) => {
       return { ...state }
     }
 
+    case 'toggle reorder': {
+      state.isReordering = !state.isReordering
+      return {...state}
+    }
+
     case "expand exercise info": {
       let newArray = state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises
       newArray.forEach((exercise, index) => {
@@ -305,24 +241,43 @@ export const EditProgramReducer = (state, action) => {
 
       return { ...state }
     }
+
+    case 'replace exercise with another from picker': {
+      state.isExercisePickerShown = true
+      state.isProgramViewShown = false
+      state.isManuallySearchingExercises = true
+      state.currentExerciseIndex = action.value
+      state.isReplacingExercise = true
+      return {...state}
+    }
+
     case "add exercise from picker": {
       const exercise = action.value
 
-      const newDayData = _.cloneDeep(currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex])
+    
+      // ако заменяме настоящо упражнение
 
-      newDayData.Exercises.push({
+      if (state.isReplacingExercise)
+      {
+        console.log(exercise)
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex].Name = exercise.Name;
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex].ID = exercise.ID;
+
+      }
+      // ако добавяме ново накрая
+      else {
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push({
         ...DEFAULT_EXERCISE_DATA2,
         Name: exercise.Name,
         ID: exercise.ID,
-        Position: Math.floor(newDayData.Exercises.length / 2 + 1),
+        Position: Math.floor(currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length / 2 + 1),
       })
+  
+    }
 
-      state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex] = { ...newDayData }
       state.isExercisePickerShown = false
       state.isProgramViewShown = true
-
-      console.log("newDayData.Exercises.length", newDayData.Exercises.length)
-      console.log("newDayData.Exercises", newDayData.Exercises)
+      state.isReplacingExercise = false
 
       console.log(
         "currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length",

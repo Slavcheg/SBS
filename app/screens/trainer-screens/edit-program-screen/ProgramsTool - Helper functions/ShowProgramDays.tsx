@@ -14,7 +14,14 @@ import { IProgram, state } from "../../../../models/sub-stores"
 import { YOUTUBE_API_KEY } from "../Constants/DatabaseConstants"
 import { getVideoID, getVideoTime, getColorByExercisePosition } from "./smallFunctions"
 import iStyles from "../Constants/Styles"
-import { ShowExercise, EditableText, ClientName, ShowDayName } from "./index"
+import {
+  ShowExercise,
+  EditableText,
+  ClientName,
+  ShowDayName,
+  ToggleButton,
+  ImageBackgroundToggle,
+} from "./index"
 
 type HeaderProps = {
   state: state
@@ -82,6 +89,8 @@ type ShowProgramDaysProps = {
   onEditPositionHandler?: Function
   onEditSetsRepsHandler?: Function
   onExpandExerciseInfo?: Function
+  onReplaceExercise?: Function
+  onToggleReorder?: Function
 }
 
 export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = observer(props => {
@@ -95,6 +104,8 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
     onEditSetsRepsHandler,
     onExpandExerciseInfo,
     mode,
+    onReplaceExercise,
+    onToggleReorder,
   } = props
 
   const { currentProgram, currentWeekIndex, currentDayIndex, locked } = props.state
@@ -102,11 +113,13 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
 
   useEffect(() => {
     const initialState = []
-    currentProgram.Weeks[currentWeekIndex].Days.map(
-      (day, dayindex) => (initialState[dayindex] = true),
-    )
+    currentProgram.Weeks[currentWeekIndex].Days.map((day, dayindex) => {
+      isDayShown[dayindex] === false
+        ? (initialState[dayindex] = false)
+        : (initialState[dayindex] = true)
+    })
     setIsDayShown(initialState)
-  }, [])
+  }, [currentProgram.Weeks[currentWeekIndex].Days.length])
 
   const exercisesStore = useStores().exerciseDataStore
 
@@ -190,7 +203,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
             let arrowIcon = moreINfoExpanded ? "arrow-expand-up" : "arrow-expand-down"
             let backgroundColor = "white"
             if (dayindex === currentDayIndex && !props.state.deselectAllDays) {
-              backgroundColor = "lightcyan"
+              backgroundColor = "lightcyan" // lightcyan azure aliceblue ivory whitesmoke
               isCurrent = true
             } else isCurrent = false
             if (currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted)
@@ -262,10 +275,26 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                       // disabled={props.state.locked}
                       onPress={() => props.onToggleDayCompleted(dayindex)}
                     />
-                    <Button
+                    {/* <Button
                       icon="arrow-split-horizontal"
                       onPress={() => isDayShownHandler(dayindex)}
-                    ></Button>
+                    ></Button> */}
+                    <ToggleButton
+                      icon="arrow-split-horizontal"
+                      onPress={() => isDayShownHandler(dayindex)}
+                      status={isDayShown[dayindex]}
+                      color={iStyles.text1.color}
+                      style={iStyles.mediumRoundIcon}
+                      compact={true}
+                    ></ToggleButton>
+                    <ToggleButton
+                      icon="swap-vertical-bold"
+                      onPress={onToggleReorder}
+                      status={state.isReordering}
+                      color={iStyles.text1.color}
+                      style={iStyles.mediumRoundIcon}
+                      compact={true}
+                    ></ToggleButton>
                     {/* {currentProgram.Weeks[currentWeekIndex].Days[dayindex]
                             .isCompleted && (
                             <View style={{marginLeft: 10}}>
@@ -279,29 +308,32 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                               </Text>
                             </View>
                           )} */}
-                    {dayindex === 0 && (
-                      <View
-                        style={{
-                          justifyContent: "flex-end",
-                          alignItems: "flex-end",
-                          flex: 1,
-                        }}
-                      >
-                        <Button
-                          icon={arrowIcon}
-                          compact={true}
-                          // onPress={() => {
-                          //   dispatch({
-                          //     type: "expand more info all exercises",
-                          //     expand: !moreINfoExpanded,
-                          //   })
-                          // }}
-                          onPress={props.onExpandMoreInfoAllExercises}
-                        >
-                          {""}
-                        </Button>
-                      </View>
-                    )}
+                    <View
+                      style={{
+                        justifyContent: "flex-end",
+                        alignItems: "flex-end",
+                        flex: 1,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {dayindex === 0 && (
+                        <View style={{ flexDirection: "row" }}>
+                          <Button
+                            icon={arrowIcon}
+                            compact={true}
+                            // onPress={() => {
+                            //   dispatch({
+                            //     type: "expand more info all exercises",
+                            //     expand: !moreINfoExpanded,
+                            //   })
+                            // }}
+                            onPress={props.onExpandMoreInfoAllExercises}
+                          >
+                            {""}
+                          </Button>
+                        </View>
+                      )}
+                    </View>
                     {/* <ShowWeekName
                             index={currentWeekIndex}
                             isCurrent={isCurrent}
@@ -309,19 +341,30 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                           /> */}
                   </View>
                   <View style={{ flex: 1 }}>
-                    {isDayShown[dayindex] && (
-                      <ShowDayExercises
-                        exercises={currentProgram.Weeks[currentWeekIndex].Days[dayindex].Exercises}
-                        isActive={isCurrent && props.state.deselectAllDays !== true}
-                        state={state}
-                        onDragEndHandler={onDragEndHandler}
-                        onDeleteExerciseHandler={onDeleteExerciseHandler}
-                        onEditPositionHandler={onEditPositionHandler}
-                        onEditSetsRepsHandler={onEditSetsRepsHandler}
-                        onExpandExerciseInfo={onExpandExerciseInfo}
-                        onViewVideo={exercise => viewVideoHandler(exercise)}
-                      />
-                    )}
+                    <ImageBackgroundToggle
+                      imageURL="https://cdn1.iconfinder.com/data/icons/simple-arrow/512/arrow_18-512.png"
+                      status={
+                        state.isReordering && isCurrent && props.state.deselectAllDays !== true
+                      }
+                      opacity={0.25}
+                    >
+                      {isDayShown[dayindex] && (
+                        <ShowDayExercises
+                          exercises={
+                            currentProgram.Weeks[currentWeekIndex].Days[dayindex].Exercises
+                          }
+                          isActive={isCurrent && props.state.deselectAllDays !== true}
+                          state={state}
+                          onDragEndHandler={onDragEndHandler}
+                          onDeleteExerciseHandler={onDeleteExerciseHandler}
+                          onEditPositionHandler={onEditPositionHandler}
+                          onEditSetsRepsHandler={onEditSetsRepsHandler}
+                          onExpandExerciseInfo={onExpandExerciseInfo}
+                          onViewVideo={exercise => viewVideoHandler(exercise)}
+                          onReplaceExercise={onReplaceExercise}
+                        />
+                      )}
+                    </ImageBackgroundToggle>
                   </View>
                 </View>
               </Pressable>
@@ -345,6 +388,7 @@ type ShowDayExercisesProps = {
   onExpandExerciseInfo: Function
   onEditSetsRepsHandler: Function
   onViewVideo: Function
+  onReplaceExercise: Function
 }
 
 const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
@@ -358,9 +402,10 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
     onExpandExerciseInfo,
     onEditSetsRepsHandler,
     onViewVideo,
+    onReplaceExercise,
   } = props
 
-  const renderExercises = ({ item, index, drag, isActive }, isClickable) => {
+  const renderExercises = ({ item, index, drag, isActive }, isClickable, isDraggable) => {
     let textStyle = {
       color: getColorByExercisePosition(item.Position),
       fontSize: isActive ? 20 : 18,
@@ -370,7 +415,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
       <ShowExercise
         onPressIn={() => {
           console.log("tried dragging")
-          drag()
+          if (isDraggable) drag()
         }}
         onPressPosition={() => onEditPositionHandler(index)}
         textStyle={textStyle}
@@ -378,6 +423,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
         onPressExercise={() => onExpandExerciseInfo(index)}
         onDeleteExercise={() => onDeleteExerciseHandler(index)}
         onPressSetsAndReps={() => onEditSetsRepsHandler(index)}
+        onPressReplace={() => onReplaceExercise(index)}
         isDragged={isActive}
         isClickable={isClickable}
         onViewVideo={() => onViewVideo(item)}
@@ -392,18 +438,37 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
       </View>
     )
 
-  if (isActive)
+  if (isActive && state.isReordering)
     return (
       <View style={{ flex: 1 }}>
         <DraggableFlatList
           data={exercises}
           renderItem={({ item, index, drag, isActive }) =>
-            renderExercises({ item, index, drag, isActive }, true)
+            renderExercises({ item, index, drag, isActive }, true, state.isReordering)
           }
           scrollEnabled={false}
           initialNumToRender={20}
           keyExtractor={(item: any, index) => `${item.ID}-${index}`}
           onDragEnd={({ data }) => onDragEndHandler(data)}
+          // getItemLayout={(data, index) => ({
+          //   length: EXERCISE_ITEM_HEIGHT,
+          //   offset: EXERCISE_ITEM_HEIGHT * index,
+          //   index,
+          // })}
+        />
+      </View>
+    )
+  else if (isActive)
+    return (
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={exercises}
+          renderItem={({ item, index, drag, isActive }) =>
+            renderExercises({ item, index, drag, isActive }, true, state.isReordering)
+          }
+          scrollEnabled={false}
+          initialNumToRender={20}
+          keyExtractor={(item, index) => `${item.ID}-${index}`}
           // getItemLayout={(data, index) => ({
           //   length: EXERCISE_ITEM_HEIGHT,
           //   offset: EXERCISE_ITEM_HEIGHT * index,
@@ -418,7 +483,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
         <FlatList
           data={exercises}
           renderItem={({ item, index, drag, isActive }) =>
-            renderExercises({ item, index, drag, isActive }, false)
+            renderExercises({ item, index, drag, isActive }, false, false)
           }
           scrollEnabled={false}
           initialNumToRender={20}

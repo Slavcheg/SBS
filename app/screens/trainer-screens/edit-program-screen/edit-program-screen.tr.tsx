@@ -94,6 +94,8 @@ type ShowProgramProps = {
   onExpandExerciseInfo: Function
   onChangeProgramName: Function
   onChangeClient: Function
+  onReplaceExercise: Function
+  onToggleReorder?: Function
 }
 
 const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
@@ -112,6 +114,8 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
     onChangeWeek,
     onChangeProgramName,
     onChangeClient,
+    onReplaceExercise,
+    onToggleReorder,
     state,
   } = props
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
@@ -140,6 +144,8 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         onEditPositionHandler={onEditPositionHandler}
         onEditSetsRepsHandler={onEditSetsRepsHandler}
         onExpandExerciseInfo={onExpandExerciseInfo}
+        onReplaceExercise={onReplaceExercise}
+        onToggleReorder={onToggleReorder}
       />
     </View>
   )
@@ -176,6 +182,8 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     isProgramViewShown: true,
     isProgramSettingsModalVisible: false,
     autoFocusSearch: false,
+    isReordering: false,
+    isReplacingExercise: false,
   }
 
   const [state, dispatch] = useReducer(EditProgramReducer, initialState)
@@ -202,6 +210,8 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     currentWeekIndex,
     currentDayIndex,
     currentExerciseIndex,
+    isReordering,
+    isReplacingExercise,
   } = state
 
   useEffect(() => {
@@ -340,6 +350,15 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     else changeUserAlert(() => dispatch({ type: "change client", value: newClientID }))
   }
 
+  const onReplaceExercise = index => {
+    console.log("tried replacing exercise ", index)
+    dispatch({ type: "replace exercise with another from picker", value: index })
+  }
+
+  const onToggleReorder = () => {
+    dispatch({ type: "toggle reorder" })
+  }
+
   return (
     <View
       style={{
@@ -391,6 +410,8 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
             onChangeProgramName={onChangeProgramName}
             onChangeWeek={onChangeWeek}
             onChangeClient={onChangeClient}
+            onReplaceExercise={onReplaceExercise}
+            onToggleReorder={onToggleReorder}
           />
         </View>
       )}

@@ -1,6 +1,6 @@
 import { Button, Portal, Modal, TextInput } from "react-native-paper"
 
-import React, { useState, useEffect, useReducer } from "react"
+import React, { useState, useEffect, useReducer, FunctionComponent, ReactNode } from "react"
 
 import { useStores } from "../../../../models/root-store"
 
@@ -33,7 +33,17 @@ import { EditableText } from "./smallComponents"
 import { getColorByExercisePosition } from "./index"
 // import StoreProvider, { StoreContext } from "../../StoreProvider"
 
-export const ExerciseMoreInfoButtons = props => {
+type ExerciseMoreInfoButtonsProps = {
+  showVideo?: Boolean
+  showDelete?: Boolean
+  size?: Number
+  onViewVideo?: Function
+  isClickable?: Boolean
+  onPressDelete?: Function
+  onPressReplace?: Function
+}
+
+export const ExerciseMoreInfoButtons: React.FC<ExerciseMoreInfoButtonsProps> = props => {
   let fontSizeZ: number
   let showVideo = props.showVideo === false ? false : true
   let showDelete = props.showDelete === false ? false : true
@@ -50,11 +60,21 @@ export const ExerciseMoreInfoButtons = props => {
           onPress={props.onViewVideo}
           disabled={!props.isClickable}
           color={iStyles.text1.color}
+        ></Button>
+      )}
+      {showDelete && (
+        <Button
+          icon="find-replace"
+          compact={true}
+          mode="contained"
+          style={iStyles.smallIcon}
+          onPress={props.onPressReplace}
+          disabled={!props.isClickable}
+          color="orange"
         >
-      
+          {""}
         </Button>
       )}
-
       {showDelete && (
         <Button
           icon="trash-can-outline"
@@ -296,6 +316,8 @@ export const SetsAndReps = props => {
 }
 
 export const ShowExercise = observer(props => {
+  const DELAY_LONG_PRESS = 0
+
   const {
     onPressIn,
     onPressPosition,
@@ -317,7 +339,7 @@ export const ShowExercise = observer(props => {
 
   return (
     <View>
-      <Pressable onPressIn={onPressIn} delayLongPress={0} disabled={!isClickable}>
+      <Pressable onPressIn={onPressIn} delayLongPress={DELAY_LONG_PRESS} disabled={!isClickable}>
         <View
           style={{
             flexDirection: "row",
@@ -332,7 +354,7 @@ export const ShowExercise = observer(props => {
             <Pressable
               onPress={onPressPosition}
               onLongPress={onPressIn}
-              delayLongPress={0}
+              delayLongPress={DELAY_LONG_PRESS}
               hitSlop={25}
               disabled={!isClickable}
             >
@@ -352,7 +374,7 @@ export const ShowExercise = observer(props => {
               onPress={onPressExercise}
               onLongPress={onPressIn}
               disabled={!isClickable}
-              delayLongPress={0}
+              delayLongPress={DELAY_LONG_PRESS}
             >
               <Text
                 style={{
@@ -366,11 +388,12 @@ export const ShowExercise = observer(props => {
             {item.isExpanded && (
               <ExerciseMoreInfoButtons
                 onPressDelete={onDeleteExercise}
-                onPressEdit={() => console.log("tried editing")}
+                // onPressEdit={() => console.log("tried editing")}
                 isClickable={isClickable}
                 onViewVideo={props.onViewVideo}
                 showVideo={props.showVideoButton}
                 showDelete={props.showDeleteButton}
+                onPressReplace={props.onPressReplace}
               />
             )}
           </View>
