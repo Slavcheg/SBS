@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer, useCallback } from "react"
 import { useFocusEffect } from "@react-navigation/native"
 import { Picker } from "@react-native-community/picker"
 
-import { View, StyleSheet, BackHandler, Alert, Dimensions } from "react-native"
+import { View, StyleSheet, BackHandler, Alert, Dimensions, ScrollView, Text } from "react-native"
 
 import _ from "lodash"
 
@@ -20,6 +20,7 @@ import {
   EasyNumberPicker,
   GetText,
   EditExerciseModal,
+  ShowProgramMoreInfo,
 } from "./ProgramsTool - Helper functions"
 
 import iStyles from "./Constants/Styles"
@@ -128,25 +129,31 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         onChangeWeek={onChangeWeek}
         onChangeClient={onChangeClient}
       />
-
-      <ShowProgramDays
-        state={state}
-        mode="allDays"
-        //  client={client}
-        onRemoveDay={onRemoveDay}
-        onAddNewDay={onAddNewDay}
-        onChangeDay={onChangeDay}
-        onChangeDayName={onChangeDayName}
-        onToggleDayCompleted={onToggleDayCompleted}
-        onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercises}
-        onDragEndHandler={onDragEndHandler}
-        onDeleteExerciseHandler={onDeleteExerciseHandler}
-        onEditPositionHandler={onEditPositionHandler}
-        onEditSetsRepsHandler={onEditSetsRepsHandler}
-        onExpandExerciseInfo={onExpandExerciseInfo}
-        onReplaceExercise={onReplaceExercise}
-        onToggleReorder={onToggleReorder}
-      />
+      <ScrollView horizontal={true} pagingEnabled={true}>
+        <View style={iStyles.carouselScreen}>
+          <ShowProgramDays
+            state={state}
+            mode="allDays"
+            //  client={client}
+            onRemoveDay={onRemoveDay}
+            onAddNewDay={onAddNewDay}
+            onChangeDay={onChangeDay}
+            onChangeDayName={onChangeDayName}
+            onToggleDayCompleted={onToggleDayCompleted}
+            onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercises}
+            onDragEndHandler={onDragEndHandler}
+            onDeleteExerciseHandler={onDeleteExerciseHandler}
+            onEditPositionHandler={onEditPositionHandler}
+            onEditSetsRepsHandler={onEditSetsRepsHandler}
+            onExpandExerciseInfo={onExpandExerciseInfo}
+            onReplaceExercise={onReplaceExercise}
+            onToggleReorder={onToggleReorder}
+          />
+        </View>
+        <View style={iStyles.carouselScreen}>
+          <ShowProgramMoreInfo state={state} />
+        </View>
+      </ScrollView>
     </View>
   )
 })
@@ -360,12 +367,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-      }}
-    >
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <ButtonsRow
         // isVisible={true}
         isVisible={state.isButtonsRowShown}
@@ -373,13 +375,13 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
         onPressSearch={onPressSearchHandler}
         goBack={onGoBackHandler}
       />
-
       <ExercisePicker
         shownArray={exercisesStore.filteredByMuscleGroup[state.selectedMuscleGroup]}
         onClickMainText={onAddNewExerciseHandler}
         isVisible={state.isExercisePickerShown}
         autoFocusSearch={state.autoFocusSearch}
       />
+
       {currentProgram &&
         currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
           <EditExerciseModal
@@ -428,7 +430,7 @@ const styles = StyleSheet.create({
     // minHeight: 350,
     // maxHeight: "100%",
     // minHeight: Dimensions.get("window").height,
-    height: "100%",
+    height: "90%",
     flexGrow: 1,
   },
 })

@@ -5,13 +5,16 @@ import iTheme from './Themes';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
+const size1 = 20;
+const size2 = 12;
+
 const iStyles = StyleSheet.create({
   defaultText: {
     fontSize: 20,
     color: 'black',
   },
   greyText: {
-    fontSize: 20,
+    fontSize: size1,
     color: 'grey',
   },
   selectedText: {
@@ -47,15 +50,15 @@ const iStyles = StyleSheet.create({
     // alignItems: 'center',
   },
   text1: {
-    fontSize: 20,
+    fontSize: size1,
     color: iTheme.colors.primary,
   },
   text2: {
-    fontSize: 20,
+    fontSize: size1,
     color: iTheme.colors.secondary,
   },
   text3: {
-    fontSize: 20,
+    fontSize: size1,
     color: iTheme.colors.third,
   },
   smallImputBox: {
@@ -92,6 +95,26 @@ const iStyles = StyleSheet.create({
     margin: 2,
     marginHorizontal: 1,
   },
-});
+  carouselScreen: {
+    flex: 1,
+    width: Dimensions.get("window").width,
+  },
+  text1Small: {
+    fontSize: size2,
+    color: iTheme.colors.primary,
+  },
+  text2Small: {
+    fontSize: size2,
+    color: iTheme.colors.secondary,
+  },
+  text3Small: {
+    fontSize: size2,
+    color: iTheme.colors.third,
+},  greyTextSmall: {
+  fontSize: size2,
+  color: 'grey',
+},
+
+})
 
 export default iStyles;

@@ -1,4 +1,6 @@
 import iStyles from "../Constants/Styles"
+import { useStores } from "../../../../models/root-store"
+
 
 import _ from "lodash"
 
@@ -87,7 +89,6 @@ export const updateFollowingWeeks = state => {
 
 }
 
-
 export const getVideoID = originalLink => {
   let newVideoID = originalLink
   let newVideo2 = originalLink
@@ -111,6 +112,29 @@ export const getVideoTime = originalLink => {
   console.log(videoTime)
 
   return videoTime
+}
+
+export function getColorByMuscleName(muscleName) {
+  let color1 = iStyles.text1.color
+  let color2 = iStyles.text2.color
+  let color3 = iStyles.text3.color
+
+  switch (muscleName) {
+    case 'chest':
+    case 'shoulders':
+    case 'back': {
+    return color1;
+    }
+    case 'glutes':
+    case 'quads':
+    case 'hamstrings':{
+      return color2;
+    }
+  
+    default: {
+      return color3
+    }
+  }
 }
 
 export function getColorByExercisePosition(position) {

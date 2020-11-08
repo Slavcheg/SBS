@@ -4,7 +4,7 @@ export { EditExerciseModal } from "./EditExerciseModal"
 export * from "./ShowProgramDays"
 export { getFilteredExercises } from "./GetAndSortExercises"
 export { EditProgramReducer } from "./EditProgramReducer"
-export { getVideoID, getColorByExercisePosition, getVideoTime, updateFollowingWeeks } from "./smallFunctions"
+export { getVideoID, getColorByExercisePosition, getVideoTime, updateFollowingWeeks, getColorByMuscleName } from "./smallFunctions"
 export { EasyNumberPicker } from "./EasyNumberPicker"
 export { GetText, EditableText, ToggleButton, ImageBackgroundToggle } from "./smallComponents"
 export {
@@ -20,4 +20,5 @@ export {
   ShowExercise,
   ShowWeekName,
   ShowDayName,
+  ShowProgramMoreInfo
 } from "./ViewProgramComponents"

@@ -3,6 +3,7 @@ import { Button, Portal, Modal, TextInput } from "react-native-paper"
 import React, { useState, useEffect, useReducer, FunctionComponent, ReactNode } from "react"
 
 import { useStores } from "../../../../models/root-store"
+import { Exercise, state } from "../../../../models/sub-stores"
 
 import {
   View,
@@ -30,7 +31,7 @@ import { GetText } from "./index"
 import iStyles from "../Constants/Styles"
 import { muscleGroups } from "../Constants/MuscleGroups"
 import { EditableText } from "./smallComponents"
-import { getColorByExercisePosition } from "./index"
+import { getColorByExercisePosition, getColorByMuscleName } from "./index"
 // import StoreProvider, { StoreContext } from "../../StoreProvider"
 
 type ExerciseMoreInfoButtonsProps = {
@@ -327,11 +328,15 @@ export const ShowExercise = observer(props => {
     onPressSetsAndReps,
     isDragged,
     isClickable,
+    showVolume,
   } = props
 
   let someStyle = {
     color: getColorByExercisePosition(item.Position),
   }
+
+  const exercisesStore = useStores().exerciseDataStore
+  let volumeText = exercisesStore.getVolumeStrings(item)
 
   let textStyle = props.textStyle ? props.textStyle : someStyle
   if (!textStyle) textStyle = iStyles.text1
@@ -396,6 +401,7 @@ export const ShowExercise = observer(props => {
                 onPressReplace={props.onPressReplace}
               />
             )}
+            {item.isExpanded && showVolume && <Text>{volumeText}</Text>}
           </View>
 
           <View
@@ -452,9 +458,15 @@ export const ShowWeekName = props => {
 }
 
 export const ShowDayName = props => {
-  const { isCurrent, day, onPress } = props
+  const { isCurrent, day, onPress, disableEdit } = props
   let dayStyleSelected = { ...iStyles.text2, fontSize: 22 }
   let dayStyleNotSelected = { ...iStyles.greyText, fontSize: 21 }
+  if (disableEdit)
+    return (
+      <View style={{ marginHorizontal: 2 }}>
+        <Text style={dayStyleSelected}>{day.DayName}</Text>
+      </View>
+    )
   if (isCurrent) {
     return (
       <View style={{ marginHorizontal: 2 }}>
@@ -472,3 +484,133 @@ export const ShowDayName = props => {
       </View>
     )
 }
+
+type ShowProgramMoreInfoProps = {
+  state: state
+}
+
+export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => {
+  const { state } = props
+  const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
+
+  if (!currentProgram) return <View></View>
+
+  return (
+    <View>
+      <Text style={iStyles.text1}>Whole program volume</Text>
+      <ProgramMiniInfo state={state} />
+      {/* {currentProgram.Weeks[currentWeekIndex].Days.map((day, index) => {
+        return <ShowDayMoreInfo key={index} state={{ ...state, currentDayIndex: index }} />
+      })} */}
+    </View>
+  )
+}
+
+export const ShowDayMoreInfo = props => {
+  const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
+  return (
+    <View>
+      <ShowDayName
+        isCurrent={true}
+        day={currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex]}
+        disableEdit={true}
+      />
+      <Text>тест</Text>
+    </View>
+  )
+}
+
+const ProgramMiniInfo = props => {
+  const { state } = props
+  const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
+
+  const muscles = state.muscles ? state.muscles : muscleGroups
+
+  const exercisesStore = useStores().exerciseDataStore
+  const coefsArray = exercisesStore.getProgramVolume(state)
+
+  const flatlistHeader = () => {
+    const greyTextStyle = { ...iStyles.greyText, color: "black" }
+    return (
+      <View style={{ flexDirection: "row", width: "100%" }}>
+        <View style={styles.muscleColumns}>
+          <Text style={greyTextStyle}>Muscle</Text>
+        </View>
+        <View style={styles.muscleCoefColumns}>
+          <Text style={greyTextStyle}>Prog</Text>
+        </View>
+        {currentProgram.Weeks[currentWeekIndex].Days.map((day, index) => {
+          let textString = `Day ${index + 1} `
+          return (
+            <View key={index} style={styles.muscleCoefColumns}>
+              <Text style={greyTextStyle}>{textString}</Text>
+            </View>
+          )
+        })}
+      </View>
+    )
+  }
+
+  const renderCoefs = ({ item, index }) => {
+    const textStyle = {
+      color: getColorByMuscleName(item.muscleName),
+      fontSize: iStyles.text1.fontSize,
+    }
+    const greyTextStyle = { ...iStyles.greyText }
+    if (item.programVolume === 0) return <View></View>
+    return (
+      <View style={{ flexDirection: "row", width: "100%" }}>
+        <View style={styles.muscleColumns}>
+          <Text style={textStyle}>{item.muscleName} </Text>
+        </View>
+        <View style={styles.muscleCoefColumns}>
+          <Text style={greyTextStyle}>{item.programVolume} </Text>
+        </View>
+
+        {currentProgram.Weeks[currentWeekIndex].Days.map((day, index) => {
+          let textString = `${item.weeklyVolume[index]} `
+          return (
+            <View key={index} style={styles.muscleCoefColumns}>
+              <Text style={greyTextStyle}>{textString}</Text>
+            </View>
+          )
+        })}
+      </View>
+    )
+  }
+
+  return (
+    <View>
+      {/* <Button
+        onPress={() => {
+          console.log(coefs)
+        }}
+      >
+        test
+      </Button> */}
+      {/* {muscles.map((muscle, index) => {
+        return (
+          <View key={index} style={{ flexDirection: "row" }}>
+
+          </View>
+        )
+      })} */}
+      <FlatList
+        data={coefsArray}
+        keyExtractor={(item, index) => `${item.Name}-${index}`}
+        renderItem={renderCoefs}
+        ListHeaderComponent={flatlistHeader}
+      />
+    </View>
+  )
+}
+const styles = StyleSheet.create({
+  muscleColumns: {
+    width: "30%",
+    flexDirection: "row",
+  },
+  muscleCoefColumns: {
+    width: "15%",
+    flexDirection: "row",
+  },
+})

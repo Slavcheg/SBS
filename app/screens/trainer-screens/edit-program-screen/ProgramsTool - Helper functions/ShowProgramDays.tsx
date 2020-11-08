@@ -1,5 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react"
-import { View, FlatList, Pressable, Text, StyleSheet, ScrollView } from "react-native"
+import React, { useState, useEffect, useCallback, useRef } from "react"
+import {
+  View,
+  FlatList,
+  Pressable,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ScrollViewComponent,
+} from "react-native"
 
 import { Button, Portal, Modal, TextInput, Checkbox } from "react-native-paper"
 import DraggableFlatList from "react-native-draggable-flatlist"
@@ -11,6 +19,8 @@ import _ from "lodash"
 import { useStores } from "../../../../models/root-store"
 import { IProgram, state } from "../../../../models/sub-stores"
 
+import { imgs } from "../../../../assets"
+
 import { YOUTUBE_API_KEY } from "../Constants/DatabaseConstants"
 import { getVideoID, getVideoTime, getColorByExercisePosition } from "./smallFunctions"
 import iStyles from "../Constants/Styles"
@@ -21,6 +31,7 @@ import {
   ShowDayName,
   ToggleButton,
   ImageBackgroundToggle,
+  ShowProgramMoreInfo,
 } from "./index"
 
 type HeaderProps = {
@@ -342,7 +353,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                   </View>
                   <View style={{ flex: 1 }}>
                     <ImageBackgroundToggle
-                      imageURL="https://cdn1.iconfinder.com/data/icons/simple-arrow/512/arrow_18-512.png"
+                      imageURL={imgs.rotate}
                       status={
                         state.isReordering && isCurrent && props.state.deselectAllDays !== true
                       }
@@ -427,6 +438,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
         isDragged={isActive}
         isClickable={isClickable}
         onViewVideo={() => onViewVideo(item)}
+        showVolume={true}
       />
     )
   }
@@ -440,60 +452,73 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
 
   if (isActive && state.isReordering)
     return (
-      <View style={{ flex: 1 }}>
-        <DraggableFlatList
-          data={exercises}
-          renderItem={({ item, index, drag, isActive }) =>
-            renderExercises({ item, index, drag, isActive }, true, state.isReordering)
-          }
-          scrollEnabled={false}
-          initialNumToRender={20}
-          keyExtractor={(item: any, index) => `${item.ID}-${index}`}
-          onDragEnd={({ data }) => onDragEndHandler(data)}
-          // getItemLayout={(data, index) => ({
-          //   length: EXERCISE_ITEM_HEIGHT,
-          //   offset: EXERCISE_ITEM_HEIGHT * index,
-          //   index,
-          // })}
-        />
-      </View>
+      <ScrollView horizontal={true} pagingEnabled={true}>
+        <View style={iStyles.carouselScreen}>
+          <DraggableFlatList
+            data={exercises}
+            renderItem={({ item, index, drag, isActive }) =>
+              renderExercises({ item, index, drag, isActive }, true, state.isReordering)
+            }
+            scrollEnabled={false}
+            initialNumToRender={20}
+            keyExtractor={(item: any, index) => `${item.ID}-${index}`}
+            onDragEnd={({ data }) => onDragEndHandler(data)}
+            // getItemLayout={(data, index) => ({
+            //   length: EXERCISE_ITEM_HEIGHT,
+            //   offset: EXERCISE_ITEM_HEIGHT * index,
+            //   index,
+            // })}
+          />
+        </View>
+      </ScrollView>
     )
   else if (isActive)
     return (
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={exercises}
-          renderItem={({ item, index, drag, isActive }) =>
-            renderExercises({ item, index, drag, isActive }, true, state.isReordering)
-          }
-          scrollEnabled={false}
-          initialNumToRender={20}
-          keyExtractor={(item, index) => `${item.ID}-${index}`}
-          // getItemLayout={(data, index) => ({
-          //   length: EXERCISE_ITEM_HEIGHT,
-          //   offset: EXERCISE_ITEM_HEIGHT * index,
-          //   index,
-          // })}
-        />
-      </View>
+      <ScrollView horizontal={true} pagingEnabled={true}>
+        <View style={iStyles.carouselScreen}>
+          <FlatList
+            data={exercises}
+            renderItem={({ item, index, drag, isActive }) =>
+              renderExercises({ item, index, drag, isActive }, true, state.isReordering)
+            }
+            scrollEnabled={false}
+            initialNumToRender={20}
+            keyExtractor={(item, index) => `${item.ID}-${index}`}
+
+            // getItemLayout={(data, index) => ({
+            //   length: EXERCISE_ITEM_HEIGHT,
+            //   offset: EXERCISE_ITEM_HEIGHT * index,
+            //   index,
+            // })}
+          />
+        </View>
+        <View style={iStyles.carouselScreen}>
+          <ShowProgramMoreInfo state={state} />
+        </View>
+      </ScrollView>
     )
   else
     return (
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={exercises}
-          renderItem={({ item, index, drag, isActive }) =>
-            renderExercises({ item, index, drag, isActive }, false, false)
-          }
-          scrollEnabled={false}
-          initialNumToRender={20}
-          keyExtractor={(item, index) => `${item.ID}-${index}`}
-          // getItemLayout={(data, index) => ({
-          //   length: EXERCISE_ITEM_HEIGHT,
-          //   offset: EXERCISE_ITEM_HEIGHT * index,
-          //   index,
-          // })}
-        />
-      </View>
+      <ScrollView horizontal={true} pagingEnabled={true}>
+        <View style={iStyles.carouselScreen}>
+          <FlatList
+            data={exercises}
+            renderItem={({ item, index, drag, isActive }) =>
+              renderExercises({ item, index, drag, isActive }, false, false)
+            }
+            scrollEnabled={false}
+            initialNumToRender={20}
+            keyExtractor={(item, index) => `${item.ID}-${index}`}
+            // getItemLayout={(data, index) => ({
+            //   length: EXERCISE_ITEM_HEIGHT,
+            //   offset: EXERCISE_ITEM_HEIGHT * index,
+            //   index,
+            // })}
+          />
+        </View>
+        <View style={iStyles.carouselScreen}>
+          <Text>Тест</Text>
+        </View>
+      </ScrollView>
     )
 }

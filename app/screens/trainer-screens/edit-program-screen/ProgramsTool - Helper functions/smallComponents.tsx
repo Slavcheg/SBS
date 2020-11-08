@@ -10,6 +10,7 @@ import React, {
 import { View, Text, TextInput as TextInput2, Pressable, ImageBackground } from "react-native"
 import { Button } from "react-native-paper"
 import { RNCamera } from "react-native-camera"
+import { ImageSource } from "react-native-vector-icons/Icon"
 
 type GetTextProps = {
   startingValue?: any
@@ -76,7 +77,7 @@ export const ToggleButton: React.FC<ToggleButtonProps> = ({
 
 type ImageBackgroundToggleProps = {
   status: Boolean
-  imageURL: string
+  imageURL: ImageSource
   tintColor?: string
   opacity?: number
   children: any
@@ -98,9 +99,7 @@ export const ImageBackgroundToggle: React.FC<ImageBackgroundToggleProps> = ({
             opacity: opacity ? opacity : 1,
             resizeMode: "contain",
           }}
-          source={{
-            uri: imageURL,
-          }}
+          source={imageURL}
           style={{ width: "100%", height: "100%" }}
         >
           {children}
