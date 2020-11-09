@@ -2,7 +2,16 @@ import React, { useState, useEffect, useReducer, useCallback } from "react"
 import { useFocusEffect } from "@react-navigation/native"
 import { Picker } from "@react-native-community/picker"
 
-import { View, StyleSheet, BackHandler, Alert, Dimensions, ScrollView, Text } from "react-native"
+import {
+  View,
+  StyleSheet,
+  BackHandler,
+  Alert,
+  Dimensions,
+  ScrollView,
+  Text,
+  AlertButton,
+} from "react-native"
 
 import _ from "lodash"
 
@@ -58,6 +67,15 @@ const removeDayAlert = (currentDaysLength: number, onRemove: Function) => {
       ],
       { cancelable: true },
     )
+}
+
+const greyedoutSetsAndRepsAlert = (onConfirmEdit: Function) => {
+  Alert.alert(
+    "Внимание",
+    "Този ден вече е направен и не трябва да се променя по случайност",
+    [{ text: "Върни ме назад" }, { text: "Искам да променя нещо!", onPress: onConfirmEdit }],
+    { cancelable: true },
+  )
 }
 
 const changeUserAlert = (onRemove: Function) => {
@@ -278,11 +296,17 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     dispatch({ type: "change day", value: newIndex })
   }
 
-  type increaseDecrease = "increase" | "decrease"
-  const onChangeWeek = (increseDecrease: increaseDecrease) => {
+  type increaseDecreaseObject = {
+    type: "increase" | "decrease" | "custom"
+    weekValue?: number
+    dayValue?: number
+  }
+  const onChangeWeek = (increseDecrease: increaseDecreaseObject) => {
     dispatch({
       type: "change current week by one",
-      value: increseDecrease,
+      value: increseDecrease.type,
+      newWeekValue: increseDecrease.weekValue || 0,
+      newDayValue: increseDecrease.dayValue || 0,
       weekLength: currentProgram.Weeks.length,
     })
   }
@@ -311,8 +335,8 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
       dayIndex: dayIndex,
     })
   }
-  const onToggleDayCompletedHandler = dayIndex => {
-    dispatch({ type: "toggle day completed", value: dayIndex })
+  const onToggleDayCompletedHandler = (dayIndex, newDate?) => {
+    dispatch({ type: "toggle day completed", dayIndex: dayIndex, newDate: newDate })
   }
   const onExpandMoreInfoAllExercisesHandler = () => {
     let expand = true
@@ -344,7 +368,11 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     })
   }
   const onEditSetsRepsHandler = exerciseIndex => {
-    dispatch({ type: "open modal and start editing exercise", value: exerciseIndex })
+    const onConfirm = () =>
+      dispatch({ type: "open modal and start editing exercise", value: exerciseIndex })
+    if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted)
+      greyedoutSetsAndRepsAlert(onConfirm)
+    else onConfirm()
   }
 
   const onCloseExerciseModal = newExercise => {

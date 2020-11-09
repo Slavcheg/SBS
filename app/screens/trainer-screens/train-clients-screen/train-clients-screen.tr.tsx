@@ -1,8 +1,4 @@
 import React, { useState, useEffect, useReducer, useCallback } from "react"
-import { useFocusEffect } from "@react-navigation/native"
-import { Picker } from "@react-native-community/picker"
-import DateTimePicker from "@react-native-community/datetimepicker"
-import moment from "moment"
 
 import {
   View,
@@ -32,7 +28,6 @@ LogBox.ignoreLogs([
   "VirtualizedLists should never be nested", // TODO: Remove when fixed
 ])
 
-import { DatePicker } from "../../../components-custom/date-picker/date-picker"
 import {
   return_todays_datestamp,
   displayDateFromTimestamp,
@@ -57,7 +52,9 @@ import {
   GetText,
   ClientName,
   EditExerciseModal,
-  updateFollowingWeeks
+  updateFollowingWeeks,
+  DayCompletedCheckbox,
+  DaysBox,
 } from "../edit-program-screen/ProgramsTool - Helper functions"
 
 import iStyles from "../edit-program-screen/Constants/Styles"
@@ -77,66 +74,6 @@ const text2 = iStyles.text2
 const text3 = iStyles.text3
 const greyText = iStyles.greyText
 
-const DaysBox = props => {
-  const { program, state } = props
-  const [isChoosing, setIsChoosing] = useState(false)
-
-  let styles = {
-    completed: { ...text2, fontWeight: "bold" },
-    notCompleted: greyText,
-  }
-
-  let buttonColor = state.locked ? greyText.color : text1.color
-
-  return (
-    <View>
-      <Button
-        onPress={() => setIsChoosing(!isChoosing)}
-        color={buttonColor}
-        disabled={state.locked}
-      >
-        {translate("trainClientsScreen.Day")}
-        {state.currentDayIndex + 1} {translate("trainClientsScreen.W")}
-        {state.currentWeekIndex + 1}
-      </Button>
-      {isChoosing && (
-        <View style={{ flexDirection: "row" }}>
-          {program.Weeks.map((week, weekIndex) => {
-            return (
-              <View key={weekIndex}>
-                <Text style={{ ...text1, fontSize: 15, textAlign: "center" }}>
-                  W{weekIndex + 1}
-                </Text>
-                {program.Weeks[weekIndex].Days.map((day, dayIndex) => {
-                  let textStyle = styles.notCompleted
-                  let selected = false
-                  if (weekIndex === state.currentWeekIndex)
-                    if (dayIndex === state.currentDayIndex) selected = true
-                  if (program.Weeks[weekIndex].Days[dayIndex].isCompleted)
-                    textStyle = styles.completed
-                  return (
-                    <Pressable
-                      key={dayIndex}
-                      onPress={() => {
-                        setIsChoosing(false)
-                        props.onPressDay(weekIndex, dayIndex)
-                      }}
-                    >
-                      <View style={{ margin: 2, borderWidth: selected ? 1 : 0 }}>
-                        <Text style={textStyle}>D{dayIndex + 1}</Text>
-                      </View>
-                    </Pressable>
-                  )
-                })}
-              </View>
-            )
-          })}
-        </View>
-      )}
-    </View>
-  )
-}
-
 const Header = props => {
   // const {client, program} = props;
 
@@ -151,8 +88,6 @@ const Header = props => {
   let lockColor = props.state.locked ? text2.color : "red"
   let lockButtonMode: any = props.state.locked ? "contained" : "text"
   let style1 = props.state.locked ? greyStyle : text1
-  const [seeDatePicker, setSeeDatePicker] = useState(false)
-  const dateRandom = new Date(1598051730000)
 
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 2 }}>
@@ -162,50 +97,14 @@ const Header = props => {
         <ClientName clientID={program.Client} disabled={true} style={iStyles.text1} />
         <View style={{ flexDirection: "row" }}>
           <Text style={style1}>{translate("trainClientsScreen.Completed")}?</Text>
-          <Checkbox
+
+          <DayCompletedCheckbox
+            isCompleted={program.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted}
+            currentDate={program.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn}
+            onToggle={newDate => props.onToggleDayCompleted(currentDayIndex, newDate)}
             color={iStyles.text1.color}
-            status={
-              program.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted
-                ? "checked"
-                : "unchecked"
-            }
-            disabled={props.state.locked}
-            onPress={props.onToggleDayCompleted}
           />
         </View>
-        {seeDatePicker ? (
-          <View
-            style={[
-              {
-                width: "100%",
-              },
-            ]}
-          >
-            {/* moment(inputDateStamp).toDate() */}
-            <DateTimePicker
-              value={
-                moment(
-                  program.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn,
-                ).toDate() || dateRandom
-              }
-              onChange={(event, newDate) => {
-                const date2 = newDate || dateRandom
-                setSeeDatePicker(false)
-                props.onChangeDate(date2)
-              }}
-              mode={"date"}
-              display="default"
-            />
-          </View>
-        ) : (
-          <Pressable onPress={() => setSeeDatePicker(true)}>
-            <Text style={iStyles.text2}>
-              {displayDateFromTimestamp2(
-                program.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn,
-              )}
-            </Text>
-          </Pressable>
-        )}
       </View>
       <View style={{ alignItems: "flex-start", marginHorizontal: 10 }}>
         <Button
@@ -363,7 +262,14 @@ const getInitialState = program => {
 const ProgramView = props => {
   // const client = store.getClient(program.ClientID);
   const [state, setState] = useState(() => getInitialState(props.program))
-  const { currentWeekIndex, currentDayIndex, currentExerciseIndex, isExerciseModalVisible, locked, currentProgram } = state
+  const {
+    currentWeekIndex,
+    currentDayIndex,
+    currentExerciseIndex,
+    isExerciseModalVisible,
+    locked,
+    currentProgram,
+  } = state
 
   const dayEmpty =
     state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length === 0
@@ -388,15 +294,19 @@ const ProgramView = props => {
     setState({ ...newState })
   }
 
-  const onToggleDayCompletedHandler = () => {
+  const onToggleDayCompletedHandler = (dayIndex, newDate) => {
     let newState = currentProgram
     newState.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted = !newState.Weeks[
       currentWeekIndex
     ].Days[currentDayIndex].isCompleted
+    const updatedDate =
+      newDate || newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn
+
+    newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn = updatedDate
     setState({ ...state, currentProgram: { ...newState } })
   }
 
-  const saveProgram = (updatedProgram) => {
+  const saveProgram = updatedProgram => {
     if (updatedProgram)
       fb.updateItem(props.programID, updatedProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
         console.error(error),
@@ -411,17 +321,18 @@ const ProgramView = props => {
   }
 
   const onEditSetsRepsHandler = exerciseIndex => {
-    setState({...state, isExerciseModalVisible: true, currentExerciseIndex: exerciseIndex})
-
+    setState({ ...state, isExerciseModalVisible: true, currentExerciseIndex: exerciseIndex })
   }
 
-const onCloseExerciseModal = newExercise => {
-  let newProgram = currentProgram;
-  newProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex] = newExercise;
-  newProgram = updateFollowingWeeks({...state, currentProgram: newProgram})
-  setState({...state, isExerciseModalVisible: false, currentProgram: newProgram})
-  saveProgram(newProgram);
-}
+  const onCloseExerciseModal = newExercise => {
+    let newProgram = currentProgram
+    newProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
+      currentExerciseIndex
+    ] = newExercise
+    newProgram = updateFollowingWeeks({ ...state, currentProgram: newProgram })
+    setState({ ...state, isExerciseModalVisible: false, currentProgram: newProgram })
+    saveProgram(newProgram)
+  }
 
   return (
     <ScrollView style={{ height: "100%" }}>
@@ -468,7 +379,6 @@ const onCloseExerciseModal = newExercise => {
           // onEditPositionHandler={onEditPositionHandler}
           onEditSetsRepsHandler={onEditSetsRepsHandler}
           // onExpandExerciseInfo={onExpandExerciseInfo}
-          
         />
       )}
       {dayEmpty && (

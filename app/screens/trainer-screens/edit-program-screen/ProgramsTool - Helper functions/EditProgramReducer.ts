@@ -38,8 +38,20 @@ export const EditProgramReducer = (state, action) => {
     }
 
     case "toggle day completed": {
-      state.currentProgram.Weeks[currentWeekIndex].Days[action.value].isCompleted = !state
-        .currentProgram.Weeks[currentWeekIndex].Days[action.value].isCompleted
+      state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].isCompleted = !state
+        .currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].isCompleted
+
+        if(action.newDate)
+        state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].completedOn = action.newDate
+        
+        // if it's the last day in the program - toggle program completed
+
+        if (currentWeekIndex === currentProgram.Weeks.length-1)
+        if (action.dayIndex === currentProgram.Weeks[currentWeekIndex].Days.length-1)
+        if (state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].isCompleted)
+        state.currentProgram.isCompleted = true;
+        else 
+        state.currentProgram.isCompleted = false;
 
       return { ...state }
     }
@@ -146,6 +158,21 @@ state.currentDayIndex = action.value
       state.isProgramViewShown = true
 
       // state.currentProgram = updateFollowingWeeks(state)
+
+      // get latest uncompleted day
+      let breakFlag = false
+      for (let weekIndex = 0; weekIndex < currentProgram.Weeks.length; weekIndex++) {
+        if (breakFlag === true) break
+        for (let dayIndex = 0; dayIndex < currentProgram.Weeks[weekIndex].Days.length; dayIndex++) {
+          if (breakFlag) break
+          if (currentProgram.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
+            breakFlag = true
+            state.currentWeekIndex = weekIndex
+            state.currentDayIndex = dayIndex 
+          }
+        }
+      }
+ 
       return { ...state }
     }
     case "reorder current program": {
@@ -211,6 +238,7 @@ state.currentDayIndex = action.value
     }
 
     case "change current week by one": {
+      if (action.value === 'increase' || action.value === 'decrease'){
       let changeBy = action.value === "increase" ? 1 : -1
       //check whether week will be out of bounds and change by 0 if so
       if (currentWeekIndex === action.weekLength - 1 && changeBy === 1) changeBy = 0
@@ -221,6 +249,16 @@ state.currentDayIndex = action.value
 
       if (changeBy === 0) return state
       else return { ...state }
+    }
+    else if(action.value === 'custom') {
+
+      state.currentWeekIndex = action.newWeekValue
+      state.currentDayIndex = action.newDayValue
+      return {...state}
+    }
+    else
+    return state
+    
     }
 
     case "change client": {

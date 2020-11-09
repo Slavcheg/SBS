@@ -151,15 +151,26 @@ export const exerciseDataStoreModel = types
 
 
       //get muscle groups and set volume to zero
+
+      let exercise = self.exercises.find(element => element.Name === 'Bench Press')
+
+      const allVolumesZero = () => {
+          let emptyObj = {}
+          for (const property in exercise.Coefs) {
+            emptyObj[property] = 0;
+          }
+        return emptyObj
+      }
+
       let programCoefs = {}
       let weeklyCoefs = [{coefs: {}}]
-      let exercise = self.exercises.find(element => element.Name === 'Bench Press')
-      for (const property in exercise.Coefs) {
-        programCoefs[property] = 0;
-      }
+      
+      programCoefs = allVolumesZero();
+
 
       //calculate all coefs
       currentProgram.Weeks[currentWeekIndex].Days.map((day, dayIndex) => {
+
         day.Exercises.forEach((exercise, exerciseIndex) => {
           let execiseVolumes = self.getExerciseVolume(exercise)
           for (const property in programCoefs) {
@@ -175,11 +186,13 @@ export const exerciseDataStoreModel = types
       for (const property in programCoefs) {
         if (!Number.isInteger(programCoefs[property])) programCoefs[property] = parseFloat(programCoefs[property].toFixed(1))
         weeklyCoefs.forEach((coef, index)=> {
-          if (!Number.isInteger(weeklyCoefs[index].coefs[property])) weeklyCoefs[index].coefs[property] = parseFloat(weeklyCoefs[index].coefs[property].toFixed(1))
+          if (weeklyCoefs[index].coefs[property])
+          if (!Number.isInteger(weeklyCoefs[index].coefs[property])) 
+          weeklyCoefs[index].coefs[property] = parseFloat(weeklyCoefs[index].coefs[property].toFixed(1))
         })
        
       }
-      // console.log(weeklyCoefs[1])
+
       let volumeArray = []
       let i=0;
       for (const muscleName in programCoefs) {
@@ -190,14 +203,6 @@ export const exerciseDataStoreModel = types
         })
         i++
       }
-
-      // let sortedArray = volumeArray;
-
-      // const sortFunction = (volumeArrayofObjects) => {
-      //   volumeArrayofObjects.
-      // }
-
-      // sortedArray.sort()
 
       const sortFunction = (a, b) => {
         return b.programVolume-a.programVolume

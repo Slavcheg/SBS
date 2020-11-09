@@ -306,10 +306,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     }
 
     const testHandler = () => {
-      let mailArr = _.uniq(cardStore2.getYouClientsEmails("dobrev.jordan@gmail.com"))
-      console.log(mailArr)
-      let idArr = mailArr.map(mail => userStore2.getUserIDByEmail(mail))
-      console.log(idArr)
+      console.log(rootStore.getUserPrograms(rootStore.loggedUser.id))
     }
 
     return (

@@ -6,7 +6,7 @@ export { getFilteredExercises } from "./GetAndSortExercises"
 export { EditProgramReducer } from "./EditProgramReducer"
 export { getVideoID, getColorByExercisePosition, getVideoTime, updateFollowingWeeks, getColorByMuscleName } from "./smallFunctions"
 export { EasyNumberPicker } from "./EasyNumberPicker"
-export { GetText, EditableText, ToggleButton, ImageBackgroundToggle } from "./smallComponents"
+export { GetText, EditableText, ToggleButton, ImageBackgroundToggle,ExpandCollapseButton,ExpandableContent } from "./smallComponents"
 export {
   ExerciseMoreInfoButtons,
   zeroMuscleVolume,
@@ -20,5 +20,6 @@ export {
   ShowExercise,
   ShowWeekName,
   ShowDayName,
-  ShowProgramMoreInfo
+  ShowProgramMoreInfo,
+  DayCompletedCheckbox,DaysBox
 } from "./ViewProgramComponents"

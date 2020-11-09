@@ -86,7 +86,24 @@ export const RootStoreModel = types.model("RootStore").props({
                 counterTotal += +card.item.card_limit
             })
         return {counterDone, counterTotal}
-    }
+    },
+
+    getUserPrograms (clientID: string) {
+        const loggedUser = values(self.userStore2.users)
+        .find(user => user.item.email == self.sessionStore.userEmail)
+        
+        const allTrainersPrograms = self.trainingProgramsStore.trainersPrograms(loggedUser.id);
+
+        const oneTraineePrograms = allTrainersPrograms.filter(program => program.item.Client === clientID)
+
+        const justProgramIDs = [];
+        oneTraineePrograms.map((program => {
+            justProgramIDs.push(program.id)
+        }))
+
+        return justProgramIDs
+    },
+
 }))
 
 /**

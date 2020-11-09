@@ -7,20 +7,68 @@ import React, {
   ReactNode,
   ReactChildren,
 } from "react"
-import { View, Text, TextInput as TextInput2, Pressable, ImageBackground } from "react-native"
+import {
+  View,
+  Text,
+  TextInput as TextInput2,
+  Pressable,
+  ImageBackground,
+  StyleProp,
+} from "react-native"
 import { Button } from "react-native-paper"
 import { RNCamera } from "react-native-camera"
 import { ImageSource } from "react-native-vector-icons/Icon"
 
-type GetTextProps = {
-  startingValue?: any
-  onEnd: any
-  style?: object
-  numeric?: boolean
-  autoFocus?: boolean
-  isNumber?: boolean
-  convertToString?: boolean
-  editable?: boolean
+type ExpandableContentProps = {
+  startMinimized?: boolean
+  title: string
+  titleStyle?: object
+}
+
+export const ExpandableContent: React.FC<ExpandableContentProps> = props => {
+  let initialState = props.startMinimized === true ? false : true
+
+  useEffect(() => {
+    initialState = props.startMinimized === true ? false : true
+  }, [props.startMinimized])
+  const [isExpanded, setIsExpanded] = useState(initialState)
+  return (
+    <View>
+      <View style={{ flexDirection: "row" }}>
+        <Text style={props.titleStyle}>{props.title}</Text>
+        <ExpandCollapseButton status={isExpanded} onPress={() => setIsExpanded(!isExpanded)} />
+      </View>
+      {isExpanded && <View>{props.children}</View>}
+    </View>
+  )
+}
+
+type ExpandCollapseButtonProps = {
+  onPress: Function
+  status: Boolean
+  color?: string
+  colorFalse?: string
+  icon?: string
+  iconFalse?: string
+  text?: string
+  style?: any
+  compact?: boolean
+}
+
+export const ExpandCollapseButton: React.FC<ExpandCollapseButtonProps> = props => {
+  const { onPress, status, color, colorFalse, icon, iconFalse, text, style, compact } = props
+
+  return (
+    <ToggleButton
+      onPress={props.onPress}
+      status={status}
+      color="red"
+      colorFalse="green"
+      icon="arrow-expand-up"
+      iconFalse="arrow-expand-down"
+      compact={true}
+    />
+  )
 }
 
 type ToggleButtonProps = {
@@ -107,6 +155,17 @@ export const ImageBackgroundToggle: React.FC<ImageBackgroundToggleProps> = ({
       </View>
     )
   else return <View>{children}</View>
+}
+
+type GetTextProps = {
+  startingValue?: any
+  onEnd: any
+  style?: object
+  numeric?: boolean
+  autoFocus?: boolean
+  isNumber?: boolean
+  convertToString?: boolean
+  editable?: boolean
 }
 
 export const GetText = (props: GetTextProps) => {

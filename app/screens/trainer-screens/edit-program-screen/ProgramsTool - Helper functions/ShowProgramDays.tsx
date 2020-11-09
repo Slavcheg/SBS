@@ -16,6 +16,14 @@ import { onPatch, onSnapshot } from "mobx-state-tree"
 import { YouTubeStandaloneAndroid } from "react-native-youtube"
 import _ from "lodash"
 
+import {
+  return_todays_datestamp,
+  displayDateFromTimestamp,
+  border_boxes,
+  getStampFromDate,
+  displayDateFromTimestamp2,
+} from "../../../../global-helper"
+
 import { useStores } from "../../../../models/root-store"
 import { IProgram, state } from "../../../../models/sub-stores"
 
@@ -32,6 +40,8 @@ import {
   ToggleButton,
   ImageBackgroundToggle,
   ShowProgramMoreInfo,
+  DayCompletedCheckbox,
+  DaysBox,
 } from "./index"
 
 type HeaderProps = {
@@ -66,14 +76,24 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
             onChange={clientID => props.onChangeClient(clientID)}
           />
           <View style={{ flexDirection: "row" }}>
-            <Button icon="arrow-left" compact={true} onPress={() => props.onChangeWeek("decrease")}>
+            <Button
+              icon="arrow-left"
+              compact={true}
+              onPress={() => props.onChangeWeek({ type: "decrease" })}
+            >
               {""}
             </Button>
-            <Text style={iStyles.text1}>Week {currentWeekIndex + 1}</Text>
+            <DaysBox
+              state={props.state}
+              program={currentProgram}
+              onPressDay={(weekIndex, dayIndex) =>
+                props.onChangeWeek({ type: "custom", weekValue: weekIndex, dayValue: dayIndex })
+              }
+            />
             <Button
               icon="arrow-right"
               compact={true}
-              onPress={() => props.onChangeWeek("increase")}
+              onPress={() => props.onChangeWeek({ type: "increase" })}
             >
               {""}
             </Button>
@@ -191,7 +211,12 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
       <View>
         {dayDone && (
           <View style={{ alignItems: "center" }}>
-            <Text>Day completed</Text>
+            <Text>
+              Day completed on{" "}
+              {displayDateFromTimestamp2(
+                currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn,
+              )}
+            </Text>
           </View>
         )}
 
@@ -217,8 +242,8 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
               backgroundColor = "lightcyan" // lightcyan azure aliceblue ivory whitesmoke
               isCurrent = true
             } else isCurrent = false
-            if (currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted)
-              backgroundColor = "lavender"
+            // if (currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted)
+            //   backgroundColor = "lavender"
             return (
               <Pressable
                 key={`${dayindex}+${day.Exercises.length}`}
@@ -276,7 +301,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                         </Button>
                       </View>
                     )}
-                    <Checkbox
+                    {/* <Checkbox
                       color={iStyles.text1.color}
                       status={
                         currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted
@@ -285,6 +310,16 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                       }
                       // disabled={props.state.locked}
                       onPress={() => props.onToggleDayCompleted(dayindex)}
+                    /> */}
+                    <DayCompletedCheckbox
+                      isCompleted={
+                        currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted
+                      }
+                      currentDate={
+                        currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn
+                      }
+                      onToggle={newDate => props.onToggleDayCompleted(dayindex, newDate)}
+                      color={iStyles.text1.color}
                     />
                     {/* <Button
                       icon="arrow-split-horizontal"
@@ -351,6 +386,14 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                             onPress={() => onChangeDay(dayindex)}
                           /> */}
                   </View>
+                  {currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted && (
+                    <Text style={{ textAlign: "center" }}>
+                      Day completed on{" "}
+                      {displayDateFromTimestamp2(
+                        currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn,
+                      )}
+                    </Text>
+                  )}
                   <View style={{ flex: 1 }}>
                     <ImageBackgroundToggle
                       imageURL={imgs.rotate}
@@ -373,6 +416,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                           onExpandExerciseInfo={onExpandExerciseInfo}
                           onViewVideo={exercise => viewVideoHandler(exercise)}
                           onReplaceExercise={onReplaceExercise}
+                          dayIndex={dayindex}
                         />
                       )}
                     </ImageBackgroundToggle>
@@ -400,6 +444,7 @@ type ShowDayExercisesProps = {
   onEditSetsRepsHandler: Function
   onViewVideo: Function
   onReplaceExercise: Function
+  dayIndex?: number
 }
 
 const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
@@ -415,6 +460,8 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
     onViewVideo,
     onReplaceExercise,
   } = props
+
+  const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
 
   const renderExercises = ({ item, index, drag, isActive }, isClickable, isDraggable) => {
     let textStyle = {
@@ -439,6 +486,9 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
         isClickable={isClickable}
         onViewVideo={() => onViewVideo(item)}
         showVolume={true}
+        isGreyedOut={
+          currentProgram.Weeks[currentWeekIndex].Days[props.dayIndex].isCompleted || false
+        }
       />
     )
   }
@@ -452,73 +502,45 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
 
   if (isActive && state.isReordering)
     return (
-      <ScrollView horizontal={true} pagingEnabled={true}>
-        <View style={iStyles.carouselScreen}>
-          <DraggableFlatList
-            data={exercises}
-            renderItem={({ item, index, drag, isActive }) =>
-              renderExercises({ item, index, drag, isActive }, true, state.isReordering)
-            }
-            scrollEnabled={false}
-            initialNumToRender={20}
-            keyExtractor={(item: any, index) => `${item.ID}-${index}`}
-            onDragEnd={({ data }) => onDragEndHandler(data)}
-            // getItemLayout={(data, index) => ({
-            //   length: EXERCISE_ITEM_HEIGHT,
-            //   offset: EXERCISE_ITEM_HEIGHT * index,
-            //   index,
-            // })}
-          />
-        </View>
-      </ScrollView>
+      <DraggableFlatList
+        data={exercises}
+        renderItem={({ item, index, drag, isActive }) =>
+          renderExercises({ item, index, drag, isActive }, true, state.isReordering)
+        }
+        scrollEnabled={false}
+        initialNumToRender={20}
+        keyExtractor={(item: any, index) => `${item.ID}-${index}`}
+        onDragEnd={({ data }) => onDragEndHandler(data)}
+      />
     )
   else if (isActive)
     return (
-      <ScrollView horizontal={true} pagingEnabled={true}>
-        <View style={iStyles.carouselScreen}>
-          <FlatList
-            data={exercises}
-            renderItem={({ item, index, drag, isActive }) =>
-              renderExercises({ item, index, drag, isActive }, true, state.isReordering)
-            }
-            scrollEnabled={false}
-            initialNumToRender={20}
-            keyExtractor={(item, index) => `${item.ID}-${index}`}
+      <FlatList
+        data={exercises}
+        renderItem={({ item, index, drag, isActive }) =>
+          renderExercises({ item, index, drag, isActive }, true, state.isReordering)
+        }
+        scrollEnabled={false}
+        initialNumToRender={20}
+        keyExtractor={(item, index) => `${item.ID}-${index}`}
 
-            // getItemLayout={(data, index) => ({
-            //   length: EXERCISE_ITEM_HEIGHT,
-            //   offset: EXERCISE_ITEM_HEIGHT * index,
-            //   index,
-            // })}
-          />
-        </View>
-        <View style={iStyles.carouselScreen}>
-          <ShowProgramMoreInfo state={state} />
-        </View>
-      </ScrollView>
+        // getItemLayout={(data, index) => ({
+        //   length: EXERCISE_ITEM_HEIGHT,
+        //   offset: EXERCISE_ITEM_HEIGHT * index,
+        //   index,
+        // })}
+      />
     )
   else
     return (
-      <ScrollView horizontal={true} pagingEnabled={true}>
-        <View style={iStyles.carouselScreen}>
-          <FlatList
-            data={exercises}
-            renderItem={({ item, index, drag, isActive }) =>
-              renderExercises({ item, index, drag, isActive }, false, false)
-            }
-            scrollEnabled={false}
-            initialNumToRender={20}
-            keyExtractor={(item, index) => `${item.ID}-${index}`}
-            // getItemLayout={(data, index) => ({
-            //   length: EXERCISE_ITEM_HEIGHT,
-            //   offset: EXERCISE_ITEM_HEIGHT * index,
-            //   index,
-            // })}
-          />
-        </View>
-        <View style={iStyles.carouselScreen}>
-          <Text>Тест</Text>
-        </View>
-      </ScrollView>
+      <FlatList
+        data={exercises}
+        renderItem={({ item, index, drag, isActive }) =>
+          renderExercises({ item, index, drag, isActive }, false, false)
+        }
+        scrollEnabled={false}
+        initialNumToRender={20}
+        keyExtractor={(item, index) => `${item.ID}-${index}`}
+      />
     )
 }

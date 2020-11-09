@@ -1,4 +1,4 @@
-import { Button, Portal, Modal, TextInput } from "react-native-paper"
+import { Button, Portal, Modal, TextInput, Checkbox } from "react-native-paper"
 
 import React, { useState, useEffect, useReducer, FunctionComponent, ReactNode } from "react"
 
@@ -24,15 +24,31 @@ import {
   Alert,
 } from "react-native"
 
+import DateTimePicker from "@react-native-community/datetimepicker"
+import moment from "moment"
 import _ from "lodash"
 import { observer } from "mobx-react-lite"
+import { translate } from "../../../../i18n"
 
 import { GetText } from "./index"
 import iStyles from "../Constants/Styles"
 import { muscleGroups } from "../Constants/MuscleGroups"
 import { EditableText } from "./smallComponents"
-import { getColorByExercisePosition, getColorByMuscleName } from "./index"
+import {
+  getColorByExercisePosition,
+  getColorByMuscleName,
+  ExpandCollapseButton,
+  ExpandableContent,
+} from "./index"
 // import StoreProvider, { StoreContext } from "../../StoreProvider"
+
+import {
+  return_todays_datestamp,
+  displayDateFromTimestamp,
+  border_boxes,
+  getStampFromDate,
+  displayDateFromTimestamp2,
+} from "../../../../global-helper"
 
 type ExerciseMoreInfoButtonsProps = {
   showVideo?: Boolean
@@ -329,6 +345,7 @@ export const ShowExercise = observer(props => {
     isDragged,
     isClickable,
     showVolume,
+    isGreyedOut,
   } = props
 
   let someStyle = {
@@ -339,9 +356,22 @@ export const ShowExercise = observer(props => {
   let volumeText = exercisesStore.getVolumeStrings(item)
 
   let textStyle = props.textStyle ? props.textStyle : someStyle
+
   if (!textStyle) textStyle = iStyles.text1
   if (!item) return <Text>No exercise found</Text>
 
+  let positionAndExerciseNameStyle = {
+    ...iStyles.text1,
+    fontSize: 20,
+    color: textStyle.color || "black",
+  }
+
+  let setsAndRepsStyle = {
+    ...textStyle,
+    textAlign: "right",
+    textAlignVertical: "bottom",
+  }
+  if (isGreyedOut) setsAndRepsStyle.color = "grey"
   return (
     <View>
       <Pressable onPressIn={onPressIn} delayLongPress={DELAY_LONG_PRESS} disabled={!isClickable}>
@@ -363,15 +393,7 @@ export const ShowExercise = observer(props => {
               hitSlop={25}
               disabled={!isClickable}
             >
-              <Text
-                style={{
-                  ...iStyles.text1,
-                  fontSize: 20,
-                  color: textStyle.color || "black",
-                }}
-              >
-                {item.Position}
-              </Text>
+              <Text style={positionAndExerciseNameStyle}>{item.Position}</Text>
             </Pressable>
           </View>
           <View style={{ width: "45%", alignItems: "flex-start" }}>
@@ -383,7 +405,7 @@ export const ShowExercise = observer(props => {
             >
               <Text
                 style={{
-                  color: textStyle.color || "black",
+                  ...positionAndExerciseNameStyle,
                   fontSize: isDragged ? 20 : 18,
                 }}
               >
@@ -401,7 +423,9 @@ export const ShowExercise = observer(props => {
                 onPressReplace={props.onPressReplace}
               />
             )}
-            {item.isExpanded && showVolume && <Text>{volumeText}</Text>}
+            {item.isExpanded && showVolume && (
+              <Text style={{ color: positionAndExerciseNameStyle.color }}>{volumeText}</Text>
+            )}
           </View>
 
           <View
@@ -422,11 +446,7 @@ export const ShowExercise = observer(props => {
               showAllSetsReps={getAverageRepsAndReturnFlag(item)}
               isActive={isDragged}
               exercise={item}
-              textStyle={{
-                ...textStyle,
-                textAlign: "right",
-                textAlignVertical: "bottom",
-              }}
+              textStyle={setsAndRepsStyle}
               isClickable={isClickable}
             />
           </View>
@@ -496,13 +516,10 @@ export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => 
   if (!currentProgram) return <View></View>
 
   return (
-    <View>
-      <Text style={iStyles.text1}>Whole program volume</Text>
-      <ProgramMiniInfo state={state} />
-      {/* {currentProgram.Weeks[currentWeekIndex].Days.map((day, index) => {
-        return <ShowDayMoreInfo key={index} state={{ ...state, currentDayIndex: index }} />
-      })} */}
-    </View>
+    <ScrollView style={{ flex: 1, padding: 2 }}>
+      <ProgramGeneralInfo state={state} />
+      <ProgramVolumeTable state={state} />
+    </ScrollView>
   )
 }
 
@@ -520,7 +537,7 @@ export const ShowDayMoreInfo = props => {
   )
 }
 
-const ProgramMiniInfo = props => {
+const ProgramVolumeTable = props => {
   const { state } = props
   const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
 
@@ -558,6 +575,7 @@ const ProgramMiniInfo = props => {
     }
     const greyTextStyle = { ...iStyles.greyText }
     if (item.programVolume === 0) return <View></View>
+
     return (
       <View style={{ flexDirection: "row", width: "100%" }}>
         <View style={styles.muscleColumns}>
@@ -580,16 +598,227 @@ const ProgramMiniInfo = props => {
   }
 
   return (
-    <View>
+    <ExpandableContent title="Whole program volume" titleStyle={iStyles.text1}>
       <FlatList
         data={coefsArray}
         keyExtractor={(item, index) => `${item.Name}-${index}`}
         renderItem={renderCoefs}
         ListHeaderComponent={flatlistHeader}
       />
+    </ExpandableContent>
+  )
+}
+
+const getClientProgramsByID = clientID => {
+  let programs = []
+
+  const sessionStore = useStores().sessionStore
+  const userStore2 = useStores().userStore2
+  const cardStore2 = useStores().cardyStore2
+  const trainerEmail = sessionStore.userEmail
+  const [state, setState] = useState({
+    clientName:
+      clientID === "No client yet" ? "No client yet" : userStore2.getUserByID(clientID).item.first,
+    allClients: [],
+  })
+
+  const clientName =
+    clientID === "No client yet" ? "No client yet" : userStore2.getUserByID(clientID).item.first
+  const allClientsEmails = [...cardStore2.getYouClientsEmails(trainerEmail), trainerEmail]
+  const allClients = _.uniq(
+    allClientsEmails
+      .map(email => userStore2.getUserByEmail(email))
+      .filter(client => client !== null),
+  )
+  setState({
+    ...state,
+    clientName: clientName,
+    allClients: [...allClients, { id: "No client yet", item: { first: "No client yet" } }],
+  })
+
+  return programs
+}
+
+const getProgramInfo = program => {
+  let sessionsInfo = []
+  let trainingsDone = 0
+  let lastCompletedOn = ""
+  let lastCompletedOnDayString = ""
+  let numberOfSessionsInProgram = 0
+
+  program.Weeks.forEach((week, weekIndex) => {
+    program.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
+      numberOfSessionsInProgram++
+      if (day.isCompleted) {
+        lastCompletedOn = day.completedOn
+        lastCompletedOnDayString = ` (${day.DayName})`
+        trainingsDone++
+      }
+    })
+  })
+
+  sessionsInfo.push({ Name: "Program name", Value: program.Name })
+  sessionsInfo.push({
+    Name: "Trainings done",
+    Value: `${trainingsDone}/${numberOfSessionsInProgram}`,
+  })
+  sessionsInfo.push({
+    Name: "Last trained on",
+    Value: displayDateFromTimestamp2(parseInt(lastCompletedOn)) + lastCompletedOnDayString,
+  })
+  const trainingsLeft = numberOfSessionsInProgram - trainingsDone
+  const programStatus = program.isCompleted ? "Completed" : `${trainingsLeft} trainings left to do`
+  sessionsInfo.push({ Name: "Program status", Value: programStatus })
+
+  return sessionsInfo
+}
+
+const ProgramGeneralInfo = props => {
+  const { state } = props
+  const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
+
+  // преместихме инфото за програмите да се взема от тук, защото в обикновени функции не може да се ползват hooks и не можем да ползваме store-a съответно
+  const rootStore = useStores()
+  const thisClientPrograms = rootStore.getUserPrograms(currentProgram.Client)
+
+  const [programInfo, setProgramInfo] = useState([
+    ...getProgramInfo(currentProgram),
+    { Name: "Programs count", Value: thisClientPrograms.length },
+  ])
+
+  useEffect(() => {
+    setProgramInfo([
+      ...getProgramInfo(currentProgram),
+      { Name: "Programs count", Value: thisClientPrograms.length },
+    ])
+  }, [state])
+
+  return (
+    <ExpandableContent title="General info" titleStyle={iStyles.text1}>
+      {programInfo.map((info, index) => {
+        return (
+          <View key={index}>
+            <Text>
+              {info.Name}
+              {": "}
+              {info.Value}
+            </Text>
+          </View>
+        )
+      })}
+    </ExpandableContent>
+  )
+}
+
+type DayCompletedCheckboxProps = {
+  isCompleted: boolean
+  onToggle: Function
+  color?: string
+  uncheckedColor?: string
+  currentDate?: string
+}
+
+export const DayCompletedCheckbox: React.FC<DayCompletedCheckboxProps> = props => {
+  const { isCompleted, onToggle, currentDate } = props
+  const [isPicking, setIsPicking] = useState(false)
+  const dateRandom = new Date(1598051730000)
+
+  const onPressCheckbox = () => (isCompleted === true ? onToggle() : setIsPicking(true))
+
+  return (
+    <View>
+      <Checkbox
+        onPress={onPressCheckbox}
+        status={isCompleted ? "checked" : "unchecked"}
+        color={props.color}
+        uncheckedColor={props.uncheckedColor}
+      />
+      {isPicking && (
+        <DateTimePicker
+          value={moment(currentDate).toDate() || dateRandom}
+          onChange={(event, newDate) => {
+            const date2 = newDate || currentDate || dateRandom
+            setIsPicking(false)
+            onToggle(getStampFromDate(date2))
+          }}
+          mode={"date"}
+          display="default"
+        />
+      )}
     </View>
   )
 }
+
+const text1 = iStyles.text1
+const text2 = iStyles.text2
+const greyText = iStyles.greyText
+
+type DaysBoxProps = {
+  program: any
+  state: any
+  onPressDay: Function
+}
+
+export const DaysBox: React.FC<DaysBoxProps> = props => {
+  const { program, state } = props
+  const [isChoosing, setIsChoosing] = useState(false)
+
+  let styles = {
+    completed: { ...text2, fontWeight: "bold" },
+    notCompleted: greyText,
+  }
+
+  let buttonColor = state.locked ? greyText.color : text1.color
+
+  return (
+    <View>
+      <Button
+        onPress={() => setIsChoosing(!isChoosing)}
+        color={buttonColor}
+        disabled={state.locked}
+      >
+        {translate("trainClientsScreen.Day")}
+        {state.currentDayIndex + 1} {translate("trainClientsScreen.W")}
+        {state.currentWeekIndex + 1}
+      </Button>
+      {isChoosing && (
+        <View style={{ flexDirection: "row" }}>
+          {program.Weeks.map((week, weekIndex) => {
+            return (
+              <View key={weekIndex}>
+                <Text style={{ ...text1, fontSize: 15, textAlign: "center" }}>
+                  W{weekIndex + 1}
+                </Text>
+                {program.Weeks[weekIndex].Days.map((day, dayIndex) => {
+                  let textStyle = styles.notCompleted
+                  let selected = false
+                  if (weekIndex === state.currentWeekIndex)
+                    if (dayIndex === state.currentDayIndex) selected = true
+                  if (program.Weeks[weekIndex].Days[dayIndex].isCompleted)
+                    textStyle = styles.completed
+                  return (
+                    <Pressable
+                      key={dayIndex}
+                      onPress={() => {
+                        setIsChoosing(false)
+                        props.onPressDay(weekIndex, dayIndex)
+                      }}
+                    >
+                      <View style={{ margin: 2, borderWidth: selected ? 1 : 0 }}>
+                        <Text style={textStyle}>D{dayIndex + 1}</Text>
+                      </View>
+                    </Pressable>
+                  )
+                })}
+              </View>
+            )
+          })}
+        </View>
+      )}
+    </View>
+  )
+}
+
 const styles = StyleSheet.create({
   muscleColumns: {
     width: "30%",

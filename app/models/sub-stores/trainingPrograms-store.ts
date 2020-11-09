@@ -5,19 +5,21 @@ import { firebaseFuncs } from "../../services/firebase/firebase.service"
 import { values } from "mobx"
 import _ from "lodash"
 
-//Това PROGRAM е само за reference, че ми помага по-лесно да си представя структурата. Долу са описани тези, които се ползват реално
+//Това PROGRAM_DATA е само за reference, че ми помага по-лесно да си представя структурата. Долу са описани тези, които се ползват реално
 
 const PROGRAM_DATA = {
   Name: "initial name",
   Tags: ["string"],
   Client: "Client ID",
   Trainers: ["Trainer IDs"],
+  isCompleted: false,
   Weeks: [
     {
       Days: [
         {
           DayName: "Day 1",
           isCompleted: false,
+          completedOn: '',
           Exercises: [
             {
               Name: "item.Name",
@@ -165,9 +167,6 @@ export const trainingProgramsStoreModel = types
   .actions(self => firebaseFuncs<IProgram>(self.refreshItems, self.collection))
   .actions(self => ({
     async createProgram(program: any) {
-      // console.log("test", values(self.programs))
-      // let emptyProgram = Program
-      // console.log(emptyProgram)
       self.addItem({
         ...EMPTY_PROGRAM_DATA2,
         ...program,
@@ -180,9 +179,7 @@ export const trainingProgramsStoreModel = types
   .views(self => ({
     program(id: string) {
       self.programs.forEach(program => console.log(program.id))
-      console.log("matching id ", id)
       let oneProgram = values(self.programs).filter(x => x.id === id)
-      console.log("oneProgram values", oneProgram)
       return oneProgram[0]
     },
     programSnapshot(id: string) {
@@ -193,9 +190,10 @@ export const trainingProgramsStoreModel = types
       let newIndex = self.programs.findIndex(findProgram)
       return newIndex
     },
-    trainersPrograms(id: string) {
-      return self.programs.filter(program => program.item.Trainers.includes(id))
+    trainersPrograms(trainerID: string) {
+      return self.programs.filter(program => program.item.Trainers.includes(trainerID))
     },
+
   }))
   .actions(self => ({
     addExercise(programID: string, state: any, exercise: object) {
@@ -222,12 +220,12 @@ export const trainingProgramsStoreModel = types
       self.programs[self.getProgramIndexByID(programID)].item.Name = newName
     },
     addNewDay(programID, weekIndex, dayIndex) {
-      console.log("tried adding new day by store")
+
       let newWeekData = {
         ...self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex],
       }
 
-      console.log(newWeekData)
+
       let newDayName = `Day ${newWeekData.Days.length + 1}`
       newWeekData.Days.push({ ...DEFAULT_ONE_DAY_DATA2, DayName: newDayName })
       applySnapshot(self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex], {
@@ -238,11 +236,10 @@ export const trainingProgramsStoreModel = types
       const helperDays =
         self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex].Days
 
-      console.log("tried removing ", dayIndex)
-      console.log("currentLength ", helperDays.length)
+
       helperDays.splice(dayIndex, 1)
       helperDays.forEach((day, index) => {
-        console.log(day.DayName)
+
       })
       applySnapshot(
         self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex].Days,

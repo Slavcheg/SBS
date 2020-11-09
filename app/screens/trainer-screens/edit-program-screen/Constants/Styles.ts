@@ -96,7 +96,7 @@ const iStyles = StyleSheet.create({
     marginHorizontal: 1,
   },
   carouselScreen: {
-    flex: 1,
+    // flex: 1,
     width: Dimensions.get("window").width,
   },
   text1Small: {
