@@ -581,20 +581,6 @@ const ProgramMiniInfo = props => {
 
   return (
     <View>
-      {/* <Button
-        onPress={() => {
-          console.log(coefs)
-        }}
-      >
-        test
-      </Button> */}
-      {/* {muscles.map((muscle, index) => {
-        return (
-          <View key={index} style={{ flexDirection: "row" }}>
-
-          </View>
-        )
-      })} */}
       <FlatList
         data={coefsArray}
         keyExtractor={(item, index) => `${item.Name}-${index}`}
