@@ -39,6 +39,7 @@ import {
   getColorByMuscleName,
   ExpandCollapseButton,
   ExpandableContent,
+  ShowProgramDays,
 } from "./index"
 // import StoreProvider, { StoreContext } from "../../StoreProvider"
 
@@ -61,7 +62,7 @@ type ExerciseMoreInfoButtonsProps = {
 }
 
 export const ExerciseMoreInfoButtons: React.FC<ExerciseMoreInfoButtonsProps> = props => {
-  let fontSizeZ: number
+  let fontSizeZ: Number
   let showVideo = props.showVideo === false ? false : true
   let showDelete = props.showDelete === false ? false : true
   if (props.size) fontSizeZ = props.size
@@ -295,7 +296,15 @@ export const ShowWeight = props => {
 }
 
 export const SetsAndReps = props => {
-  let textStyle = { ...props.textStyle, fontSize: props.isActive ? 20 : 18 }
+  let defaultStyle = { fontSize: props.isActive ? 20 : 18 }
+  let textStyle = {
+    ...defaultStyle,
+    ...props.textStyle,
+  }
+
+  if (props.textStyle.fontSize)
+    textStyle.fontSize = props.isActive ? textStyle.fontSize + 2 : textStyle.fontSize
+
   const item = props.exercise
   let showItemRepsProgression = false
   let showItemWeightProgression = false
@@ -357,12 +366,14 @@ export const ShowExercise = observer(props => {
 
   let textStyle = props.textStyle ? props.textStyle : someStyle
 
+  textStyle.color = props.textStyle.color ? props.textStyle.color : someStyle.color
+
   if (!textStyle) textStyle = iStyles.text1
   if (!item) return <Text>No exercise found</Text>
 
   let positionAndExerciseNameStyle = {
     ...iStyles.text1,
-    fontSize: 20,
+    fontSize: textStyle.fontSize || 20,
     color: textStyle.color || "black",
   }
 
@@ -406,7 +417,9 @@ export const ShowExercise = observer(props => {
               <Text
                 style={{
                   ...positionAndExerciseNameStyle,
-                  fontSize: isDragged ? 20 : 18,
+                  fontSize: isDragged
+                    ? positionAndExerciseNameStyle.fontSize + 2
+                    : positionAndExerciseNameStyle.fontSize,
                 }}
               >
                 {item.Name}
@@ -519,6 +532,7 @@ export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => 
     <ScrollView style={{ flex: 1, padding: 2 }}>
       <ProgramGeneralInfo state={state} />
       <ProgramVolumeTable state={state} />
+      <ProgramInfoOldPrograms state={state} />
     </ScrollView>
   )
 }
@@ -639,7 +653,7 @@ const getClientProgramsByID = clientID => {
   return programs
 }
 
-const getProgramInfo = program => {
+export const getProgramInfo = (program: any, returnObject?: boolean) => {
   let sessionsInfo = []
   let trainingsDone = 0
   let lastCompletedOn = ""
@@ -670,6 +684,14 @@ const getProgramInfo = program => {
   const programStatus = program.isCompleted ? "Completed" : `${trainingsLeft} trainings left to do`
   sessionsInfo.push({ Name: "Program status", Value: programStatus })
 
+  if (returnObject) {
+    return {
+      ProgramName: program.Name,
+      TrainingsDone: `${trainingsDone}/${numberOfSessionsInProgram}`,
+      LastTrainedOn: displayDateFromTimestamp2(parseInt(lastCompletedOn)),
+      ProgramStatus: programStatus,
+    }
+  }
   return sessionsInfo
 }
 
@@ -704,6 +726,37 @@ const ProgramGeneralInfo = props => {
               {info.Value}
             </Text>
           </View>
+        )
+      })}
+    </ExpandableContent>
+  )
+}
+
+const ProgramInfoOldPrograms = props => {
+  const { state } = props
+  const { currentProgram, currentWeekIndex, currentDayIndex, oldPrograms } = props.state
+  console.log(oldPrograms)
+
+  return (
+    <ExpandableContent title="Other programs" titleStyle={iStyles.text1} startMinimized={true}>
+      {oldPrograms.length === 0 && <Text>No other programs found :(</Text>}
+      {oldPrograms.map((program, index) => {
+        return (
+          <ExpandableContent
+            title={program.Name}
+            titleStyle={iStyles.text1}
+            key={index}
+            startMinimized={true}
+          >
+            <ShowProgramDays
+              mode="smallPreview"
+              state={{
+                ...state,
+                currentProgram: program,
+                currentWeekIndex: program.Weeks.length - 1,
+              }}
+            />
+          </ExpandableContent>
         )
       })}
     </ExpandableContent>

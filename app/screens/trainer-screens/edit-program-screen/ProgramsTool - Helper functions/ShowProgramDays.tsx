@@ -104,7 +104,7 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
   )
 })
 
-type ShowProgramDaysModes = "oneDay" | "allDays"
+type ShowProgramDaysModes = "oneDay" | "allDays" | "smallPreview"
 
 type ShowProgramDaysProps = {
   state: state
@@ -187,7 +187,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
           <ShowExercise
             //   onPressIn={onDragStartHandler}
             //   onPressPosition={onEditPositionHandler}
-            textStyle={dayDone ? doneTextStyle : null}
+            textStyle={dayDone ? doneTextStyle : {}}
             // item={exercise}
             item={exercise}
             //   onPressExercise={() =>
@@ -225,6 +225,44 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
           renderItem={renderExercises}
           keyExtractor={(item, index) => `${item.Name}-${index}`}
         />
+      </View>
+    )
+  } else if (mode === "smallPreview") {
+    const renderExercises = ({ item, index }) => {
+      let exercise = { ...item, isExpanded: false }
+
+      return (
+        <View>
+          <ShowExercise
+            //   onPressIn={onDragStartHandler}
+            //   onPressPosition={onEditPositionHandler}
+            textStyle={{ fontSize: 14 }}
+            item={exercise}
+            showDeleteButton={false}
+            isClickable={false}
+            onViewVideo={() => viewVideoHandler(exercise)}
+          />
+        </View>
+      )
+    }
+
+    const renderHeader = DayName => {
+      return <Text>{DayName}</Text>
+    }
+
+    return (
+      <View>
+        {currentProgram.Weeks[currentWeekIndex].Days.map((day, dayindex) => {
+          return (
+            <FlatList
+              key={dayindex}
+              data={currentProgram.Weeks[currentWeekIndex].Days[dayindex].Exercises}
+              renderItem={renderExercises}
+              keyExtractor={(item, index) => `${item.Name}-${index}`}
+              ListHeaderComponent={() => renderHeader(day.DayName)}
+            />
+          )
+        })}
       </View>
     )
   } else if (mode === "allDays") {

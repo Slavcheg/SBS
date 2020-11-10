@@ -1,4 +1,6 @@
 export const TRAINING_PROGRAMS_COLLECTION = "trainingPrograms"
+import {return_todays_datestamp} from '../../global-helper'
+
 
 import { types, SnapshotIn, applySnapshot, getSnapshot } from "mobx-state-tree"
 import { firebaseFuncs } from "../../services/firebase/firebase.service"
@@ -19,7 +21,7 @@ const PROGRAM_DATA = {
         {
           DayName: "Day 1",
           isCompleted: false,
-          completedOn: '',
+          completedOn: return_todays_datestamp(),
           Exercises: [
             {
               Name: "item.Name",
@@ -68,6 +70,7 @@ const DEFAULT_EXERCISE_DATA = types.model({
 const DEFAULT_ONE_DAY_DATA = types.model({
   DayName: "Day 1",
   isCompleted: false,
+  completedOn: types.optional(types.union(types.number,types.string, types.undefined),return_todays_datestamp()),
   Exercises: types.optional(types.array(DEFAULT_EXERCISE_DATA), []),
 })
 
@@ -117,6 +120,7 @@ export const DEFAULT_EXERCISE_DATA2 = {
 export const DEFAULT_ONE_DAY_DATA2 = {
   DayName: "Day 1",
   isCompleted: false,
+  completedOn: return_todays_datestamp(),
   Exercises: [],
 }
 
@@ -172,7 +176,7 @@ export const trainingProgramsStoreModel = types
         ...program,
       })
     },
-    async deleteProgram(id: string) {
+    deleteProgram(id: string) {
       self.deleteItem(id)
     },
   }))

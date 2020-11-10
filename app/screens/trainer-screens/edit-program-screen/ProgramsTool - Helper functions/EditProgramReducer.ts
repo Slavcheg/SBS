@@ -153,6 +153,7 @@ state.currentDayIndex = action.value
 
     case "update current program": {
       state.currentProgram = action.value
+      state.oldPrograms = action.oldPrograms
 
       state.isExercisePickerShown = false
       state.isProgramViewShown = true

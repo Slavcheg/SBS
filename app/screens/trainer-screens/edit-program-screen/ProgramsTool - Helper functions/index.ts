@@ -21,5 +21,5 @@ export {
   ShowWeekName,
   ShowDayName,
   ShowProgramMoreInfo,
-  DayCompletedCheckbox,DaysBox
+  DayCompletedCheckbox,DaysBox, getProgramInfo
 } from "./ViewProgramComponents"

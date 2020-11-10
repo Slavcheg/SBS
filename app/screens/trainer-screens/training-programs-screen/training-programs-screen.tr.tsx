@@ -14,7 +14,17 @@ import { Button, Checkbox } from "react-native-paper"
 
 import _ from "lodash"
 
+import {
+  EMPTY_PROGRAM_DATA2,
+  state,
+  TRAINING_PROGRAMS_COLLECTION,
+  DEFAULT_SET_DATA2,
+} from "../../../models/sub-stores"
+import * as fb from "../../../services/firebase/firebase.service"
+
 import iStyles from "../edit-program-screen/Constants/Styles"
+
+import { getProgramInfo } from "../edit-program-screen/ProgramsTool - Helper functions"
 
 const getExerciseDB = async (onDownload: Function) => {
   const JSON_SHEET_ID =
@@ -125,73 +135,126 @@ interface ShowProgramsListProps {
   onPressDeleteProgram?: Function
   onPressEditProgram?: Function
   selectedPrograms: string[]
-  onPressCheckbox: Function
   onPressItem: Function
+  removeCompletedPrograms: Function
 }
 
 const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observer(props => {
   const userStore2 = useStores().userStore2
+  const [hideCompleted, setHideCompleted] = useState(false)
+
+  const onHideCompleted = () => {
+    setHideCompleted(!hideCompleted)
+
+    const newSelectedPrograms = []
+
+    props.programs.forEach(program => {
+      if (props.selectedPrograms.includes(program.id))
+        if (!program.item.isCompleted) newSelectedPrograms.push(program.id)
+    })
+    props.removeCompletedPrograms(newSelectedPrograms)
+  }
+
   return (
     <View style={props.style}>
-      {props.programs.length === 1 && (
-        <Text>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Checkbox
+          status={hideCompleted ? "checked" : "unchecked"}
+          onPress={onHideCompleted}
+          color={iStyles.text1.color}
+        />
+        <Text>Hide completed programs</Text>
+      </View>
+      {/* {props.programs.length === 1 && (
+        <Text style={{ textAlign: "center" }}>
           {translate("selectPrograms.ProgramsFound1")} {props.programs.length}{" "}
           {translate("selectPrograms.ProgramsFound2")}
         </Text>
       )}
       {props.programs.length !== 1 && (
-        <Text>
+        <Text style={{ textAlign: "center" }}>
           {translate("selectPrograms.ProgramsFound1")} {props.programs.length}{" "}
           {translate("selectPrograms.ProgramsFound2-Plural")}
         </Text>
-      )}
+      )} */}
 
       {/* <Button onPress={() => console.log(props.programs)}>test</Button> */}
-      {props.programs.map((program: any, index) => {
-        const programName =
-          props.programs[index].item.Client === "No client yet"
-            ? "No client yet"
-            : userStore2.getUserByID(props.programs[index].item.Client).item.first
-        let programSelected = props.selectedPrograms.includes(program.id) ? true : false
-        let textStyle = {
-          fontSize: 19,
-          color: programSelected ? iStyles.text1.color : "black",
-        }
+      {props.programs.length > 0 &&
+        props.programs.map((program: any, index) => {
+          const programName =
+            props.programs[index].item.Client === "No client yet"
+              ? "No client yet"
+              : userStore2.getUserByID(props.programs[index].item.Client).item.first
+          let programSelected = props.selectedPrograms.includes(program.id) ? true : false
+          let textStyle = {
+            fontSize: 19,
+            color: programSelected ? iStyles.text1.color : "black",
+          }
 
-        let checkedStatus = false
-        if (props.selectedPrograms.length > 0)
-          props.selectedPrograms.forEach(programIDList => {
-            if (programIDList === program.id) checkedStatus = true
-          })
+          let checkedStatus = false
+          if (props.selectedPrograms.length > 0)
+            props.selectedPrograms.forEach(programIDList => {
+              if (programIDList === program.id) checkedStatus = true
+            })
+          if (hideCompleted) if (program.item.isCompleted) return <View key={program.id}></View>
 
-        return (
-          <View
-            key={index}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <View style={{ backgroundColor: "white" }}>
-              <Pressable
-                activeOpacity={0.6}
-                onLongPress={() => props.onPressDeleteProgram(program.id)}
-                onPress={() => props.onPressCheckbox(program, checkedStatus)}
+          // let lastTrainingOn = ""
+          // let trainingsDone = 0
+          // let trainingsCount = 0
+
+          // program.item.Weeks.forEach((week, weekIndex) => {
+          //   program.item.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
+          //     trainingsCount++
+          //     if (day.isCompleted) {
+          //       console.log(day)
+          //       lastTrainingOn = day.completedOn
+          //       trainingsDone++
+          //     }
+          //   })
+          // })
+
+          // let trainingsString = `${trainingsDone}/${trainingsCount} trainings done`
+
+          let moreInfoString = ""
+          // if (lastTrainingOn === "") moreInfoString = trainingsString
+          // else moreInfoString = `${trainingsString}, last on ${lastTrainingOn}`
+
+          // let infoObject = getProgramInfo(program.item, true)
+          // if (infoObject.LastTrainedOn !== "Invalid date")
+          //   moreInfoString = `${infoObject.TrainingsDone} done, last on ${infoObject.LastTrainedOn}`
+          // else moreInfoString = `${infoObject.TrainingsDone} trainings done`
+          return (
+            <View key={program.id}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                <Text style={textStyle}>{programName}</Text>
-              </Pressable>
+                <View style={{ backgroundColor: "white" }}>
+                  <Pressable
+                    activeOpacity={0.6}
+                    onLongPress={() => props.onPressDeleteProgram(program.id)}
+                    onPress={() => props.onPressItem(program, checkedStatus)}
+                  >
+                    <Text style={textStyle}>{programName}</Text>
+                  </Pressable>
+                  <Text style={{ fontSize: 12, color: textStyle.color }}>{moreInfoString}</Text>
+                </View>
+
+                <Button
+                  icon="square-edit-outline"
+                  onPress={() => props.onPressEditProgram(program.id)}
+                  color={textStyle.color}
+                  labelStyle={{ fontSize: 20 }}
+                  compact={true}
+                  // color={"transparent"}
+                ></Button>
+              </View>
             </View>
-            <Button
-              icon="square-edit-outline"
-              onPress={() => props.onPressEditProgram(program.id)}
-              color={textStyle.color}
-              labelStyle={{ fontSize: 20 }}
-              // color={"transparent"}
-            ></Button>
-          </View>
-        )
-      })}
+          )
+        })}
     </View>
   )
 })
@@ -210,23 +273,35 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
 
     const [state, setState] = useState({
       currentProgram: "",
-      loadedExercises: false,
       selectedPrograms: [],
+      userPrograms: [],
     })
+
+    const [exercisesLoaded, setExercisesLoaded] = useState(false)
 
     useEffect(() => {
       programsStore.getItems()
       cardStore2.getItems()
-    }, [programsStore])
+      getPrograms()
+    }, [])
 
     useEffect(() => {
       getExerciseDB(onDownload)
     }, [])
 
+    const getPrograms = async () => {
+      const allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
+      const userPrograms = allPrograms.filter(program =>
+        program.item.Trainers.includes(rootStore.loggedUser.id),
+      )
+      console.log("all programs got ", allPrograms.length, userPrograms.length)
+      setState({ ...state, userPrograms: userPrograms })
+    }
+
     const onDownload = exerciseDatabase => {
       exercisesStore.updateAllExercises(exerciseDatabase)
       console.log("Exercises got")
-      setState({ ...state, loadedExercises: true })
+      setExercisesLoaded(true)
     }
 
     const onStartViewingHandler = () => {
@@ -251,17 +326,29 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       }
     }
 
-    const addProgramHandler = () => {
-      programsStore.createProgram({
-        Name: `Program number ${programsStore.trainersPrograms(rootStore.loggedUser.id).length +
-          1}`,
+    const addProgramHandler = async () => {
+      const defProgram = {
+        ...EMPTY_PROGRAM_DATA2,
+        Name: "NewProgram",
         Trainers: [rootStore.loggedUser.id],
         Client: `${translate("selectPrograms.NoClientYet")}`,
-      })
-      programsStore.getItems()
+      }
+      // let newPrograms = state.userPrograms
+      // newPrograms.push({ id: "bogus", item: defProgram })
+      // setState({ ...state, userPrograms: newPrograms })
+      await fb.addItem(defProgram, TRAINING_PROGRAMS_COLLECTION)
+      getPrograms()
+      // programsStore.createProgram({
+      //   Name: `Program number ${programsStore.trainersPrograms(rootStore.loggedUser.id).length +
+      //     1}`,
+      //   Trainers: [rootStore.loggedUser.id],
+      //   Client: `${translate("selectPrograms.NoClientYet")}`,
+      // })
+      // programsStore.getItems()
     }
 
     const onPressDeleteProgramHandler = deleteID => {
+      console.log(deleteID)
       Alert.alert(
         `${translate("editProgramScreen.Warning")}`,
         `${translate("selectPrograms.alertDeleteProgram")}`,
@@ -273,8 +360,11 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           {
             text: `${translate("alerts.yes")}`,
             onPress: () => {
-              programsStore.deleteProgram(deleteID)
-              programsStore.getItems()
+              // programsStore.deleteProgram(deleteID)
+              // programsStore.getItems()
+              let newPrograms = state.userPrograms.filter(program => program.id != deleteID)
+              setState({ ...state, userPrograms: newPrograms })
+              fb.deleteItem(deleteID, TRAINING_PROGRAMS_COLLECTION)
             },
           },
         ],
@@ -283,12 +373,17 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     }
 
     const onPressEditProgramHandler = editID => {
+      const editedProgram = state.userPrograms.find(program => program.id === editID)
+      const thisClientAllPrograms = rootStore.getUserPrograms(editedProgram.item.Client)
+      const thisClientOtherPrograms = thisClientAllPrograms.filter(programID => programID != editID)
+
       navigation.navigate("EditProgramScreen", {
-        programID: editID,
+        programID: editedProgram.id,
+        otherProgramIDs: thisClientOtherPrograms,
       })
     }
 
-    const onPressCheckbox = (program, checkedStatus: boolean) => {
+    const onPressItem = (program, checkedStatus: boolean) => {
       let arr = state.selectedPrograms
 
       //проверка за check. ако вече е чекнато - връщаме списък без него. ако го няма - добавяме го
@@ -301,13 +396,17 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       setState({ ...state, selectedPrograms: [...arr] })
     }
 
-    const onPressItem = program => {
-      setState({ ...state, selectedPrograms: [program.id] })
+    const removeCompletedPrograms = newList => {
+      setState({ ...state, selectedPrograms: newList })
     }
 
     const testHandler = () => {
-      console.log(rootStore.getUserPrograms(rootStore.loggedUser.id))
+      console.log(state.userPrograms.length)
+      // console.log(rootStore.getUserPrograms(rootStore.loggedUser.id))
     }
+
+    // const programs = programsStore.trainersPrograms(rootStore.loggedUser.id)
+    // const programs = state.userPrograms
 
     return (
       <Screen
@@ -327,18 +426,18 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           title={translate("selectPrograms.Header")}
         />
         <ShowProgramsList
-          programs={programsStore.trainersPrograms(rootStore.loggedUser.id)}
+          programs={state.userPrograms}
           onPressEditProgram={onPressEditProgramHandler}
           onPressDeleteProgram={onPressDeleteProgramHandler}
           selectedPrograms={state.selectedPrograms}
-          onPressCheckbox={onPressCheckbox}
           onPressItem={onPressItem}
+          removeCompletedPrograms={removeCompletedPrograms}
           // onPressEditProgram={onPressEditProgramHandler}
         />
         <Button
           onPress={addProgramHandler}
-          loading={!state.loadedExercises}
-          disabled={!state.loadedExercises}
+          loading={!exercisesLoaded}
+          disabled={!exercisesLoaded}
           color={iStyles.text2.color}
         >
           {translate("selectPrograms.AddNewProgram")}
@@ -355,12 +454,12 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
             onPress={onStartViewingHandler}
             mode="contained"
             color={iStyles.text1.color}
-            loading={!state.loadedExercises}
-            disabled={!state.loadedExercises}
+            loading={!exercisesLoaded}
+            disabled={!exercisesLoaded}
           >
             {translate("selectPrograms.TrainButton")}
           </Button>
-          {/* <Button onPress={testHandler}>test</Button> */}
+          <Button onPress={testHandler}>test</Button>
         </View>
       </Screen>
     )

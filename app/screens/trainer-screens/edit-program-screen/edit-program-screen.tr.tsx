@@ -179,6 +179,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
 export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(props => {
   const { navigation, route } = props
   const programID = route.params.programID
+  const otherProgramIDs = route.params.otherProgramIDs
   const sessionStore = useStores().sessionStore
   const userStore2 = useStores().userStore2
   const programsStore = useStores().trainingProgramsStore
@@ -217,8 +218,12 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     let allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
 
     let ourProgram = allPrograms.find(program => program.id === programID)
+    const oldPrograms = []
+    otherProgramIDs.forEach(programID => {
+      oldPrograms.push(allPrograms.find(program => program.id === programID).item)
+    })
 
-    dispatch({ type: "update current program", value: ourProgram.item })
+    dispatch({ type: "update current program", value: ourProgram.item, oldPrograms: oldPrograms })
   }
 
   useEffect(() => {

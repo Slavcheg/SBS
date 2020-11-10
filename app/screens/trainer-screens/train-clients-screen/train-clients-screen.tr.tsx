@@ -401,7 +401,6 @@ export const TrainClientsScreen = ({ navigation, route }) => {
     Object.keys(route.params).forEach(key => {
       programIDsArray.push(route.params[key])
     })
-    console.log("programIDsArray", programIDsArray)
 
     let allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
     let newProgramsArray = allPrograms.filter(program => programIDsArray.includes(program.id))
