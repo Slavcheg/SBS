@@ -41,6 +41,8 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
   const windowHeight = useWindowDimensions().height
 
   const [exerciseState, setExerciseState] = useState(_.cloneDeep(props.exercise))
+  const [weightArrow, setWeightArrow] = useState(-1)
+  const [repsArrow, setRepsArrow] = useState(-1)
 
   React.useMemo(() => {
     const newEx = _.cloneDeep(props.exercise)
@@ -63,18 +65,32 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
   const onChangeReps = (newValue, setIndex) => {
     let newSets = [...exerciseState.Sets]
 
-    if (setIndex === 0) {
-      for (let i = 0; i < newSets.length; i++) {
-        newSets[i].Reps = newValue
-      }
-    } else newSets[setIndex].Reps = newValue
+    newSets[setIndex].Reps = newValue
 
     setExerciseState({ ...exerciseState, Sets: [...newSets] })
+    setRepsArrow(setIndex + 1)
+    setTimeout(() => setRepsArrow(-1), 9000)
+  }
+
+  const onSpreadWeight = (setIndex: number) => {
+    let newSets = [...exerciseState.Sets]
+    for (let i = setIndex; i < exerciseState.Sets.length; i++)
+      newSets[i].Weight = newSets[i - 1].Weight
+    setExerciseState({ ...exerciseState, Sets: [...newSets] })
+    setWeightArrow(-1)
+  }
+
+  const onSpreadReps = (setIndex: number) => {
+    let newSets = [...exerciseState.Sets]
+    for (let i = setIndex; i < exerciseState.Sets.length; i++) newSets[i].Reps = newSets[i - 1].Reps
+    setExerciseState({ ...exerciseState, Sets: [...newSets] })
+    setRepsArrow(-1)
   }
 
   const onChangeWeight = (newValue, setIndex) => {
     let dummyExercise = { ...exerciseState }
-
+    setWeightArrow(setIndex + 1)
+    setTimeout(() => setWeightArrow(-1), 9000)
     // weight value is saved as string
 
     //if is not a number > change type to 'other'
@@ -83,11 +99,11 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
     if (Number.isNaN(parseInt(newValue))) {
       for (let i = 0; i < dummyExercise.Sets.length; i++) dummyExercise.Sets[i].WeightType = "other"
     }
-    if (setIndex === 0) {
-      for (let i = 0; i < dummyExercise.Sets.length; i++) {
-        dummyExercise.Sets[i].Weight = newValue
-      }
-    } else dummyExercise.Sets[setIndex].Weight = newValue
+
+    if (parseFloat(newValue).toString().length === newValue.toString().length)
+      dummyExercise.Sets[setIndex].WeightType = "pureWeight"
+
+    dummyExercise.Sets[setIndex].Weight = newValue
 
     setExerciseState({ ...exerciseState, ...dummyExercise })
   }
@@ -236,8 +252,49 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
             </View>
             {exerciseState.Sets.map((set, setIndex) => (
               <View key={setIndex}>
-                <Text style={{ ...iStyles.text1, textAlign: "center" }}>Set {setIndex + 1}</Text>
-
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  {repsArrow === setIndex && (
+                    <View
+                      style={{
+                        position: "absolute",
+                        left: 15,
+                        top: -10,
+                      }}
+                    >
+                      <Button
+                        icon={"arrow-down-bold-outline"}
+                        labelStyle={{ fontSize: 25 }}
+                        // compact={true}
+                        color={iStyles.text1.color}
+                        onPress={() => onSpreadReps(setIndex)}
+                      ></Button>
+                    </View>
+                  )}
+                  <Text style={{ ...iStyles.text1, textAlign: "center" }}>Set {setIndex + 1}</Text>
+                  {weightArrow === setIndex && (
+                    <View
+                      style={{
+                        position: "absolute",
+                        right: 5,
+                        top: -10,
+                      }}
+                    >
+                      <Button
+                        icon={"arrow-down-bold-outline"}
+                        labelStyle={{ fontSize: 25 }}
+                        // compact={true}
+                        color={iStyles.text1.color}
+                        onPress={() => onSpreadWeight(setIndex)}
+                      ></Button>
+                    </View>
+                  )}
+                </View>
                 <View
                   style={{
                     flexDirection: "row",

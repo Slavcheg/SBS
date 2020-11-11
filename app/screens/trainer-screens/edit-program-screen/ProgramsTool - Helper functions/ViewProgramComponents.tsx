@@ -33,7 +33,7 @@ import { translate } from "../../../../i18n"
 import { GetText } from "./index"
 import iStyles from "../Constants/Styles"
 import { muscleGroups } from "../Constants/MuscleGroups"
-import { EditableText } from "./smallComponents"
+import { EditableText, PlusButton, TrashButton } from "./smallComponents"
 import {
   getColorByExercisePosition,
   getColorByMuscleName,
@@ -284,11 +284,17 @@ export const ShowWeight = props => {
   const sets = props.sets
   const textStyle = props.textStyle
   let showKG
-  if (sets[0].WeightType === "pureWeight") {
+  const averagedSets = []
+  sets.forEach((set, setIndex) => {
+    if (set.WeightType === "pureWeight") averagedSets.push(set)
+  })
+  let averageWeight
+  if (averagedSets.length > 0) {
+    averageWeight = getAverageWeight(averagedSets)
     showKG = true
+  } else averageWeight = sets[0].Weight
 
-    let averageWeight = getAverageWeight(sets)
-
+  if (showKG) {
     return <Text style={textStyle}>{`  ${averageWeight}kg`}</Text>
   } else {
     return <Text style={textStyle}>{` ${sets[0].Weight}`}</Text>
@@ -520,6 +526,8 @@ export const ShowDayName = props => {
 
 type ShowProgramMoreInfoProps = {
   state: state
+  onChangeProgramName?: Function
+  onToggleProgramCompleted?: Function
 }
 
 export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => {
@@ -530,7 +538,11 @@ export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => 
 
   return (
     <ScrollView style={{ flex: 1, padding: 2 }}>
-      <ProgramGeneralInfo state={state} />
+      <ProgramGeneralInfo
+        state={state}
+        onChangeProgramName={props.onChangeProgramName}
+        onToggleProgramCompleted={props.onToggleProgramCompleted}
+      />
       <ProgramVolumeTable state={state} />
       <ProgramInfoOldPrograms state={state} />
     </ScrollView>
@@ -656,7 +668,7 @@ const getClientProgramsByID = clientID => {
 export const getProgramInfo = (program: any, returnObject?: boolean) => {
   let sessionsInfo = []
   let trainingsDone = 0
-  let lastCompletedOn = ""
+  let lastCompletedOn = 0
   let lastCompletedOnDayString = ""
   let numberOfSessionsInProgram = 0
 
@@ -664,8 +676,10 @@ export const getProgramInfo = (program: any, returnObject?: boolean) => {
     program.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
       numberOfSessionsInProgram++
       if (day.isCompleted) {
-        lastCompletedOn = day.completedOn
-        lastCompletedOnDayString = ` (${day.DayName})`
+        if (lastCompletedOn < day.completedOn) {
+          lastCompletedOn = day.completedOn
+          lastCompletedOnDayString = ` (${day.DayName})`
+        }
         trainingsDone++
       }
     })
@@ -676,9 +690,13 @@ export const getProgramInfo = (program: any, returnObject?: boolean) => {
     Name: "Trainings done",
     Value: `${trainingsDone}/${numberOfSessionsInProgram}`,
   })
+  let lastTrainedOnStringValue =
+    lastCompletedOn === 0
+      ? "Never"
+      : displayDateFromTimestamp2(parseInt(lastCompletedOn)) + lastCompletedOnDayString
   sessionsInfo.push({
     Name: "Last trained on",
-    Value: displayDateFromTimestamp2(parseInt(lastCompletedOn)) + lastCompletedOnDayString,
+    Value: lastTrainedOnStringValue,
   })
   const trainingsLeft = numberOfSessionsInProgram - trainingsDone
   const programStatus = program.isCompleted ? "Completed" : `${trainingsLeft} trainings left to do`
@@ -688,7 +706,8 @@ export const getProgramInfo = (program: any, returnObject?: boolean) => {
     return {
       ProgramName: program.Name,
       TrainingsDone: `${trainingsDone}/${numberOfSessionsInProgram}`,
-      LastTrainedOn: displayDateFromTimestamp2(parseInt(lastCompletedOn)),
+      LastTrainedOn:
+        lastCompletedOn === 0 ? "Never" : displayDateFromTimestamp2(parseInt(lastCompletedOn)),
       ProgramStatus: programStatus,
     }
   }
@@ -715,18 +734,47 @@ const ProgramGeneralInfo = props => {
     ])
   }, [state])
 
+  const leftTextStyle = { fontSize: 18, color: "black", fontWeight: "bold" }
+  const rightTextStyle = { fontSize: 18, color: "black" }
+  const clickableStyle = { ...rightTextStyle, color: iStyles.text1.color }
+
   return (
     <ExpandableContent title="General info" titleStyle={iStyles.text1}>
       {programInfo.map((info, index) => {
-        return (
-          <View key={index}>
-            <Text>
-              {info.Name}
-              {": "}
-              {info.Value}
-            </Text>
-          </View>
-        )
+        if (info.Name === "Program name")
+          return (
+            <View key={index} style={{ flexDirection: "row" }}>
+              <Text style={leftTextStyle}>
+                {info.Name}
+                {": "}
+              </Text>
+              <EditableText onEnd={props.onChangeProgramName} textStyle={clickableStyle}>
+                {info.Value}
+              </EditableText>
+            </View>
+          )
+        else if (info.Name === "Program status")
+          return (
+            <View key={index} style={{ flexDirection: "row" }}>
+              <Text style={leftTextStyle}>
+                {info.Name}
+                {": "}
+              </Text>
+              <TouchableOpacity onPress={props.onToggleProgramCompleted}>
+                <Text style={clickableStyle}>{info.Value}</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        else
+          return (
+            <View key={index} style={{ flexDirection: "row" }}>
+              <Text style={leftTextStyle}>
+                {info.Name}
+                {": "}
+              </Text>
+              <Text style={rightTextStyle}>{info.Value}</Text>
+            </View>
+          )
       })}
     </ExpandableContent>
   )
@@ -735,7 +783,6 @@ const ProgramGeneralInfo = props => {
 const ProgramInfoOldPrograms = props => {
   const { state } = props
   const { currentProgram, currentWeekIndex, currentDayIndex, oldPrograms } = props.state
-  console.log(oldPrograms)
 
   return (
     <ExpandableContent title="Other programs" titleStyle={iStyles.text1} startMinimized={true}>
@@ -743,7 +790,7 @@ const ProgramInfoOldPrograms = props => {
       {oldPrograms.map((program, index) => {
         return (
           <ExpandableContent
-            title={program.Name}
+            title={program.item.Name}
             titleStyle={iStyles.text1}
             key={index}
             startMinimized={true}
@@ -752,8 +799,8 @@ const ProgramInfoOldPrograms = props => {
               mode="smallPreview"
               state={{
                 ...state,
-                currentProgram: program,
-                currentWeekIndex: program.Weeks.length - 1,
+                currentProgram: program.item,
+                currentWeekIndex: program.item.Weeks.length - 1,
               }}
             />
           </ExpandableContent>
@@ -768,7 +815,7 @@ type DayCompletedCheckboxProps = {
   onToggle: Function
   color?: string
   uncheckedColor?: string
-  currentDate?: string
+  currentDate?: Date
 }
 
 export const DayCompletedCheckbox: React.FC<DayCompletedCheckboxProps> = props => {
@@ -810,6 +857,9 @@ type DaysBoxProps = {
   program: any
   state: any
   onPressDay: Function
+  editWeeks?: boolean
+  onAddWeek?: Function
+  onRemoveWeek?: Function
 }
 
 export const DaysBox: React.FC<DaysBoxProps> = props => {
@@ -866,6 +916,12 @@ export const DaysBox: React.FC<DaysBoxProps> = props => {
               </View>
             )
           })}
+          {props.editWeeks && (
+            <View style={{ justifyContent: "space-around" }}>
+              <PlusButton onPress={props.onAddWeek} />
+              <TrashButton onPress={props.onRemoveWeek} />
+            </View>
+          )}
         </View>
       )}
     </View>

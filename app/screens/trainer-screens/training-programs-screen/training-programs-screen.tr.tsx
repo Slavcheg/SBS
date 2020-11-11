@@ -11,6 +11,7 @@ import { translate } from "../../../i18n"
 import { SwipeRow } from "react-native-swipe-list-view"
 
 import { Button, Checkbox } from "react-native-paper"
+import firestore from "@react-native-firebase/firestore"
 
 import _ from "lodash"
 
@@ -19,12 +20,14 @@ import {
   state,
   TRAINING_PROGRAMS_COLLECTION,
   DEFAULT_SET_DATA2,
+  USERS_COLLECTION,
 } from "../../../models/sub-stores"
 import * as fb from "../../../services/firebase/firebase.service"
 
 import iStyles from "../edit-program-screen/Constants/Styles"
 
 import { getProgramInfo } from "../edit-program-screen/ProgramsTool - Helper functions"
+import { ScrollView } from "react-native-gesture-handler"
 
 const getExerciseDB = async (onDownload: Function) => {
   const JSON_SHEET_ID =
@@ -156,7 +159,7 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
   }
 
   return (
-    <View style={props.style}>
+    <View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Checkbox
           status={hideCompleted ? "checked" : "unchecked"}
@@ -179,12 +182,14 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
       )} */}
 
       {/* <Button onPress={() => console.log(props.programs)}>test</Button> */}
+
       {props.programs.length > 0 &&
         props.programs.map((program: any, index) => {
-          const programName =
+          const clientName =
             props.programs[index].item.Client === "No client yet"
               ? "No client yet"
               : userStore2.getUserByID(props.programs[index].item.Client).item.first
+          const programName = props.programs[index].item.Name
           let programSelected = props.selectedPrograms.includes(program.id) ? true : false
           let textStyle = {
             fontSize: 19,
@@ -198,31 +203,11 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
             })
           if (hideCompleted) if (program.item.isCompleted) return <View key={program.id}></View>
 
-          // let lastTrainingOn = ""
-          // let trainingsDone = 0
-          // let trainingsCount = 0
-
-          // program.item.Weeks.forEach((week, weekIndex) => {
-          //   program.item.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
-          //     trainingsCount++
-          //     if (day.isCompleted) {
-          //       console.log(day)
-          //       lastTrainingOn = day.completedOn
-          //       trainingsDone++
-          //     }
-          //   })
-          // })
-
-          // let trainingsString = `${trainingsDone}/${trainingsCount} trainings done`
-
           let moreInfoString = ""
-          // if (lastTrainingOn === "") moreInfoString = trainingsString
-          // else moreInfoString = `${trainingsString}, last on ${lastTrainingOn}`
-
-          // let infoObject = getProgramInfo(program.item, true)
-          // if (infoObject.LastTrainedOn !== "Invalid date")
-          //   moreInfoString = `${infoObject.TrainingsDone} done, last on ${infoObject.LastTrainedOn}`
-          // else moreInfoString = `${infoObject.TrainingsDone} trainings done`
+          let infoObject = getProgramInfo(program.item, true)
+          if (infoObject.LastTrainedOn !== "Never")
+            moreInfoString = `${infoObject.TrainingsDone} done, last on ${infoObject.LastTrainedOn}`
+          else moreInfoString = `${infoObject.TrainingsDone} trainings done`
           return (
             <View key={program.id}>
               <View
@@ -233,14 +218,19 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
                 }}
               >
                 <View style={{ backgroundColor: "white" }}>
-                  <Pressable
+                  <TouchableOpacity
                     activeOpacity={0.6}
                     onLongPress={() => props.onPressDeleteProgram(program.id)}
                     onPress={() => props.onPressItem(program, checkedStatus)}
                   >
                     <Text style={textStyle}>{programName}</Text>
-                  </Pressable>
-                  <Text style={{ fontSize: 12, color: textStyle.color }}>{moreInfoString}</Text>
+
+                    <Text style={{ fontSize: 12, color: textStyle.color }}>
+                      {/* {clientName} */}
+                      {/* {", "} */}
+                      {moreInfoString}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
 
                 <Button
@@ -273,11 +263,13 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
 
     const [state, setState] = useState({
       currentProgram: "",
-      selectedPrograms: [],
       userPrograms: [],
     })
 
+    const [selectedPrograms, setSelectedPrograms] = useState([])
+
     const [exercisesLoaded, setExercisesLoaded] = useState(false)
+    const [users, setUsers] = useState([])
 
     useEffect(() => {
       programsStore.getItems()
@@ -289,12 +281,41 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       getExerciseDB(onDownload)
     }, [])
 
+    useEffect(() => {
+      const unsubscribe = navigation.addListener("focus", () => {
+        getPrograms().catch(error => console.error(error))
+      })
+      return unsubscribe
+    }, [navigation])
+
     const getPrograms = async () => {
       const allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
-      const userPrograms = allPrograms.filter(program =>
+      await firestore()
+        .collection(USERS_COLLECTION)
+        .get()
+        .then(usersArray => {
+          console.log("downloaded all users")
+          const newUsers = []
+          usersArray.forEach(user => {
+            const userItem = user.data()
+            newUsers.push({
+              id: user.id,
+              item: { first: userItem.first, last: userItem.last, picture: userItem.picture },
+            })
+          })
+
+          setUsers(newUsers)
+        })
+        .catch(error => console.error(error))
+
+      let userPrograms = allPrograms.filter(program =>
         program.item.Trainers.includes(rootStore.loggedUser.id),
       )
       console.log("all programs got ", allPrograms.length, userPrograms.length)
+      userPrograms.sort(
+        (a, b) =>
+          b.item.Weeks[0].Days[0].Exercises.length - a.item.Weeks[0].Days[0].Exercises.length,
+      )
       setState({ ...state, userPrograms: userPrograms })
     }
 
@@ -305,7 +326,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     }
 
     const onStartViewingHandler = () => {
-      if (state.selectedPrograms.length === 0)
+      if (selectedPrograms.length === 0)
         Alert.alert(
           "",
           "Не си избрал нито 1 програма. Избери програма и пробвай пак",
@@ -316,7 +337,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         )
       else {
         let routeParams = {}
-        state.selectedPrograms.forEach((programID, index) => {
+        selectedPrograms.forEach((programID, index) => {
           routeParams = {
             ...routeParams,
             [index]: programID,
@@ -333,22 +354,28 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         Trainers: [rootStore.loggedUser.id],
         Client: `${translate("selectPrograms.NoClientYet")}`,
       }
-      // let newPrograms = state.userPrograms
-      // newPrograms.push({ id: "bogus", item: defProgram })
-      // setState({ ...state, userPrograms: newPrograms })
-      await fb.addItem(defProgram, TRAINING_PROGRAMS_COLLECTION)
-      getPrograms()
-      // programsStore.createProgram({
-      //   Name: `Program number ${programsStore.trainersPrograms(rootStore.loggedUser.id).length +
-      //     1}`,
-      //   Trainers: [rootStore.loggedUser.id],
-      //   Client: `${translate("selectPrograms.NoClientYet")}`,
-      // })
-      // programsStore.getItems()
+      let newPrograms = state.userPrograms
+      newPrograms.push({ id: "bogus", item: defProgram })
+      setState({ ...state, userPrograms: newPrograms })
+
+      await firestore()
+        .collection(TRAINING_PROGRAMS_COLLECTION)
+        .add(defProgram)
+        .then(res => {
+          console.log("Added new program with id: ", res.id)
+          newPrograms[newPrograms.length - 1].id = res.id
+          setState({ ...state, userPrograms: newPrograms })
+        })
     }
 
-    const onPressDeleteProgramHandler = deleteID => {
-      console.log(deleteID)
+    const onPressDeleteProgramHandler = async deleteID => {
+      const onConfirmDelete = async () => {
+        // programsStore.deleteProgram(deleteID)
+        // programsStore.getItems()
+        let newPrograms = state.userPrograms.filter(program => program.id != deleteID)
+        setState({ ...state, userPrograms: newPrograms })
+        await fb.deleteItem(deleteID, TRAINING_PROGRAMS_COLLECTION)
+      }
       Alert.alert(
         `${translate("editProgramScreen.Warning")}`,
         `${translate("selectPrograms.alertDeleteProgram")}`,
@@ -359,13 +386,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           },
           {
             text: `${translate("alerts.yes")}`,
-            onPress: () => {
-              // programsStore.deleteProgram(deleteID)
-              // programsStore.getItems()
-              let newPrograms = state.userPrograms.filter(program => program.id != deleteID)
-              setState({ ...state, userPrograms: newPrograms })
-              fb.deleteItem(deleteID, TRAINING_PROGRAMS_COLLECTION)
-            },
+            onPress: onConfirmDelete,
           },
         ],
         { cancelable: true },
@@ -380,11 +401,13 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       navigation.navigate("EditProgramScreen", {
         programID: editedProgram.id,
         otherProgramIDs: thisClientOtherPrograms,
+        allPrograms: state.userPrograms,
+        allUsers: users,
       })
     }
 
     const onPressItem = (program, checkedStatus: boolean) => {
-      let arr = state.selectedPrograms
+      let arr = selectedPrograms
 
       //проверка за check. ако вече е чекнато - връщаме списък без него. ако го няма - добавяме го
 
@@ -393,11 +416,11 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           return value != program.id
         })
       } else arr.push(program.id)
-      setState({ ...state, selectedPrograms: [...arr] })
+      setSelectedPrograms([...arr])
     }
 
     const removeCompletedPrograms = newList => {
-      setState({ ...state, selectedPrograms: newList })
+      setSelectedPrograms(newList)
     }
 
     const testHandler = () => {
@@ -420,16 +443,18 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           backgroundColor: color.palette.transparent,
         }}
       >
+        {/* <View style={{ backgroundColor: "white", alignItems: "center" }}> */}
         <PageHeader_Tr
           navigation={navigation}
           style={{ paddingHorizontal: 25 }}
           title={translate("selectPrograms.Header")}
         />
+
         <ShowProgramsList
           programs={state.userPrograms}
           onPressEditProgram={onPressEditProgramHandler}
           onPressDeleteProgram={onPressDeleteProgramHandler}
-          selectedPrograms={state.selectedPrograms}
+          selectedPrograms={selectedPrograms}
           onPressItem={onPressItem}
           removeCompletedPrograms={removeCompletedPrograms}
           // onPressEditProgram={onPressEditProgramHandler}
@@ -442,25 +467,24 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         >
           {translate("selectPrograms.AddNewProgram")}
         </Button>
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
-          {/* <Button
+
+        {/* <Button
           // onPress={() => console.log(exercisesStore.exercises[0].item.Name)}
           onPress={() => console.log(rootStore.loggedUser.id)}
         >
           Test
         </Button> */}
-          {/* <Button onPress={() => console.log(state.currentProgram)}>test</Button> */}
-          <Button
-            onPress={onStartViewingHandler}
-            mode="contained"
-            color={iStyles.text1.color}
-            loading={!exercisesLoaded}
-            disabled={!exercisesLoaded}
-          >
-            {translate("selectPrograms.TrainButton")}
-          </Button>
-          <Button onPress={testHandler}>test</Button>
-        </View>
+        {/* <Button onPress={() => console.log(state.currentProgram)}>test</Button> */}
+        <Button
+          onPress={onStartViewingHandler}
+          mode="contained"
+          color={iStyles.text1.color}
+          loading={!exercisesLoaded}
+          disabled={!exercisesLoaded}
+        >
+          {translate("selectPrograms.TrainButton")}
+        </Button>
+        {/* <Button onPress={testHandler}>test</Button> */}
       </Screen>
     )
   },

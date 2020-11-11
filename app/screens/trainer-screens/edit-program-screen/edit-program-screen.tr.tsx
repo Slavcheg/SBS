@@ -115,6 +115,9 @@ type ShowProgramProps = {
   onChangeClient: Function
   onReplaceExercise: Function
   onToggleReorder?: Function
+  onToggleProgramCompleted?: Function
+  onAddWeek?: Function
+  onRemoveWeek?: Function
 }
 
 const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
@@ -146,6 +149,8 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         onChangeProgramName={onChangeProgramName}
         onChangeWeek={onChangeWeek}
         onChangeClient={onChangeClient}
+        onAddWeek={props.onAddWeek}
+        onRemoveWeek={props.onRemoveWeek}
       />
       <ScrollView horizontal={true} pagingEnabled={true}>
         <View style={iStyles.carouselScreen}>
@@ -169,7 +174,11 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
           />
         </View>
         <View style={iStyles.carouselScreen}>
-          <ShowProgramMoreInfo state={state} />
+          <ShowProgramMoreInfo
+            state={state}
+            onChangeProgramName={onChangeProgramName}
+            onToggleProgramCompleted={props.onToggleProgramCompleted}
+          />
         </View>
       </ScrollView>
     </View>
@@ -178,17 +187,14 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
 
 export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(props => {
   const { navigation, route } = props
-  const programID = route.params.programID
-  const otherProgramIDs = route.params.otherProgramIDs
-  const sessionStore = useStores().sessionStore
-  const userStore2 = useStores().userStore2
-  const programsStore = useStores().trainingProgramsStore
+  const { programID, otherProgramIDs, allPrograms, allUsers } = route.params
+  // const  = route.params.otherProgramIDs
+
   const exercisesStore = useStores().exerciseDataStore
-  const rootStore = useStores()
 
   const initialState = {
     selectedMuscleGroup: "chest",
-    // currentProgram: programsStore.programSnapshot(programID),
+
     currentProgram: null,
     programID: route.params.programID,
     isExercisePickerShown: false,
@@ -215,15 +221,21 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   const [state, dispatch] = useReducer(EditProgramReducer, initialState)
 
   const getPrograms = async () => {
-    let allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
+    // let allProgramsDownloaded = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
 
     let ourProgram = allPrograms.find(program => program.id === programID)
     const oldPrograms = []
-    otherProgramIDs.forEach(programID => {
-      oldPrograms.push(allPrograms.find(program => program.id === programID).item)
+    otherProgramIDs.forEach(otherProgramID => {
+      oldPrograms.push(allPrograms.find(program => program.id === otherProgramID))
     })
 
-    dispatch({ type: "update current program", value: ourProgram.item, oldPrograms: oldPrograms })
+    dispatch({
+      type: "update current program",
+      value: ourProgram.item,
+      oldPrograms: oldPrograms,
+      allPrograms: allPrograms,
+      allUsers: allUsers,
+    })
   }
 
   useEffect(() => {
@@ -281,8 +293,6 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   const onSaveProgramHandler = () => {
     console.log("currentProgram", currentProgram)
     if (currentProgram) fb.updateItem(programID, currentProgram, TRAINING_PROGRAMS_COLLECTION)
-
-    // programsStore.saveProgram(programID, currentProgram)
   }
 
   const onPressSearchHandler = () => {
@@ -399,6 +409,17 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     dispatch({ type: "toggle reorder" })
   }
 
+  const onToggleProgramCompleted = () => {
+    dispatch({ type: "toggle program completed status" })
+  }
+
+  const onAddWeek = () => {
+    dispatch({ type: "add week" })
+  }
+  const onRemoveWeek = () => {
+    dispatch({ type: "remove week" })
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <ButtonsRow
@@ -447,6 +468,9 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
             onChangeClient={onChangeClient}
             onReplaceExercise={onReplaceExercise}
             onToggleReorder={onToggleReorder}
+            onToggleProgramCompleted={onToggleProgramCompleted}
+            onAddWeek={onAddWeek}
+            onRemoveWeek={onRemoveWeek}
           />
         </View>
       )}

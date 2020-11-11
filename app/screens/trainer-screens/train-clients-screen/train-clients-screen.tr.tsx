@@ -276,18 +276,6 @@ const ProgramView = props => {
       ? true
       : false
 
-  useEffect(() => {
-    const onBackPress = () => {
-      saveProgram(currentProgram)
-
-      return false
-    }
-
-    BackHandler.addEventListener("hardwareBackPress", onBackPress)
-
-    return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
-  }, [])
-
   const onToggleLockedHandler = () => {
     let newState = state
     newState.locked = !newState.locked
@@ -304,13 +292,16 @@ const ProgramView = props => {
 
     newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn = updatedDate
     setState({ ...state, currentProgram: { ...newState } })
+    saveProgram(currentProgram)
   }
 
   const saveProgram = updatedProgram => {
-    if (updatedProgram)
+    if (updatedProgram) {
       fb.updateItem(props.programID, updatedProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
         console.error(error),
       )
+      console.log("saved ", props.programID)
+    }
   }
 
   const onChangeDate = newDate => {
@@ -318,10 +309,12 @@ const ProgramView = props => {
     const newState = currentProgram
     newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn = getStampFromDate(newDate)
     setState({ ...state, currentProgram: { ...newState } })
+    saveProgram(currentProgram)
   }
 
   const onEditSetsRepsHandler = exerciseIndex => {
     setState({ ...state, isExerciseModalVisible: true, currentExerciseIndex: exerciseIndex })
+    saveProgram(currentProgram)
   }
 
   const onCloseExerciseModal = newExercise => {
@@ -413,6 +406,19 @@ export const TrainClientsScreen = ({ navigation, route }) => {
     })
     return unsubscribe
   }, [navigation])
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (isRearranging) {
+        setIsRearranging(false)
+        return true
+      } else return false
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", onBackPress)
+
+    return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
+  }, [isRearranging])
 
   const testHandler = () => {
     console.log("hii")

@@ -49,6 +49,8 @@ type HeaderProps = {
   onChangeWeek: Function
   onChangeProgramName: Function
   onChangeClient: Function
+  onAddWeek?: Function
+  onRemoveWeek?: Function
 }
 
 export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(props => {
@@ -89,6 +91,9 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
               onPressDay={(weekIndex, dayIndex) =>
                 props.onChangeWeek({ type: "custom", weekValue: weekIndex, dayValue: dayIndex })
               }
+              editWeeks={true}
+              onAddWeek={props.onAddWeek}
+              onRemoveWeek={props.onRemoveWeek}
             />
             <Button
               icon="arrow-right"

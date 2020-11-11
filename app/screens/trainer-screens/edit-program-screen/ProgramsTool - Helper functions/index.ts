@@ -4,9 +4,24 @@ export { EditExerciseModal } from "./EditExerciseModal"
 export * from "./ShowProgramDays"
 export { getFilteredExercises } from "./GetAndSortExercises"
 export { EditProgramReducer } from "./EditProgramReducer"
-export { getVideoID, getColorByExercisePosition, getVideoTime, updateFollowingWeeks, getColorByMuscleName } from "./smallFunctions"
+export {
+  getVideoID,
+  getColorByExercisePosition,
+  getVideoTime,
+  updateFollowingWeeks,
+  getColorByMuscleName,
+} from "./smallFunctions"
 export { EasyNumberPicker } from "./EasyNumberPicker"
-export { GetText, EditableText, ToggleButton, ImageBackgroundToggle,ExpandCollapseButton,ExpandableContent } from "./smallComponents"
+export {
+  GetText,
+  EditableText,
+  ToggleButton,
+  ImageBackgroundToggle,
+  ExpandCollapseButton,
+  ExpandableContent,
+  PlusButton,
+  TrashButton,
+} from "./smallComponents"
 export {
   ExerciseMoreInfoButtons,
   zeroMuscleVolume,
@@ -21,5 +36,7 @@ export {
   ShowWeekName,
   ShowDayName,
   ShowProgramMoreInfo,
-  DayCompletedCheckbox,DaysBox, getProgramInfo
+  DayCompletedCheckbox,
+  DaysBox,
+  getProgramInfo,
 } from "./ViewProgramComponents"

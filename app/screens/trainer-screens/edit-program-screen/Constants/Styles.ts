@@ -1,29 +1,30 @@
-import {DefaultTheme} from 'react-native-paper';
-import {StyleSheet, Dimensions} from 'react-native';
-import iTheme from './Themes';
+import { DefaultTheme } from "react-native-paper"
+import { StyleSheet, Dimensions, Appearance } from "react-native"
+import iTheme from "./Themes"
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width
+const windowHeight = Dimensions.get("window").height
+const colorScheme = Appearance.getColorScheme()
 
-const size1 = 20;
-const size2 = 12;
+const size1 = 20
+const size2 = 12
 
 const iStyles = StyleSheet.create({
   defaultText: {
     fontSize: 20,
-    color: 'black',
+    color: "black",
   },
   greyText: {
     fontSize: size1,
-    color: 'grey',
+    color: "grey",
   },
   selectedText: {
     fontSize: 22,
     color: iTheme.colors.primary,
   },
   bottomButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   oneButtonWrapper: {
     marginHorizontal: 0.5,
@@ -32,7 +33,7 @@ const iStyles = StyleSheet.create({
   exerciseHeader: {
     // fontFamily: 'Oswald-Regular',
     fontSize: 20,
-    color: 'blue',
+    color: "blue",
   },
   exerciseText: {
     // fontFamily: 'Oswald-Regular',
@@ -42,16 +43,17 @@ const iStyles = StyleSheet.create({
     fontSize: 15,
   },
   exercisePropContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   screenViewWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     flex: 1,
     // alignItems: 'center',
   },
   text1: {
     fontSize: size1,
-    color: iTheme.colors.primary,
+    color: colorScheme === "dark" ? iTheme.colors.primary : iTheme.colors.primary,
+    // color: colorScheme==='dark' ? iTheme.colors.primary,
   },
   text2: {
     fontSize: size1,
@@ -63,8 +65,8 @@ const iStyles = StyleSheet.create({
   },
   smallImputBox: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     height: 60,
     // width: 50,
     // borderWidth: 2,
@@ -72,23 +74,23 @@ const iStyles = StyleSheet.create({
   smallerOutlineOverInputBox: {
     borderWidth: 1,
     borderColor: iTheme.colors.primary,
-    width: '95%',
-    height: '80%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "95%",
+    height: "80%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   smallIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: 50,
     height: 20,
     borderRadius: 10,
     marginHorizontal: 1,
   },
   mediumRoundIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
     width: 35,
     height: 25,
     borderRadius: 10,
@@ -110,11 +112,11 @@ const iStyles = StyleSheet.create({
   text3Small: {
     fontSize: size2,
     color: iTheme.colors.third,
-},  greyTextSmall: {
-  fontSize: size2,
-  color: 'grey',
-},
-
+  },
+  greyTextSmall: {
+    fontSize: size2,
+    color: "grey",
+  },
 })
 
-export default iStyles;
+export default iStyles

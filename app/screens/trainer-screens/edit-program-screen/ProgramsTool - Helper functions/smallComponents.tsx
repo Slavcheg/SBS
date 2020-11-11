@@ -18,6 +18,7 @@ import {
 import { Button } from "react-native-paper"
 import { RNCamera } from "react-native-camera"
 import { ImageSource } from "react-native-vector-icons/Icon"
+import iStyles from "../Constants/Styles"
 
 type ExpandableContentProps = {
   startMinimized?: boolean
@@ -246,5 +247,35 @@ export const EditableText = (props: EditableTextProps) => {
         </Pressable>
       )}
     </View>
+  )
+}
+
+export const PlusButton = props => {
+  return (
+    <Button
+      icon="plus-circle"
+      mode={"contained"}
+      compact={true}
+      color={iStyles.text2.color}
+      style={iStyles.mediumRoundIcon}
+      onPress={props.onPress}
+    >
+      {""}
+    </Button>
+  )
+}
+
+export const TrashButton = props => {
+  return (
+    <Button
+      icon="trash-can-outline"
+      mode={"contained"}
+      compact={true}
+      color="red"
+      style={iStyles.mediumRoundIcon}
+      onPress={props.onPress}
+    >
+      {""}
+    </Button>
   )
 }

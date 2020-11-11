@@ -11,10 +11,9 @@ import {
   DEFAULT_ONE_DAY_DATA2,
 } from "../../../../models/sub-stores"
 
-import {updateFollowingWeeks} from './index'
+import { updateFollowingWeeks } from "./index"
 
 import _ from "lodash"
-
 
 export const EditProgramReducer = (state, action) => {
   const {
@@ -41,17 +40,19 @@ export const EditProgramReducer = (state, action) => {
       state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].isCompleted = !state
         .currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].isCompleted
 
-        if(action.newDate)
-        state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].completedOn = action.newDate
-        
-        // if it's the last day in the program - toggle program completed
+      if (action.newDate)
+        state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].completedOn =
+          action.newDate
 
-        if (currentWeekIndex === currentProgram.Weeks.length-1)
-        if (action.dayIndex === currentProgram.Weeks[currentWeekIndex].Days.length-1)
-        if (state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].isCompleted)
-        state.currentProgram.isCompleted = true;
-        else 
-        state.currentProgram.isCompleted = false;
+      // if all days are completed - toggle program completed
+      let allDaysNumber = 0
+      let completedDaysNumber = 0
+      for (let i = 0; i < currentProgram.Weeks.length; i++)
+        for (let k = 0; k < currentProgram.Weeks[k].Days.length; k++) {
+          allDaysNumber++
+          if (currentProgram.Weeks[i].Days[k].isCompleted) completedDaysNumber++
+        }
+      if (allDaysNumber === completedDaysNumber) state.currentProgram.isCompleted = true
 
       return { ...state }
     }
@@ -71,6 +72,11 @@ export const EditProgramReducer = (state, action) => {
         default:
           throw new Error("Unexpected action in ExerciseDBReducer - Edit Field")
       }
+    }
+
+    case "toggle program completed status": {
+      state.currentProgram.isCompleted = !state.currentProgram.isCompleted
+      return { ...state }
     }
 
     case "open program settings modal": {
@@ -106,7 +112,7 @@ export const EditProgramReducer = (state, action) => {
 
       state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = newArray
 
-//turning off deselectAllDays option for now
+      //turning off deselectAllDays option for now
 
       // if (state.currentDayIndex === action.value) {
       //   state.deselectAllDays = !state.deselectAllDays
@@ -115,10 +121,9 @@ export const EditProgramReducer = (state, action) => {
       //   state.currentDayIndex = action.value
       // }
 
-// dummy so it's always false. Use top one and delete these 2 lines in case you need it again
-state.deselectAllDays = false
-state.currentDayIndex = action.value
-
+      // dummy so it's always false. Use top one and delete these 2 lines in case you need it again
+      state.deselectAllDays = false
+      state.currentDayIndex = action.value
 
       state.currentExerciseIndex = 0
 
@@ -154,6 +159,8 @@ state.currentDayIndex = action.value
     case "update current program": {
       state.currentProgram = action.value
       state.oldPrograms = action.oldPrograms
+      state.allPrograms = action.allPrograms
+      state.allUsers = action.allUsers
 
       state.isExercisePickerShown = false
       state.isProgramViewShown = true
@@ -169,11 +176,11 @@ state.currentDayIndex = action.value
           if (currentProgram.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
             breakFlag = true
             state.currentWeekIndex = weekIndex
-            state.currentDayIndex = dayIndex 
+            state.currentDayIndex = dayIndex
           }
         }
       }
- 
+
       return { ...state }
     }
     case "reorder current program": {
@@ -221,9 +228,9 @@ state.currentDayIndex = action.value
       return { ...state }
     }
 
-    case 'toggle reorder': {
+    case "toggle reorder": {
       state.isReordering = !state.isReordering
-      return {...state}
+      return { ...state }
     }
 
     case "expand exercise info": {
@@ -239,31 +246,50 @@ state.currentDayIndex = action.value
     }
 
     case "change current week by one": {
-      if (action.value === 'increase' || action.value === 'decrease'){
-      let changeBy = action.value === "increase" ? 1 : -1
-      //check whether week will be out of bounds and change by 0 if so
-      if (currentWeekIndex === action.weekLength - 1 && changeBy === 1) changeBy = 0
-      else if (currentWeekIndex === 0 && changeBy === -1) changeBy = 0
+      if (action.value === "increase" || action.value === "decrease") {
+        let changeBy = action.value === "increase" ? 1 : -1
+        //check whether week will be out of bounds and change by 0 if so
+        if (currentWeekIndex === action.weekLength - 1 && changeBy === 1) changeBy = 0
+        else if (currentWeekIndex === 0 && changeBy === -1) changeBy = 0
 
-      //increse/decrease weekIndex
-      state.currentWeekIndex += changeBy
+        //increse/decrease weekIndex
+        state.currentWeekIndex += changeBy
 
-      if (changeBy === 0) return state
-      else return { ...state }
+        if (changeBy === 0) return state
+        else return { ...state }
+      } else if (action.value === "custom") {
+        state.currentWeekIndex = action.newWeekValue
+        state.currentDayIndex = action.newDayValue
+        return { ...state }
+      } else return state
     }
-    else if(action.value === 'custom') {
 
-      state.currentWeekIndex = action.newWeekValue
-      state.currentDayIndex = action.newDayValue
-      return {...state}
+    case "add week": {
+      const newWeek = { Days: [] }
+      currentProgram.Weeks[currentWeekIndex].Days.forEach((day, dayIndex) => {
+        newWeek.Days.push({ ...DEFAULT_ONE_DAY_DATA2, DayName: day.DayName })
+      })
+      state.currentProgram.Weeks.push(newWeek)
+      state.currentProgram = updateFollowingWeeks(state)
+      return { ...state }
     }
-    else
-    return state
-    
+
+    case "remove week": {
+      if (currentProgram.Weeks.length === 1) return state
+
+      if (currentWeekIndex === currentProgram.Weeks.length - 1) state.currentWeekIndex--
+      state.currentProgram.Weeks.pop()
+      return { ...state }
     }
 
     case "change client": {
       state.currentProgram.Client = action.value
+
+      let newUser = state.allUsers.find(user => user.id === action.value)
+
+      state.oldPrograms = state.allPrograms.filter(program => program.item.Client === newUser.id)
+      state.oldPrograms = state.oldPrograms.filter(program => program.id != state.programID)
+      state.currentProgram.Name = `${newUser.item.first} ${state.oldPrograms.length + 1}`
       return { ...state }
     }
 
@@ -281,38 +307,40 @@ state.currentDayIndex = action.value
       return { ...state }
     }
 
-    case 'replace exercise with another from picker': {
+    case "replace exercise with another from picker": {
       state.isExercisePickerShown = true
       state.isProgramViewShown = false
       state.isManuallySearchingExercises = true
       state.currentExerciseIndex = action.value
       state.isReplacingExercise = true
-      return {...state}
+      return { ...state }
     }
 
     case "add exercise from picker": {
       const exercise = action.value
 
-    
       // ако заменяме настоящо упражнение
 
-      if (state.isReplacingExercise)
-      {
+      if (state.isReplacingExercise) {
         console.log(exercise)
-        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex].Name = exercise.Name;
-        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex].ID = exercise.ID;
-
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
+          currentExerciseIndex
+        ].Name = exercise.Name
+        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
+          currentExerciseIndex
+        ].ID = exercise.ID
       }
       // ако добавяме ново накрая
       else {
         currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push({
-        ...DEFAULT_EXERCISE_DATA2,
-        Name: exercise.Name,
-        ID: exercise.ID,
-        Position: Math.floor(currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length / 2 + 1),
-      })
-  
-    }
+          ...DEFAULT_EXERCISE_DATA2,
+          Name: exercise.Name,
+          ID: exercise.ID,
+          Position: Math.floor(
+            currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length / 2 + 1,
+          ),
+        })
+      }
 
       state.isExercisePickerShown = false
       state.isProgramViewShown = true

@@ -1,6 +1,6 @@
 export const TRAINING_PROGRAMS_COLLECTION = "trainingPrograms"
-import {return_todays_datestamp} from '../../global-helper'
-
+export const USERS_COLLECTION = "users2"
+import { return_todays_datestamp } from "../../global-helper"
 
 import { types, SnapshotIn, applySnapshot, getSnapshot } from "mobx-state-tree"
 import { firebaseFuncs } from "../../services/firebase/firebase.service"
@@ -70,7 +70,10 @@ const DEFAULT_EXERCISE_DATA = types.model({
 const DEFAULT_ONE_DAY_DATA = types.model({
   DayName: "Day 1",
   isCompleted: false,
-  completedOn: types.optional(types.union(types.number,types.string, types.undefined),return_todays_datestamp()),
+  completedOn: types.optional(
+    types.union(types.number, types.string, types.undefined),
+    return_todays_datestamp(),
+  ),
   Exercises: types.optional(types.array(DEFAULT_EXERCISE_DATA), []),
 })
 
@@ -197,7 +200,6 @@ export const trainingProgramsStoreModel = types
     trainersPrograms(trainerID: string) {
       return self.programs.filter(program => program.item.Trainers.includes(trainerID))
     },
-
   }))
   .actions(self => ({
     addExercise(programID: string, state: any, exercise: object) {
@@ -224,11 +226,9 @@ export const trainingProgramsStoreModel = types
       self.programs[self.getProgramIndexByID(programID)].item.Name = newName
     },
     addNewDay(programID, weekIndex, dayIndex) {
-
       let newWeekData = {
         ...self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex],
       }
-
 
       let newDayName = `Day ${newWeekData.Days.length + 1}`
       newWeekData.Days.push({ ...DEFAULT_ONE_DAY_DATA2, DayName: newDayName })
@@ -240,11 +240,8 @@ export const trainingProgramsStoreModel = types
       const helperDays =
         self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex].Days
 
-
       helperDays.splice(dayIndex, 1)
-      helperDays.forEach((day, index) => {
-
-      })
+      helperDays.forEach((day, index) => {})
       applySnapshot(
         self.programs[self.getProgramIndexByID(programID)].item.Weeks[weekIndex].Days,
         helperDays,
