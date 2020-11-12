@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Text, View, TouchableOpacity, Pressable, Alert, Dimensions } from "react-native"
 import { spacing, color, styles } from "../../../theme"
 import { Screen, MainHeader_Tr, ButtonSquare, PageHeader_Tr } from "../../../components"
@@ -27,7 +27,8 @@ import * as fb from "../../../services/firebase/firebase.service"
 import iStyles from "../edit-program-screen/Constants/Styles"
 
 import { getProgramInfo } from "../edit-program-screen/ProgramsTool - Helper functions"
-import { ScrollView } from "react-native-gesture-handler"
+import { FlatList, ScrollView } from "react-native-gesture-handler"
+import { Item } from "react-native-paper/lib/typescript/src/components/List/List"
 
 const getExerciseDB = async (onDownload: Function) => {
   const JSON_SHEET_ID =
@@ -144,7 +145,7 @@ interface ShowProgramsListProps {
 
 const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observer(props => {
   const userStore2 = useStores().userStore2
-  const [hideCompleted, setHideCompleted] = useState(false)
+  const [hideCompleted, setHideCompleted] = useState(true)
 
   const onHideCompleted = () => {
     setHideCompleted(!hideCompleted)

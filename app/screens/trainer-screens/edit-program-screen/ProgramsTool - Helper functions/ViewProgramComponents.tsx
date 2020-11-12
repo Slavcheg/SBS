@@ -30,16 +30,21 @@ import _ from "lodash"
 import { observer } from "mobx-react-lite"
 import { translate } from "../../../../i18n"
 
-import { GetText } from "./index"
+import { GetText, getDoneBeforeColor } from "./index"
 import iStyles from "../Constants/Styles"
 import { muscleGroups } from "../Constants/MuscleGroups"
-import { EditableText, PlusButton, TrashButton } from "./smallComponents"
+
 import {
   getColorByExercisePosition,
   getColorByMuscleName,
   ExpandCollapseButton,
   ExpandableContent,
   ShowProgramDays,
+  TextWithInfoBaloon,
+  MoreInfoBaloon,
+  EditableText,
+  PlusButton,
+  TrashButton,
 } from "./index"
 // import StoreProvider, { StoreContext } from "../../StoreProvider"
 
@@ -89,9 +94,7 @@ export const ExerciseMoreInfoButtons: React.FC<ExerciseMoreInfoButtonsProps> = p
           onPress={props.onPressReplace}
           disabled={!props.isClickable}
           color="orange"
-        >
-          {""}
-        </Button>
+        ></Button>
       )}
       {showDelete && (
         <Button
@@ -102,9 +105,7 @@ export const ExerciseMoreInfoButtons: React.FC<ExerciseMoreInfoButtonsProps> = p
           onPress={props.onPressDelete}
           disabled={!props.isClickable}
           color="red"
-        >
-          {""}
-        </Button>
+        ></Button>
       )}
     </View>
   )
@@ -361,11 +362,15 @@ export const ShowExercise = observer(props => {
     isClickable,
     showVolume,
     isGreyedOut,
+    showDoneBefore,
+    oldExercise,
   } = props
 
   let someStyle = {
     color: getColorByExercisePosition(item.Position),
   }
+
+  const [showMoreInfoBaloon, setShowMoreInfoBaloon] = useState(false)
 
   const exercisesStore = useStores().exerciseDataStore
   let volumeText = exercisesStore.getVolumeStrings(item)
@@ -389,8 +394,37 @@ export const ShowExercise = observer(props => {
     textAlignVertical: "bottom",
   }
   if (isGreyedOut) setsAndRepsStyle.color = "grey"
+
+  const doneBefore = oldExercise ? oldExercise.doneBefore : 0
+  let doneBeforeStyle = { ...positionAndExerciseNameStyle, color: getDoneBeforeColor(doneBefore) }
+  const doneBeforeInfoText =
+    doneBefore > 0
+      ? `Last time you did ${oldExercise.latestSet.wholeSetString} on ${displayDateFromTimestamp2(
+          oldExercise.completedOn,
+        )}`
+      : `You haven't done this exercise before`
+
+  const onPressMoreInfoBaloon = () => {
+    setShowMoreInfoBaloon(false)
+  }
+
+  const onPressDoneBefore = () => {
+    if (showMoreInfoBaloon) setShowMoreInfoBaloon(false)
+    else {
+      setShowMoreInfoBaloon(true)
+      setTimeout(() => setShowMoreInfoBaloon(false), 8000)
+    }
+  }
+
   return (
     <View>
+      {showMoreInfoBaloon && (
+        <MoreInfoBaloon
+          infoText={doneBeforeInfoText}
+          onPress={onPressMoreInfoBaloon}
+          infoTextStyle={{ textAlign: "center" }}
+        />
+      )}
       <Pressable onPressIn={onPressIn} delayLongPress={DELAY_LONG_PRESS} disabled={!isClickable}>
         <View
           style={{
@@ -402,18 +436,27 @@ export const ShowExercise = observer(props => {
             // height: EXERCISE_ITEM_HEIGHT,
           }}
         >
+          {showDoneBefore && (
+            <View style={{ width: "10%", justifyContent: "center", alignItems: "center" }}>
+              {/* <Text style={doneBeforeStyle}>{doneBefore}</Text> */}
+              <TouchableOpacity onPress={onPressDoneBefore}>
+                <Text style={doneBeforeStyle}>{doneBefore}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <View style={{ width: "10%", justifyContent: "center", alignItems: "center" }}>
             <Pressable
               onPress={onPressPosition}
               onLongPress={onPressIn}
               delayLongPress={DELAY_LONG_PRESS}
-              hitSlop={25}
+              hitSlop={15}
               disabled={!isClickable}
             >
               <Text style={positionAndExerciseNameStyle}>{item.Position}</Text>
             </Pressable>
           </View>
-          <View style={{ width: "45%", alignItems: "flex-start" }}>
+          {/* <View style={{ width: "40%", alignItems: "flex-start" }}> */}
+          <View style={{ flex: 1, alignItems: "flex-start" }}>
             <Pressable
               onPress={onPressExercise}
               onLongPress={onPressIn}
@@ -449,7 +492,7 @@ export const ShowExercise = observer(props => {
 
           <View
             style={{
-              width: "45%",
+              width: "40%",
 
               justifyContent: "center",
               alignItems: "center",
@@ -612,7 +655,8 @@ const ProgramVolumeTable = props => {
         </View>
 
         {currentProgram.Weeks[currentWeekIndex].Days.map((day, index) => {
-          let textString = `${item.weeklyVolume[index]} `
+          let textString = ``
+          if (item.weeklyVolume[index]) textString = `${item.weeklyVolume[index]} `
           return (
             <View key={index} style={styles.muscleCoefColumns}>
               <Text style={greyTextStyle}>{textString}</Text>
@@ -633,36 +677,6 @@ const ProgramVolumeTable = props => {
       />
     </ExpandableContent>
   )
-}
-
-const getClientProgramsByID = clientID => {
-  let programs = []
-
-  const sessionStore = useStores().sessionStore
-  const userStore2 = useStores().userStore2
-  const cardStore2 = useStores().cardyStore2
-  const trainerEmail = sessionStore.userEmail
-  const [state, setState] = useState({
-    clientName:
-      clientID === "No client yet" ? "No client yet" : userStore2.getUserByID(clientID).item.first,
-    allClients: [],
-  })
-
-  const clientName =
-    clientID === "No client yet" ? "No client yet" : userStore2.getUserByID(clientID).item.first
-  const allClientsEmails = [...cardStore2.getYouClientsEmails(trainerEmail), trainerEmail]
-  const allClients = _.uniq(
-    allClientsEmails
-      .map(email => userStore2.getUserByEmail(email))
-      .filter(client => client !== null),
-  )
-  setState({
-    ...state,
-    clientName: clientName,
-    allClients: [...allClients, { id: "No client yet", item: { first: "No client yet" } }],
-  })
-
-  return programs
 }
 
 export const getProgramInfo = (program: any, returnObject?: boolean) => {

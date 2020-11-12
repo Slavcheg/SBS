@@ -42,6 +42,7 @@ import {
   ShowProgramMoreInfo,
   DayCompletedCheckbox,
   DaysBox,
+  TextWithInfoBaloon,
 } from "./index"
 
 type HeaderProps = {
@@ -512,6 +513,13 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
       fontSize: isActive ? 20 : 18,
     }
 
+    let oldExercise
+    state.oldExercises.forEach((oldEx, oldExIndex) => {
+      if (oldEx.Name === item.Name) {
+        oldExercise = oldEx
+      }
+    })
+
     return (
       <ShowExercise
         onPressIn={() => {
@@ -532,6 +540,8 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
         isGreyedOut={
           currentProgram.Weeks[currentWeekIndex].Days[props.dayIndex].isCompleted || false
         }
+        showDoneBefore={true}
+        oldExercise={oldExercise}
       />
     )
   }

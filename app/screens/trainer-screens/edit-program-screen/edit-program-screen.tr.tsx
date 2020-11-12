@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react"
+import React, { useState, useEffect, useReducer, useCallback, useRef } from "react"
 import { useFocusEffect } from "@react-navigation/native"
 import { Picker } from "@react-native-community/picker"
 
@@ -11,6 +11,7 @@ import {
   ScrollView,
   Text,
   AlertButton,
+  useWindowDimensions,
 } from "react-native"
 
 import _ from "lodash"
@@ -30,6 +31,7 @@ import {
   GetText,
   EditExerciseModal,
   ShowProgramMoreInfo,
+  TextWithInfoBaloon,
 } from "./ProgramsTool - Helper functions"
 
 import iStyles from "./Constants/Styles"
@@ -39,6 +41,7 @@ import {
   state,
   TRAINING_PROGRAMS_COLLECTION,
   DEFAULT_SET_DATA2,
+  Exercise,
 } from "../../../models/sub-stores"
 import * as fb from "../../../services/firebase/firebase.service"
 
@@ -142,6 +145,18 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   } = props
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
 
+  const windowWidth = useWindowDimensions().width
+
+  const scrollRef = useRef()
+
+  const scroll = () => {
+    if (scrollRef.current) scrollRef.current.scrollTo({ x: windowWidth, y: 0, animated: true })
+  }
+
+  useEffect(() => {
+    setTimeout(() => scroll(), 10)
+  }, [])
+
   return (
     <View style={{ flex: 1 }}>
       <ProgramViewHeader
@@ -152,7 +167,11 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         onAddWeek={props.onAddWeek}
         onRemoveWeek={props.onRemoveWeek}
       />
-      <ScrollView horizontal={true} pagingEnabled={true}>
+      <ScrollView horizontal={true} pagingEnabled={true} ref={scrollRef}>
+        {/* <View style={iStyles.carouselScreen}> */}
+        <View style={{ width: windowWidth }}>
+          <Text>ШШшшшт.... това е тайно меню... не казвай на другите!</Text>
+        </View>
         <View style={iStyles.carouselScreen}>
           <ShowProgramDays
             state={state}
@@ -201,6 +220,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     isButtonsRowShown: true,
     isProgramViewBig: true,
     shownExercises: [],
+    oldExercises: [],
 
     currentWeekIndex: 0,
     currentDayIndex: 0,
@@ -328,11 +348,13 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
 
   const onChangeProgramName = (newName: string) => {
     dispatch({ type: "edit field", field: "program name", value: newName })
+    setTimeout(onSaveProgramHandler, 100)
   }
 
   const onRemoveDayHandler = dayIndexToRemove => {
     const onRemoveInsideHandler = () => {
       dispatch({ type: "remove day" })
+      setTimeout(onSaveProgramHandler, 100)
     }
     if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length !== 0)
       removeDayAlert(currentProgram.Weeks[currentWeekIndex].Days.length, onRemoveInsideHandler)
@@ -340,6 +362,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   }
   const onAddNewDayHandler = () => {
     dispatch({ type: "add new day" })
+    setTimeout(onSaveProgramHandler, 100)
   }
 
   const onChangeDayNameHandler = (newName, dayIndex) => {
@@ -349,9 +372,11 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
       value: newName,
       dayIndex: dayIndex,
     })
+    setTimeout(onSaveProgramHandler, 100)
   }
   const onToggleDayCompletedHandler = (dayIndex, newDate?) => {
     dispatch({ type: "toggle day completed", dayIndex: dayIndex, newDate: newDate })
+    setTimeout(onSaveProgramHandler, 100)
   }
   const onExpandMoreInfoAllExercisesHandler = () => {
     let expand = true
@@ -368,10 +393,12 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
       type: "reorder current program",
       exercises: newArray,
     })
+    setTimeout(onSaveProgramHandler, 100)
   }
 
   const onDeleteExerciseHandler = index => {
     dispatch({ type: "delete exercise", value: index })
+    setTimeout(onSaveProgramHandler, 100)
   }
   const onEditPositionHandler = index => {
     dispatch({ type: "change position number", value: index })
@@ -392,6 +419,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
 
   const onCloseExerciseModal = newExercise => {
     dispatch({ type: "close modal and update exercise", value: newExercise })
+    setTimeout(onSaveProgramHandler, 100)
   }
 
   const onChangeClient = newClientID => {
@@ -403,6 +431,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   const onReplaceExercise = index => {
     console.log("tried replacing exercise ", index)
     dispatch({ type: "replace exercise with another from picker", value: index })
+    setTimeout(onSaveProgramHandler, 100)
   }
 
   const onToggleReorder = () => {

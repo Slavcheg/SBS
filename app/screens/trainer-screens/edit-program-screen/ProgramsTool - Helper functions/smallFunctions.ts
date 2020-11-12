@@ -1,9 +1,7 @@
 import iStyles from "../Constants/Styles"
 import { useStores } from "../../../../models/root-store"
 
-
 import _ from "lodash"
-
 
 export const updateFollowingWeeks = state => {
   const {
@@ -85,8 +83,89 @@ export const updateFollowingWeeks = state => {
   }
 
   return { ...newProgram }
+}
 
+type latestSet = {
+  latestWeight: string
+  latestWeightType: string
+  latestWeightReps: number
+  completedOn: string | Date | number
+  wholeSetString: string
+  Sets: any
+}
 
+type oldExerciseInfo = {
+  Name: string
+  doneBefore: number
+  latestSet: latestSet
+}
+
+const getExerciseLatestSet = (exercise, day) => {
+  let latestSet: latestSet
+
+  let setIndex = exercise.Sets.length - 1
+  let sets = exercise.Sets.length
+
+  let weight = exercise.Sets[setIndex].Weight
+  let weightType = exercise.Sets[setIndex].WeightType
+  let reps = exercise.Sets[setIndex].Reps
+  let showKg = weightType === "pureWeight" ? "kg" : ""
+
+  latestSet = {
+    latestWeight: weight,
+    latestWeightType: weightType,
+    latestWeightReps: reps,
+    completedOn: day.completedOn,
+    wholeSetString: `${sets}x${reps} @ ${weight}${showKg}`,
+    Sets: exercise.Sets,
+  }
+
+  return latestSet
+}
+
+export const updateOldExercises = state => {
+  let oldExercises: oldExerciseInfo[] = [] //all info about oldExercises will be in this array
+  let oldExercisesNames = [] //names here for easy checking if we already did that exercise
+  let markedThisProgram = [] //we put each exercise that we already did in the program here so we count each exercise as done once per program
+
+  state.oldPrograms.forEach((program, index) => {
+    markedThisProgram = []
+    program.item.Weeks.forEach((week, weekIndex) => {
+      program.item.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
+        if (program.item.Weeks[weekIndex].Days[dayIndex].isCompleted)
+          //only count exercises on days we've completed
+          program.item.Weeks[weekIndex].Days[dayIndex].Exercises.forEach(
+            (exercise, exerciseIndex) => {
+              let newLatestSet: latestSet = getExerciseLatestSet(exercise, day)
+              if (!oldExercisesNames.includes(exercise.Name)) {
+                //if we haven't done it already - we push a new exercise
+
+                oldExercises.push({
+                  ...exercise,
+                  doneBefore: 1,
+
+                  latestSet: newLatestSet,
+                })
+                oldExercisesNames.push(exercise.Name)
+                markedThisProgram.push(exercise.Name)
+              } else {
+                //if we've pushed this exercise already - we increase the 'doneBefore' count per program, and get latestWeight/WeightType always
+
+                let foundIndex = oldExercises.findIndex(ex => ex.Name === exercise.Name)
+
+                oldExercises[foundIndex].latestSet = newLatestSet
+
+                if (!markedThisProgram.includes(exercise.Name))
+                  // if exercise exists in oldExercises but we haven't counted it for this program yet
+                  oldExercises[foundIndex].doneBefore++
+              }
+            },
+          )
+      })
+    })
+  })
+
+  return oldExercises
 }
 
 export const getVideoID = originalLink => {
@@ -120,17 +199,17 @@ export function getColorByMuscleName(muscleName) {
   let color3 = iStyles.text3.color
 
   switch (muscleName) {
-    case 'chest':
-    case 'shoulders':
-    case 'back': {
-    return color1;
+    case "chest":
+    case "shoulders":
+    case "back": {
+      return color1
     }
-    case 'glutes':
-    case 'quads':
-    case 'hamstrings':{
-      return color2;
+    case "glutes":
+    case "quads":
+    case "hamstrings": {
+      return color2
     }
-  
+
     default: {
       return color3
     }
@@ -173,6 +252,27 @@ export function getColorByExercisePosition(position) {
 
     default: {
       return color1
+    }
+  }
+}
+
+export const getDoneBeforeColor = (doneBefore: number) => {
+  let color1 = iStyles.text1.color
+  let color2 = iStyles.text2.color
+  let color3 = iStyles.text3.color
+
+  switch (doneBefore) {
+    case 0: {
+      return color2
+    }
+    case 1:
+    case 2:
+    case 3: {
+      return "orange"
+    }
+
+    default: {
+      return "red"
     }
   }
 }

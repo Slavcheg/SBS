@@ -2301,10 +2301,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native@0.61.23":
-  version "0.61.23"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.61.23.tgz#bff4e0311c229a5203eb37aacd4febf59f3e2980"
-  integrity sha512-upHmySsrVBDBokWWhYIKkKnpvadsHdioSjbBTu4xl7fjN0yb94KR5ngUOBXsyqAYqQzF+hP6qpvobG9M7Jr6hw==
+"@types/react-native@^0.63.25":
+  version "0.63.34"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.63.34.tgz#745270747308a09266eb061d9e1423d365670396"
+  integrity sha512-6syTIfUt+DY4mJBoO0Y5i4jsDg0I7v31XIPRgsJZAlHeMY9p9GehtGd4VpQKB/NgzLiGzx9ahJPE8w+0lt/WxA==
   dependencies:
     "@types/react" "*"
 
@@ -2337,13 +2337,13 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/react@16.9.23":
-  version "16.9.23"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.23.tgz#1a66c6d468ba11a8943ad958a8cb3e737568271c"
-  integrity sha512-SsGVT4E7L2wLN3tPYLiF20hmZTPGuzaayVunfgXzUn1x4uHVsKH6QDJQ/TdpHqwsTLd4CwrmQ2vOgxN7gE24gw==
+"@types/react@^16.9.56":
+  version "16.9.56"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.56.tgz#ea25847b53c5bec064933095fc366b1462e2adf0"
+  integrity sha512-gIkl4J44G/qxbuC6r2Xh+D3CGZpJ+NdWTItAPmZbR5mUS+JQ8Zvzpl0ea5qT/ZT3ZNTUcDKUVqV3xBE8wv/DyQ==
   dependencies:
     "@types/prop-types" "*"
-    csstype "^2.2.0"
+    csstype "^3.0.2"
 
 "@types/source-list-map@*":
   version "0.1.2"
@@ -4949,6 +4949,11 @@ csstype@^2.2.0, csstype@^2.5.7:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.11.tgz#452f4d024149ecf260a852b025e36562a253ffc5"
   integrity sha512-l8YyEC9NBkSm783PFTvh0FmJy7s5pFKrDp49ZL7zBGX3fWkO+N4EEyan1qqp8cwPLDcD0OSdyY6hAMoxp34JFw==
+
+csstype@^3.0.2:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.4.tgz#b156d7be03b84ff425c9a0a4b1e5f4da9c5ca888"
+  integrity sha512-xc8DUsCLmjvCfoD7LTGE0ou2MIWLx0K9RCZwSHMOdynqRsP4MtUcLeqh1HcQ2dInwDTqn+3CE0/FZh1et+p4jA==
 
 cyclist@^1.0.1:
   version "1.0.1"

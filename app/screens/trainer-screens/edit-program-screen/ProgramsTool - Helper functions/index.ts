@@ -10,6 +10,8 @@ export {
   getVideoTime,
   updateFollowingWeeks,
   getColorByMuscleName,
+  getDoneBeforeColor,
+  updateOldExercises,
 } from "./smallFunctions"
 export { EasyNumberPicker } from "./EasyNumberPicker"
 export {
@@ -21,6 +23,8 @@ export {
   ExpandableContent,
   PlusButton,
   TrashButton,
+  TextWithInfoBaloon,
+  MoreInfoBaloon,
 } from "./smallComponents"
 export {
   ExerciseMoreInfoButtons,

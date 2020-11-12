@@ -170,13 +170,10 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
   }, [props.programs])
 
   const renderPrograms = ({ item, index, drag, isActive }) => {
-    // console.log(item.id)
-    // console.log(programColorsByID)
-    // console.log(programColorsByID[item.id])
-    const userName =
-      userStore.getUserByID(item.item.Client) !== null
-        ? userStore.getUserByID(item.item.Client).item.first
-        : "No name yet"
+    // const userName =
+    //   userStore.getUserByID(item.item.Client) !== null
+    //     ? userStore.getUserByID(item.item.Client).item.first
+    //     : "No name yet"
     return (
       <Pressable onPressIn={() => drag()}>
         <View
@@ -188,11 +185,11 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
         >
           <View>
             <Text style={{ ...text1, textAlign: "center", textAlignVertical: "center" }}>
-              {userName}
+              {item.item.Name}
             </Text>
-            <Text style={{ ...text1, textAlign: "center", textAlignVertical: "center" }}>
+            {/* <Text style={{ ...text1, textAlign: "center", textAlignVertical: "center" }}>
               {index + 1}
-            </Text>
+            </Text> */}
           </View>
         </View>
       </Pressable>

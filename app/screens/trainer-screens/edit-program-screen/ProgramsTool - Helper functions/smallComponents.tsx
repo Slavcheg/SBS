@@ -6,6 +6,7 @@ import React, {
   ReactChild,
   ReactNode,
   ReactChildren,
+  VoidFunctionComponent,
 } from "react"
 import {
   View,
@@ -14,11 +15,70 @@ import {
   Pressable,
   ImageBackground,
   StyleProp,
+  useWindowDimensions,
 } from "react-native"
 import { Button } from "react-native-paper"
 import { RNCamera } from "react-native-camera"
 import { ImageSource } from "react-native-vector-icons/Icon"
 import iStyles from "../Constants/Styles"
+import { TouchableOpacity } from "react-native-gesture-handler"
+
+type MoreInfoBaloonProps = {
+  infoText: string
+  infoTextStyle?: any
+  onPress?: VoidFunctionComponent
+}
+
+export const MoreInfoBaloon: React.FC<MoreInfoBaloonProps> = props => {
+  const windowWidth = useWindowDimensions().width
+
+  return (
+    <TouchableOpacity onPress={props.onPress}>
+      <View
+        style={{
+          borderWidth: 1,
+          // right: 0,
+          width: windowWidth,
+          backgroundColor: "white",
+          left: 0,
+        }}
+      >
+        <Text style={props.infoTextStyle}>{props.infoText}</Text>
+      </View>
+    </TouchableOpacity>
+  )
+}
+
+type TextWithInfoBaloonProps = {
+  text?: string
+  textStyle?: any
+  infoText: string
+  infoTextStyle?: any
+  baloonDuration?: number
+  disabled?: boolean
+}
+
+export const TextWithInfoBaloon: React.FC<TextWithInfoBaloonProps> = props => {
+  const [showBaloon, setShowBaloon] = useState(false)
+
+  const onPress = () => {
+    console.log(props.infoText)
+    if (showBaloon) setShowBaloon(false)
+    else {
+      setShowBaloon(true)
+      setTimeout(() => setShowBaloon(false), props.baloonDuration || 3000)
+    }
+  }
+
+  return (
+    <TouchableOpacity onPress={onPress} disabled={props.disabled}>
+      <Text style={props.textStyle}>{props.text}</Text>
+      {showBaloon && (
+        <MoreInfoBaloon infoText={props.infoText} infoTextStyle={props.infoTextStyle} />
+      )}
+    </TouchableOpacity>
+  )
+}
 
 type ExpandableContentProps = {
   startMinimized?: boolean

@@ -11,7 +11,7 @@ import {
   DEFAULT_ONE_DAY_DATA2,
 } from "../../../../models/sub-stores"
 
-import { updateFollowingWeeks } from "./index"
+import { updateFollowingWeeks, updateOldExercises } from "./index"
 
 import _ from "lodash"
 
@@ -162,6 +162,34 @@ export const EditProgramReducer = (state, action) => {
       state.allPrograms = action.allPrograms
       state.allUsers = action.allUsers
 
+      // state.oldExercises = []
+      // let oldExercisesNames = []
+      // let markedThisProgram = []
+      // state.oldPrograms.forEach((program, index) => {
+      //   markedThisProgram = []
+      //   program.item.Weeks.forEach((week, weekIndex) => {
+      //     program.item.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
+      //       program.item.Weeks[weekIndex].Days[dayIndex].Exercises.forEach(
+      //         (exercise, exerciseIndex) => {
+      //           if (!oldExercisesNames.includes(exercise.Name)) {
+      //             state.oldExercises.push({ ...exercise, doneBefore: 1 })
+      //             oldExercisesNames.push(exercise.Name)
+      //             markedThisProgram.push(exercise.Name)
+      //           } else {
+      //             let foundIndex
+      //             if (!markedThisProgram.includes(exercise.Name)) {
+      //               foundIndex = state.oldExercises.findIndex(ex => ex.Name === exercise.Name)
+      //               state.oldExercises[foundIndex].doneBefore++
+      //             }
+      //           }
+      //         },
+      //       )
+      //     })
+      //   })
+      // })
+
+      state.oldExercises = updateOldExercises(state)
+
       state.isExercisePickerShown = false
       state.isProgramViewShown = true
 
@@ -290,6 +318,7 @@ export const EditProgramReducer = (state, action) => {
       state.oldPrograms = state.allPrograms.filter(program => program.item.Client === newUser.id)
       state.oldPrograms = state.oldPrograms.filter(program => program.id != state.programID)
       state.currentProgram.Name = `${newUser.item.first} ${state.oldPrograms.length + 1}`
+      state.oldExercises = updateOldExercises(state)
       return { ...state }
     }
 
@@ -332,14 +361,36 @@ export const EditProgramReducer = (state, action) => {
       }
       // ако добавяме ново накрая
       else {
-        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push({
+        const defaultExData = {
           ...DEFAULT_EXERCISE_DATA2,
           Name: exercise.Name,
           ID: exercise.ID,
           Position: Math.floor(
             currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length / 2 + 1,
           ),
+        }
+
+        //ако сме го правили - слагаме сериите от последния път както сме го правили. Ако не сме - слагаме default само
+        let addLastSets = false
+        let Sets = []
+
+        state.oldExercises.forEach(oldEx => {
+          if (oldEx.Name === exercise.Name) {
+            addLastSets = true
+            Sets = oldEx.latestSet.Sets
+            console.log(Sets)
+          }
         })
+
+        if (addLastSets)
+          state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push({
+            ...defaultExData,
+            Sets: Sets,
+          })
+        else
+          state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push(
+            defaultExData,
+          )
       }
 
       state.isExercisePickerShown = false
@@ -359,56 +410,6 @@ export const EditProgramReducer = (state, action) => {
       if (currentWeekIndex !== currentProgram.Weeks.length - 1) {
         state.currentProgram = updateFollowingWeeks(state)
       }
-
-      // if (currentWeekIndex !== currentProgram.Weeks.length - 1) {
-      //   let newProgram = _.cloneDeep(state.currentProgram)
-
-      //   console.log("          i < currentProgram.Weeks.length;", currentProgram.Weeks.length)
-      //   console.log("current week index", currentWeekIndex)
-      //   console.log("currentDayIndex", currentDayIndex)
-      //   console.log("currentExerciseIndex", currentExerciseIndex)
-
-      //   for (
-      //     let i = currentWeekIndex + 1;
-      //     i < currentProgram.Weeks.length;
-      //     i++ // i = weekIndex
-      //   ) {
-      //     // newDayData.Exercises.push({
-      //     //   ...DEFAULT_EXERCISE_DATA2,
-      //     //   Name: exercise.Name,
-      //     //   ID: exercise.ID,
-      //     //   Position: Math.floor(newDayData.Exercises.length / 2 + 1),
-      //     // })
-
-      //     let newWeekExercise = _.cloneDeep(
-      //       currentProgram.Weeks[i - 1].Days[currentDayIndex].Exercises[currentExerciseIndex],
-      //     )
-      //     console.log("newWeekExercise ", newWeekExercise)
-      //     newWeekExercise.Sets.forEach((set, setIndex) => {
-      //       newWeekExercise.Sets[setIndex].Reps =
-      //         _.cloneDeep(
-      //           newProgram.Weeks[i - 1].Days[currentDayIndex].Exercises[currentExerciseIndex].Sets[
-      //             setIndex
-      //           ].Reps,
-      //         ) + newWeekExercise.increaseReps
-
-      //       if (newWeekExercise.Sets[setIndex].WeightType === "pureWeight")
-      //         newWeekExercise.Sets[setIndex].Weight = `${parseInt(
-      //           newProgram.Weeks[i - 1].Days[currentDayIndex].Exercises[currentExerciseIndex].Sets[
-      //             setIndex
-      //           ].Weight,
-      //         ) + parseInt(newWeekExercise.increaseWeight)}`
-      //       else {
-      //         newWeekExercise.Sets[setIndex].Weight =
-      //           newProgram.Weeks[i - 1].Days[currentDayIndex].Exercises[currentExerciseIndex].Sets[
-      //             setIndex
-      //           ].Weight
-      //       }
-      //     })
-
-      //     newProgram.Weeks[i].Days[currentDayIndex].Exercises.push(_.deepClonenewWeekExercise)
-      //   }
-      // }
 
       return { ...state }
     }
