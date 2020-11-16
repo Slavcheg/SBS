@@ -36,19 +36,17 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
   useEffect(() => {
     setSearchText("")
     setCurrentArray(props.shownArray)
-  },[props.isVisible])
+  }, [props.isVisible])
 
   const onCancelHandler = useCallback(() => {
     setSearchText("")
     setCurrentArray(props.shownArray)
   }, [])
-  
+
   const onChangeTextHandler = useCallback(text => {
     setCurrentArray(currentArray => filterExercises(text, allExercises))
     setSearchText(searchText => text)
   }, [])
-
-
 
   const renderExerciseDB = ({ item }) => {
     return (
@@ -84,7 +82,7 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
                   style={{
                     ...iStyles.selectedText,
                     fontSize: pressed ? 25 : 23,
-                    color: pressed ? iStyles.text1.color : "black",
+                    color: pressed ? iStyles.text1.color : iStyles.text0.color,
                   }}
                 >
                   {item.Name}
@@ -145,8 +143,7 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
           <SearchBar
             placeholder="Search for an exercise"
             containerStyle={{ backgroundColor: iStyles.text1.color }}
-            inputContainerStyle={{ backgroundColor: "white" }}
-            lightTheme={true}
+            inputContainerStyle={{ backgroundColor: iStyles.backGround.color }}
             round={true}
             value={searchText}
             onChangeText={text => onChangeTextHandler(text)}

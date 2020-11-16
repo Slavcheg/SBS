@@ -1,7 +1,22 @@
 import iStyles from "../Constants/Styles"
 import { useStores } from "../../../../models/root-store"
+import { IProgram, IProgram_Model, state } from "../../../../models/sub-stores"
 
 import _ from "lodash"
+
+import { repComparisonCoefs as repComp } from "../Constants"
+
+export const getWeightEquivalent = (
+  originalWeight: number,
+  originalReps: number,
+  toNumberOfReps: number,
+) => {
+  if (originalReps > 30) return 0
+  const weightRepCoef = repComp.find(el => el.Reps === originalReps)
+  const toNumberOfRepsCoef = repComp.find(el => el.Reps === toNumberOfReps)
+  const newWeight = (originalWeight / weightRepCoef.Weight) * toNumberOfRepsCoef.Weight
+  return newWeight
+}
 
 export const updateFollowingWeeks = state => {
   const {
@@ -85,6 +100,15 @@ export const updateFollowingWeeks = state => {
   return { ...newProgram }
 }
 
+export const getLatestCompletedWeekIndexForOneDay = (program: IProgram, dayIndex: number) => {
+  let weekIndex = -1 //stays -1 if no weeks found
+  program.Weeks.forEach((week, wIndex) => {
+    if (program.Weeks[wIndex].Days[dayIndex])
+      if (program.Weeks[wIndex].Days[dayIndex].isCompleted) weekIndex = wIndex
+  })
+  return weekIndex
+}
+
 type latestSet = {
   latestWeight: string
   latestWeightType: string
@@ -100,7 +124,7 @@ type oldExerciseInfo = {
   latestSet: latestSet
 }
 
-const getExerciseLatestSet = (exercise, day) => {
+export const getExerciseLatestSet = (exercise, day) => {
   let latestSet: latestSet
 
   let setIndex = exercise.Sets.length - 1
@@ -217,8 +241,8 @@ export function getColorByMuscleName(muscleName) {
 }
 
 export function getColorByExercisePosition(position) {
-  let color1 = iStyles.text2.color
-  let color2 = iStyles.text1.color
+  let color1 = iStyles.text1.color
+  let color2 = iStyles.text2.color
   let color3 = iStyles.text3.color
 
   switch (position) {
@@ -260,6 +284,7 @@ export const getDoneBeforeColor = (doneBefore: number) => {
   let color1 = iStyles.text1.color
   let color2 = iStyles.text2.color
   let color3 = iStyles.text3.color
+  let colorYellow = iStyles.textYellow.color
 
   switch (doneBefore) {
     case 0: {
@@ -268,7 +293,7 @@ export const getDoneBeforeColor = (doneBefore: number) => {
     case 1:
     case 2:
     case 3: {
-      return "orange"
+      return colorYellow
     }
 
     default: {

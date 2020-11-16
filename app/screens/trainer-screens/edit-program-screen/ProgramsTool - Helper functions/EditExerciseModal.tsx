@@ -123,7 +123,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
             position: "absolute",
             top: 10,
             bottom: 10,
-            backgroundColor: "white",
+            backgroundColor: iStyles.backGround.color,
             justifyContent: "center",
             height: windowHeight * 0.85,
             width: windowWidth,
@@ -158,6 +158,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                     props.onClose(_.cloneDeep(exerciseState))
                     setExerciseState(null)
                   }}
+                  color={iStyles.text1.color}
                 >
                   ok
                 </Button>
@@ -312,13 +313,19 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                       <Picker
                         mode={"dropdown"}
                         selectedValue={exerciseState.Sets[setIndex].Reps}
-                        style={{ height: 50, width: 100 }}
+                        style={{ height: 50, width: 100, color: iStyles.text1.color }}
                         onValueChange={(itemValue, itemIndex) => {
                           onChangeReps(itemValue, setIndex)
                         }}
+                        itemStyle={{ color: iStyles.text1.color }}
                       >
                         {MAX_REPS.map(value => (
-                          <Picker.Item key={value} label={value.toString()} value={value} />
+                          <Picker.Item
+                            key={value}
+                            label={value.toString()}
+                            value={value}
+                            color={iStyles.text1.color}
+                          />
                         ))}
                       </Picker>
                     </View>
@@ -335,6 +342,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                   <View style={iStyles.smallImputBox}>
                     <View style={iStyles.smallerOutlineOverInputBox}>
                       <GetText
+                        style={iStyles.text1}
                         isNumber={true}
                         convertToString={true}
                         startingValue={exerciseState.Sets[setIndex].Weight}

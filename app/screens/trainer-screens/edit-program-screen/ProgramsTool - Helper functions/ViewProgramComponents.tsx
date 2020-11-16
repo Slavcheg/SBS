@@ -321,13 +321,13 @@ export const SetsAndReps = props => {
   }
   return (
     <View>
-      <Pressable disabled={!props.isClickable} onPress={props.onPress}>
-        <View
-          style={{
-            flexDirection: "row",
-          }}
-        >
-          <View style={{ width: "60%" }}>
+      <View
+        style={{
+          flexDirection: "row",
+        }}
+      >
+        <View style={{ width: "60%" }}>
+          <Pressable disabled={!props.isClickable} onPress={props.onPress}>
             <Text style={textStyle}>
               {item.Sets.length}x
               {props.showAllSetsReps ? (
@@ -336,14 +336,16 @@ export const SetsAndReps = props => {
                 <Text style={textStyle}>{item.Sets[0].Reps}</Text>
               )}
             </Text>
-            {showItemRepsProgression && <Text style={textStyle}>+{item.increaseReps}</Text>}
-          </View>
-          <View style={{ width: "40%" }}>
+          </Pressable>
+          {showItemRepsProgression && <Text style={textStyle}>+{item.increaseReps}</Text>}
+        </View>
+        <View style={{ width: "40%" }}>
+          <Pressable disabled={!props.isClickable} onPress={props.onPress}>
             <ShowWeight sets={item.Sets} textStyle={textStyle} />
             {showItemWeightProgression && <Text style={textStyle}>+{item.increaseWeight}</Text>}
-          </View>
+          </Pressable>
         </View>
-      </Pressable>
+      </View>
     </View>
   )
 }
@@ -380,12 +382,12 @@ export const ShowExercise = observer(props => {
   textStyle.color = props.textStyle.color ? props.textStyle.color : someStyle.color
 
   if (!textStyle) textStyle = iStyles.text1
-  if (!item) return <Text>No exercise found</Text>
+  if (!item) return <Text style={{ color: iStyles.text0.color }}>No exercise found</Text>
 
   let positionAndExerciseNameStyle = {
     ...iStyles.text1,
     fontSize: textStyle.fontSize || 20,
-    color: textStyle.color || "black",
+    color: textStyle.color || iStyles.text0.color,
   }
 
   let setsAndRepsStyle = {
@@ -422,7 +424,7 @@ export const ShowExercise = observer(props => {
         <MoreInfoBaloon
           infoText={doneBeforeInfoText}
           onPress={onPressMoreInfoBaloon}
-          infoTextStyle={{ textAlign: "center" }}
+          infoTextStyle={{ textAlign: "center", color: iStyles.text0.color }}
         />
       )}
       <Pressable onPressIn={onPressIn} delayLongPress={DELAY_LONG_PRESS} disabled={!isClickable}>
@@ -437,7 +439,7 @@ export const ShowExercise = observer(props => {
           }}
         >
           {showDoneBefore && (
-            <View style={{ width: "10%", justifyContent: "center", alignItems: "center" }}>
+            <View style={{ width: "5%", justifyContent: "center", alignItems: "center" }}>
               {/* <Text style={doneBeforeStyle}>{doneBefore}</Text> */}
               <TouchableOpacity onPress={onPressDoneBefore}>
                 <Text style={doneBeforeStyle}>{doneBefore}</Text>
@@ -456,7 +458,7 @@ export const ShowExercise = observer(props => {
             </Pressable>
           </View>
           {/* <View style={{ width: "40%", alignItems: "flex-start" }}> */}
-          <View style={{ flex: 1, alignItems: "flex-start" }}>
+          <View style={{ flex: 1, alignItems: "flex-start", width: "40%" }}>
             <Pressable
               onPress={onPressExercise}
               onLongPress={onPressIn}
@@ -492,7 +494,7 @@ export const ShowExercise = observer(props => {
 
           <View
             style={{
-              width: "40%",
+              width: "45%",
 
               justifyContent: "center",
               alignItems: "center",
@@ -541,8 +543,10 @@ export const ShowWeekName = props => {
 
 export const ShowDayName = props => {
   const { isCurrent, day, onPress, disableEdit } = props
-  let dayStyleSelected = { ...iStyles.text2, fontSize: 22 }
-  let dayStyleNotSelected = { ...iStyles.greyText, fontSize: 21 }
+  let dayStyleSelected = { ...iStyles.text0, fontSize: 22 }
+  let dayStyleNotSelected = dayStyleSelected
+  // let dayStyleSelected = { ...iStyles.text2, fontSize: 22 }
+  // let dayStyleNotSelected = { ...iStyles.greyText, fontSize: 21 }
   if (disableEdit)
     return (
       <View style={{ marginHorizontal: 2 }}>
@@ -616,7 +620,7 @@ const ProgramVolumeTable = props => {
   const coefsArray = exercisesStore.getProgramVolume(state)
 
   const flatlistHeader = () => {
-    const greyTextStyle = { ...iStyles.greyText, color: "black" }
+    const greyTextStyle = { ...iStyles.greyText, color: iStyles.text0.color }
     return (
       <View style={{ flexDirection: "row", width: "100%" }}>
         <View style={styles.muscleColumns}>
@@ -748,8 +752,8 @@ const ProgramGeneralInfo = props => {
     ])
   }, [state])
 
-  const leftTextStyle = { fontSize: 18, color: "black", fontWeight: "bold" }
-  const rightTextStyle = { fontSize: 18, color: "black" }
+  const leftTextStyle = { fontSize: 18, color: iStyles.text0.color, fontWeight: "bold" }
+  const rightTextStyle = { fontSize: 18, color: iStyles.text0.color }
   const clickableStyle = { ...rightTextStyle, color: iStyles.text1.color }
 
   return (
@@ -800,7 +804,7 @@ const ProgramInfoOldPrograms = props => {
 
   return (
     <ExpandableContent title="Other programs" titleStyle={iStyles.text1} startMinimized={true}>
-      {oldPrograms.length === 0 && <Text>No other programs found :(</Text>}
+      {oldPrograms.length === 0 && <Text style={iStyles.text0}>No other programs found :(</Text>}
       {oldPrograms.map((program, index) => {
         return (
           <ExpandableContent
@@ -845,7 +849,7 @@ export const DayCompletedCheckbox: React.FC<DayCompletedCheckboxProps> = props =
         onPress={onPressCheckbox}
         status={isCompleted ? "checked" : "unchecked"}
         color={props.color}
-        uncheckedColor={props.uncheckedColor}
+        uncheckedColor={props.uncheckedColor ? props.uncheckedColor : iStyles.text0.color}
       />
       {isPicking && (
         <DateTimePicker
@@ -874,11 +878,12 @@ type DaysBoxProps = {
   editWeeks?: boolean
   onAddWeek?: Function
   onRemoveWeek?: Function
+  startOpen?: boolean
 }
 
 export const DaysBox: React.FC<DaysBoxProps> = props => {
   const { program, state } = props
-  const [isChoosing, setIsChoosing] = useState(false)
+  const [isChoosing, setIsChoosing] = useState(props.startOpen ? true : false)
 
   let styles = {
     completed: { ...text2, fontWeight: "bold" },
@@ -893,6 +898,7 @@ export const DaysBox: React.FC<DaysBoxProps> = props => {
         onPress={() => setIsChoosing(!isChoosing)}
         color={buttonColor}
         disabled={state.locked}
+        labelStyle={{ color: buttonColor }}
       >
         {translate("trainClientsScreen.Day")}
         {state.currentDayIndex + 1} {translate("trainClientsScreen.W")}

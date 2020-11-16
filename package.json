@@ -72,7 +72,8 @@
     "reactotron-mst": "^3.1.1",
     "reactotron-react-native": "^4.0.0-beta.1",
     "rn-progress-loader": "^1.0.8",
-    "validate.js": "0.13.1"
+    "validate.js": "0.13.1",
+    "victory-native": "^35.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

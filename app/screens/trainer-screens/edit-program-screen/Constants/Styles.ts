@@ -1,6 +1,6 @@
 import { DefaultTheme } from "react-native-paper"
 import { StyleSheet, Dimensions, Appearance } from "react-native"
-import iTheme from "./Themes"
+import { iTheme, lightTheme, darkTheme } from "./Themes"
 
 const windowWidth = Dimensions.get("window").width
 const windowHeight = Dimensions.get("window").height
@@ -12,7 +12,7 @@ const size2 = 12
 const iStyles = StyleSheet.create({
   defaultText: {
     fontSize: 20,
-    color: "black",
+    color: colorScheme === "dark" ? darkTheme.color0 : lightTheme.color0,
   },
   greyText: {
     fontSize: size1,
@@ -20,7 +20,7 @@ const iStyles = StyleSheet.create({
   },
   selectedText: {
     fontSize: 22,
-    color: iTheme.colors.primary,
+    color: colorScheme === "dark" ? darkTheme.color1 : lightTheme.color1,
   },
   bottomButtonsContainer: {
     flexDirection: "row",
@@ -46,22 +46,22 @@ const iStyles = StyleSheet.create({
     flexDirection: "row",
   },
   screenViewWrapper: {
-    backgroundColor: "white",
+    backgroundColor: colorScheme === "dark" ? darkTheme.background : lightTheme.background,
     flex: 1,
     // alignItems: 'center',
   },
   text1: {
     fontSize: size1,
-    color: colorScheme === "dark" ? iTheme.colors.primary : iTheme.colors.primary,
+    color: colorScheme === "dark" ? darkTheme.color1 : lightTheme.color1,
     // color: colorScheme==='dark' ? iTheme.colors.primary,
   },
   text2: {
     fontSize: size1,
-    color: iTheme.colors.secondary,
+    color: colorScheme === "dark" ? darkTheme.color2 : lightTheme.color2,
   },
   text3: {
     fontSize: size1,
-    color: iTheme.colors.third,
+    color: colorScheme === "dark" ? darkTheme.color3 : lightTheme.color3,
   },
   smallImputBox: {
     flex: 1,
@@ -73,7 +73,7 @@ const iStyles = StyleSheet.create({
   },
   smallerOutlineOverInputBox: {
     borderWidth: 1,
-    borderColor: iTheme.colors.primary,
+    borderColor: colorScheme === "dark" ? darkTheme.color1 : lightTheme.color1,
     width: "95%",
     height: "80%",
     alignItems: "center",
@@ -82,7 +82,7 @@ const iStyles = StyleSheet.create({
   smallIcon: {
     alignItems: "center",
     justifyContent: "center",
-    width: 50,
+    width: 47,
     height: 20,
     borderRadius: 10,
     marginHorizontal: 1,
@@ -103,19 +103,28 @@ const iStyles = StyleSheet.create({
   },
   text1Small: {
     fontSize: size2,
-    color: iTheme.colors.primary,
+    color: colorScheme === "dark" ? darkTheme.color1 : lightTheme.color1,
   },
   text2Small: {
     fontSize: size2,
-    color: iTheme.colors.secondary,
+    color: colorScheme === "dark" ? darkTheme.color2 : lightTheme.color2,
   },
   text3Small: {
     fontSize: size2,
-    color: iTheme.colors.third,
+    color: colorScheme === "dark" ? darkTheme.color3 : lightTheme.color3,
   },
   greyTextSmall: {
     fontSize: size2,
     color: "grey",
+  },
+  textYellow: {
+    color: colorScheme === "dark" ? darkTheme.colorYellow : lightTheme.colorYellow,
+  },
+  text0: {
+    color: colorScheme === "dark" ? darkTheme.color0 : lightTheme.color0,
+  },
+  backGround: {
+    color: colorScheme === "dark" ? darkTheme.background : lightTheme.background,
   },
 })
 

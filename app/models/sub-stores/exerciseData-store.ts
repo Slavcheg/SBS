@@ -107,97 +107,98 @@ export const exerciseDataStoreModel = types
       let exercise = self.exercises.find(element => element.Name === exerciseName)
       return exercise
     },
-    getExerciseVolume: exerciseWithSets => { // exerciseWithSets is what the program contains. simply 'exercise' refers to exercise in database 
-    let exercise = self.exercises.find(element => element.Name === exerciseWithSets.Name)
-    let volumes = {};
-    for (const property in exercise.Coefs) {
-      volumes[property] = exercise.Coefs[property]*exerciseWithSets.Sets.length
-    }
-    return volumes
+    getExerciseVolume: exerciseWithSets => {
+      // exerciseWithSets is what the program contains. simply 'exercise' refers to exercise in database
+      let exercise = self.exercises.find(element => element.Name === exerciseWithSets.Name)
+      let volumes = {}
+      for (const property in exercise.Coefs) {
+        volumes[property] = exercise.Coefs[property] * exerciseWithSets.Sets.length
+      }
+      return volumes
     },
-  })).views(self => ({
+  }))
+  .views(self => ({
     getVolumeStrings: exerciseWithSets => {
       let volumes = self.getExerciseVolume(exerciseWithSets)
 
-      let volumesArray = [];
+      let volumesArray = []
 
       let volumesString = ""
-  
+
       for (const property in volumes) {
-        volumesArray.push({muscleName: property, value: volumes[property]})
+        volumesArray.push({ muscleName: property, value: volumes[property] })
       }
 
       const sortFunction = (a, b) => {
-        return b.value-a.value
+        return b.value - a.value
       }
 
       volumesArray.sort(sortFunction)
 
-      for (let i=0; i<= volumesArray.length; i++)
-       {
-        if (volumesArray[i].value===0 || i >= 4 ) break
-        let oneVolumeString = volumesArray[i].value;
-        if (!Number.isInteger(volumesArray[i].value)) oneVolumeString = volumesArray[i].value.toFixed(1)
+      for (let i = 0; i <= volumesArray.length; i++) {
+        if (volumesArray[i].value === 0 || i >= 4) break //максимална бройка на мускулните групи, които да показва
+        let oneVolumeString = volumesArray[i].value
+        if (!Number.isInteger(volumesArray[i].value))
+          oneVolumeString = volumesArray[i].value.toFixed(1)
         volumesString += `${volumesArray[i].muscleName} ${oneVolumeString} `
-        
-        
       }
-
 
       return volumesString
     },
-    getProgramVolume: (state) => {
-      const {currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex} = state;
-
+    getProgramVolume: state => {
+      const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = state
 
       //get muscle groups and set volume to zero
 
-      let exercise = self.exercises.find(element => element.Name === 'Bench Press')
+      let exercise = self.exercises.find(element => element.Name === "Bench Press")
 
       const allVolumesZero = () => {
-          let emptyObj = {}
-          for (const property in exercise.Coefs) {
-            emptyObj[property] = 0;
-          }
+        let emptyObj = {}
+        for (const property in exercise.Coefs) {
+          emptyObj[property] = 0
+        }
         return emptyObj
       }
 
       let programCoefs = {}
-      let weeklyCoefs = [{coefs: {}}]
-      
-      programCoefs = allVolumesZero();
+      let weeklyCoefs = [{ coefs: {} }]
 
+      programCoefs = allVolumesZero()
 
       //calculate all coefs
       currentProgram.Weeks[currentWeekIndex].Days.map((day, dayIndex) => {
-
         day.Exercises.forEach((exercise, exerciseIndex) => {
           let execiseVolumes = self.getExerciseVolume(exercise)
           for (const property in programCoefs) {
-            programCoefs[property]+=execiseVolumes[property];
-            if (!weeklyCoefs[dayIndex]) weeklyCoefs.push({coefs: {}})
-            if (!weeklyCoefs[dayIndex].coefs[property]) weeklyCoefs[dayIndex].coefs[property]=0; //zero out value if undefined
-            weeklyCoefs[dayIndex].coefs[property]+=execiseVolumes[property]
+            programCoefs[property] += execiseVolumes[property]
+            if (!weeklyCoefs[dayIndex]) weeklyCoefs.push({ coefs: {} })
+            if (!weeklyCoefs[dayIndex].coefs[property]) weeklyCoefs[dayIndex].coefs[property] = 0 //zero out value if undefined
+            weeklyCoefs[dayIndex].coefs[property] += execiseVolumes[property]
           }
         })
       })
 
       //reduce float numbers to 1 digit
       for (const property in programCoefs) {
-        if (!Number.isInteger(programCoefs[property])) programCoefs[property] = parseFloat(programCoefs[property].toFixed(1))
-        weeklyCoefs.forEach((coef, index)=> {
+        if (!Number.isInteger(programCoefs[property]))
+          programCoefs[property] = parseFloat(programCoefs[property].toFixed(1))
+        weeklyCoefs.forEach((coef, index) => {
           if (weeklyCoefs[index].coefs[property])
-          if (!Number.isInteger(weeklyCoefs[index].coefs[property])) 
-          weeklyCoefs[index].coefs[property] = parseFloat(weeklyCoefs[index].coefs[property].toFixed(1))
+            if (!Number.isInteger(weeklyCoefs[index].coefs[property]))
+              weeklyCoefs[index].coefs[property] = parseFloat(
+                weeklyCoefs[index].coefs[property].toFixed(1),
+              )
         })
-       
       }
 
       let volumeArray = []
-      let i=0;
+      let i = 0
       for (const muscleName in programCoefs) {
-  
-        volumeArray.push({muscleName: muscleName, programVolume: programCoefs[muscleName], weeklyVolume: []})
+        volumeArray.push({
+          muscleName: muscleName,
+          programVolume: programCoefs[muscleName],
+          weeklyVolume: [],
+        })
         weeklyCoefs.forEach((week, index) => {
           volumeArray[i].weeklyVolume.push(weeklyCoefs[index].coefs[muscleName])
         })
@@ -205,11 +206,11 @@ export const exerciseDataStoreModel = types
       }
 
       const sortFunction = (a, b) => {
-        return b.programVolume-a.programVolume
+        return b.programVolume - a.programVolume
       }
 
       volumeArray.sort(sortFunction)
 
       return volumeArray
-    }
+    },
   }))

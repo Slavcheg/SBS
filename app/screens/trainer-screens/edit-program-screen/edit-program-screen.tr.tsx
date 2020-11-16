@@ -32,6 +32,10 @@ import {
   EditExerciseModal,
   ShowProgramMoreInfo,
   TextWithInfoBaloon,
+  SmallIconButton,
+  ProgramPicker,
+  getWeightEquivalent,
+  ExerciseProgressChart,
 } from "./ProgramsTool - Helper functions"
 
 import iStyles from "./Constants/Styles"
@@ -121,6 +125,8 @@ type ShowProgramProps = {
   onToggleProgramCompleted?: Function
   onAddWeek?: Function
   onRemoveWeek?: Function
+  onPressCopy?: Function
+  onAddExercise?: Function
 }
 
 const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
@@ -141,6 +147,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
     onChangeClient,
     onReplaceExercise,
     onToggleReorder,
+    onAddExercise,
     state,
   } = props
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
@@ -150,12 +157,17 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   const scrollRef = useRef()
 
   const scroll = () => {
-    if (scrollRef.current) scrollRef.current.scrollTo({ x: windowWidth, y: 0, animated: true })
+    if (scrollRef.current) scrollRef.current.scrollTo({ x: windowWidth, y: 0, animated: false })
   }
 
   useEffect(() => {
     setTimeout(() => scroll(), 10)
   }, [])
+
+  const testHandler = () => {
+    let newWeight = getWeightEquivalent(54, 10, 8)
+    console.log(newWeight)
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -166,11 +178,18 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         onChangeClient={onChangeClient}
         onAddWeek={props.onAddWeek}
         onRemoveWeek={props.onRemoveWeek}
+        onPressCopy={props.onPressCopy}
       />
       <ScrollView horizontal={true} pagingEnabled={true} ref={scrollRef}>
         {/* <View style={iStyles.carouselScreen}> */}
         <View style={{ width: windowWidth }}>
-          <Text>ШШшшшт.... това е тайно меню... не казвай на другите!</Text>
+          <Text style={{ fontSize: 30, textAlign: "center", color: iStyles.text0.color }}>
+            Таблици с прогрес
+          </Text>
+          <Text style={{ color: iStyles.text0.color }}>
+            Малко статистики за упражненията, килограмите са изравнени за 8 повторения!
+          </Text>
+          <ExerciseProgressChart state={state} />
         </View>
         <View style={iStyles.carouselScreen}>
           <ShowProgramDays
@@ -190,6 +209,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
             onExpandExerciseInfo={onExpandExerciseInfo}
             onReplaceExercise={onReplaceExercise}
             onToggleReorder={onToggleReorder}
+            onAddExercise={onAddExercise}
           />
         </View>
         <View style={iStyles.carouselScreen}>
@@ -206,7 +226,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
 
 export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(props => {
   const { navigation, route } = props
-  const { programID, otherProgramIDs, allPrograms, allUsers } = route.params
+  const { programID, otherProgramIDs, allPrograms, allUsers, trainerID } = route.params
   // const  = route.params.otherProgramIDs
 
   const exercisesStore = useStores().exerciseDataStore
@@ -236,14 +256,17 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     autoFocusSearch: false,
     isReordering: false,
     isReplacingExercise: false,
+    isCopyProgramViewShown: false,
   }
 
   const [state, dispatch] = useReducer(EditProgramReducer, initialState)
 
   const getPrograms = async () => {
-    // let allProgramsDownloaded = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
+    const allProgramsDownloaded = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
+    const ourProgram = allProgramsDownloaded.find(program => program.id === programID)
 
-    let ourProgram = allPrograms.find(program => program.id === programID)
+    // const ourProgram = allPrograms.find(program => program.id === programID) като прехвърлям целите програми през navigation става бъгаво
+
     const oldPrograms = []
     otherProgramIDs.forEach(otherProgramID => {
       oldPrograms.push(allPrograms.find(program => program.id === otherProgramID))
@@ -253,7 +276,9 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
       type: "update current program",
       value: ourProgram.item,
       oldPrograms: oldPrograms,
-      allPrograms: allPrograms,
+      allPrograms: allProgramsDownloaded.filter(program =>
+        program.item.Trainers.includes(trainerID),
+      ),
       allUsers: allUsers,
     })
   }
@@ -274,6 +299,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     currentExerciseIndex,
     isReordering,
     isReplacingExercise,
+    isCopyProgramViewShown,
   } = state
 
   useEffect(() => {
@@ -353,7 +379,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
 
   const onRemoveDayHandler = dayIndexToRemove => {
     const onRemoveInsideHandler = () => {
-      dispatch({ type: "remove day" })
+      dispatch({ type: "remove day", value: dayIndexToRemove })
       setTimeout(onSaveProgramHandler, 100)
     }
     if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length !== 0)
@@ -396,22 +422,27 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     setTimeout(onSaveProgramHandler, 100)
   }
 
-  const onDeleteExerciseHandler = index => {
-    dispatch({ type: "delete exercise", value: index })
+  const onDeleteExerciseHandler = (exerciseIndex, dayIndex) => {
+    dispatch({ type: "delete exercise", value: exerciseIndex, dayIndex: dayIndex })
     setTimeout(onSaveProgramHandler, 100)
   }
-  const onEditPositionHandler = index => {
-    dispatch({ type: "change position number", value: index })
+  const onEditPositionHandler = (exerciseIndex, dayIndex) => {
+    dispatch({ type: "change position number", value: exerciseIndex, dayIndex: dayIndex })
   }
-  const onExpandExerciseInfo = index => {
+  const onExpandExerciseInfo = (exerciseIndex, dayIndex) => {
     dispatch({
       type: "expand exercise info",
-      value: index,
+      value: exerciseIndex,
+      dayIndex: dayIndex,
     })
   }
-  const onEditSetsRepsHandler = exerciseIndex => {
+  const onEditSetsRepsHandler = (exerciseIndex, dayIndex) => {
     const onConfirm = () =>
-      dispatch({ type: "open modal and start editing exercise", value: exerciseIndex })
+      dispatch({
+        type: "open modal and start editing exercise",
+        value: exerciseIndex,
+        dayIndex: dayIndex,
+      })
     if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted)
       greyedoutSetsAndRepsAlert(onConfirm)
     else onConfirm()
@@ -423,19 +454,24 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   }
 
   const onChangeClient = newClientID => {
-    if (!currentProgram.Weeks[0].Days[0].isCompleted)
-      dispatch({ type: "change client", value: newClientID })
-    else changeUserAlert(() => dispatch({ type: "change client", value: newClientID }))
+    if (newClientID !== currentProgram.Client)
+      if (!currentProgram.Weeks[0].Days[0].isCompleted)
+        dispatch({ type: "change client", value: newClientID })
+      else changeUserAlert(() => dispatch({ type: "change client", value: newClientID }))
   }
 
-  const onReplaceExercise = index => {
-    console.log("tried replacing exercise ", index)
-    dispatch({ type: "replace exercise with another from picker", value: index })
+  const onReplaceExercise = (exerciseIndex, dayIndex) => {
+    console.log("tried replacing exercise ", exerciseIndex)
+    dispatch({
+      type: "replace exercise with another from picker",
+      value: exerciseIndex,
+      dayIndex: dayIndex,
+    })
     setTimeout(onSaveProgramHandler, 100)
   }
 
-  const onToggleReorder = () => {
-    dispatch({ type: "toggle reorder" })
+  const onToggleReorder = dayIndex => {
+    dispatch({ type: "toggle reorder", dayIndex: dayIndex })
   }
 
   const onToggleProgramCompleted = () => {
@@ -449,14 +485,38 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     dispatch({ type: "remove week" })
   }
 
+  const onPressCopy = () => {
+    dispatch({ type: "start to copy from another program" })
+  }
+
+  const onCloseProgramPicker = () => {
+    dispatch({ type: "close program picker without choosing a program" })
+  }
+
+  const onCopyProgram = program => {
+    dispatch({ type: "copy program and close ProgramPicker", value: program })
+    console.log(program.id)
+  }
+
+  const onAddExercise = dayIndex => {
+    dispatch({ type: "add exercise from end of day button", dayIndex: dayIndex })
+  }
+
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <View style={iStyles.screenViewWrapper}>
       <ButtonsRow
         // isVisible={true}
         isVisible={state.isButtonsRowShown}
         onPressMuscleGroup={onPressMuscleGroupFilterHandler}
         onPressSearch={onPressSearchHandler}
         goBack={onGoBackHandler}
+      />
+      <ProgramPicker
+        isVisible={isCopyProgramViewShown}
+        programs={state.allPrograms}
+        onGoBack={onCloseProgramPicker}
+        state={state}
+        onCopyWholeProgram={onCopyProgram}
       />
       <ExercisePicker
         shownArray={exercisesStore.filteredByMuscleGroup[state.selectedMuscleGroup]}
@@ -477,7 +537,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
             onClose={onCloseExerciseModal}
           />
         )}
-      {currentProgram && (
+      {currentProgram && state.isProgramViewShown && (
         <View style={styles.programStyle}>
           <ShowProgram
             state={state}
@@ -500,6 +560,8 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
             onToggleProgramCompleted={onToggleProgramCompleted}
             onAddWeek={onAddWeek}
             onRemoveWeek={onRemoveWeek}
+            onPressCopy={onPressCopy}
+            onAddExercise={onAddExercise}
           />
         </View>
       )}

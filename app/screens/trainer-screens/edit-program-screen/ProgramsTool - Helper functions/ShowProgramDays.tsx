@@ -43,6 +43,7 @@ import {
   DayCompletedCheckbox,
   DaysBox,
   TextWithInfoBaloon,
+  SmallIconButton,
 } from "./index"
 
 type HeaderProps = {
@@ -52,6 +53,7 @@ type HeaderProps = {
   onChangeClient: Function
   onAddWeek?: Function
   onRemoveWeek?: Function
+  onPressCopy?: Function
 }
 
 export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(props => {
@@ -83,6 +85,7 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
               icon="arrow-left"
               compact={true}
               onPress={() => props.onChangeWeek({ type: "decrease" })}
+              color={iStyles.text3.color}
             >
               {""}
             </Button>
@@ -100,9 +103,9 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
               icon="arrow-right"
               compact={true}
               onPress={() => props.onChangeWeek({ type: "increase" })}
-            >
-              {""}
-            </Button>
+              color={iStyles.text3.color}
+            ></Button>
+            <SmallIconButton icon="content-copy" onPress={props.onPressCopy} />
           </View>
         </View>
       </View>
@@ -128,6 +131,7 @@ type ShowProgramDaysProps = {
   onExpandExerciseInfo?: Function
   onReplaceExercise?: Function
   onToggleReorder?: Function
+  onAddExercise?: Function
 }
 
 export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = observer(props => {
@@ -217,7 +221,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
       <View>
         {dayDone && (
           <View style={{ alignItems: "center" }}>
-            <Text>
+            <Text style={{ color: iStyles.text0.color }}>
               Day completed on{" "}
               {displayDateFromTimestamp2(
                 currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn,
@@ -266,6 +270,9 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
               renderItem={renderExercises}
               keyExtractor={(item, index) => `${item.Name}-${index}`}
               ListHeaderComponent={() => renderHeader(day.DayName)}
+              listKey={`${dayindex.toString()}+${currentProgram.Name}+${
+                currentProgram.Client
+              }+${Math.random().toString()}`}
             />
           )
         })}
@@ -281,9 +288,10 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
             let moreINfoExpanded = false //flag for whether expand arrow to point up or down
             if (exercises.length > 0) if (exercises[0].isExpanded) moreINfoExpanded = true
             let arrowIcon = moreINfoExpanded ? "arrow-expand-up" : "arrow-expand-down"
-            let backgroundColor = "white"
+            let backgroundColor = iStyles.backGround
             if (dayindex === currentDayIndex && !props.state.deselectAllDays) {
-              backgroundColor = "lightcyan" // lightcyan azure aliceblue ivory whitesmoke
+              // backgroundColor = "lightcyan" // lightcyan azure aliceblue ivory whitesmoke
+              backgroundColor = iStyles.backGround // lightcyan azure aliceblue ivory whitesmoke
               isCurrent = true
             } else isCurrent = false
             // if (currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted)
@@ -294,7 +302,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                 onPress={() => {
                   onChangeDay(dayindex)
                 }}
-                // disabled={true}
+                disabled={true}
               >
                 <View
                   style={{
@@ -316,35 +324,23 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                       isCurrent={isCurrent}
                       onEdit={newDayName => onChangeDayName(newDayName, dayindex)}
                     />
-                    {isCurrent && (
+                    {/* {isCurrent && (
                       <View
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
                         }}
-                      >
-                        <Button
-                          icon="plus-circle"
-                          mode={"contained"}
-                          compact={true}
-                          color={iStyles.text2.color}
-                          style={iStyles.mediumRoundIcon}
-                          onPress={props.onAddNewDay}
-                        >
-                          {""}
-                        </Button>
-                        <Button
-                          icon="trash-can-outline"
-                          mode={"contained"}
-                          compact={true}
-                          color="red"
-                          style={iStyles.mediumRoundIcon}
-                          onPress={() => props.onRemoveDay(dayindex)}
-                        >
-                          {""}
-                        </Button>
-                      </View>
-                    )}
+                      > */}
+                    <Button
+                      icon="trash-can-outline"
+                      mode={"contained"}
+                      compact={true}
+                      color="red"
+                      style={iStyles.mediumRoundIcon}
+                      onPress={() => props.onRemoveDay(dayindex)}
+                    ></Button>
+                    {/* </View>
+                    )} */}
                     {/* <Checkbox
                       color={iStyles.text1.color}
                       status={
@@ -379,7 +375,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                     ></ToggleButton>
                     <ToggleButton
                       icon="swap-vertical-bold"
-                      onPress={onToggleReorder}
+                      onPress={() => onToggleReorder(dayindex)}
                       status={state.isReordering}
                       color={iStyles.text1.color}
                       style={iStyles.mediumRoundIcon}
@@ -410,6 +406,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                         <View style={{ flexDirection: "row" }}>
                           <Button
                             icon={arrowIcon}
+                            color={iStyles.text3.color}
                             compact={true}
                             // onPress={() => {
                             //   dispatch({
@@ -430,14 +427,15 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                             onPress={() => onChangeDay(dayindex)}
                           /> */}
                   </View>
-                  {currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted && (
-                    <Text style={{ textAlign: "center" }}>
-                      Day completed on{" "}
-                      {displayDateFromTimestamp2(
-                        currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn,
-                      )}
-                    </Text>
-                  )}
+                  {currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted &&
+                    isDayShown[dayindex] && (
+                      <Text style={{ textAlign: "center", color: iStyles.text0.color }}>
+                        Day completed on{" "}
+                        {displayDateFromTimestamp2(
+                          currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn,
+                        )}
+                      </Text>
+                    )}
                   <View style={{ flex: 1 }}>
                     <ImageBackgroundToggle
                       imageURL={imgs.rotate}
@@ -464,6 +462,33 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                         />
                       )}
                     </ImageBackgroundToggle>
+                    <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+                      {dayindex === currentProgram.Weeks[currentWeekIndex].Days.length - 1 && (
+                        <Button
+                          icon="plus-circle"
+                          mode={"outlined"}
+                          // compact={true}
+                          color={iStyles.text2.color}
+                          // style={iStyles.mediumRoundIcon}
+                          style={{ width: 100 }}
+                          onPress={props.onAddNewDay}
+                        >
+                          {" "}
+                          Day{" "}
+                        </Button>
+                      )}
+                      {isDayShown[dayindex] && (
+                        <Button
+                          mode="outlined"
+                          compact={true}
+                          color={iStyles.text1.color}
+                          style={{ width: "60%" }}
+                          onPress={() => props.onAddExercise(dayindex)}
+                        >
+                          + упражнение
+                        </Button>
+                      )}
+                    </View>
                   </View>
                 </View>
               </Pressable>
@@ -503,6 +528,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
     onEditSetsRepsHandler,
     onViewVideo,
     onReplaceExercise,
+    dayIndex,
   } = props
 
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = props.state
@@ -526,20 +552,21 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
           console.log("tried dragging")
           if (isDraggable) drag()
         }}
-        onPressPosition={() => onEditPositionHandler(index)}
+        onPressPosition={() => onEditPositionHandler(index, dayIndex)}
         textStyle={textStyle}
         item={item}
-        onPressExercise={() => onExpandExerciseInfo(index)}
-        onDeleteExercise={() => onDeleteExerciseHandler(index)}
-        onPressSetsAndReps={() => onEditSetsRepsHandler(index)}
-        onPressReplace={() => onReplaceExercise(index)}
+        onPressExercise={() => {
+          console.log("dayIndex", dayIndex)
+          onExpandExerciseInfo(index, dayIndex)
+        }}
+        onDeleteExercise={() => onDeleteExerciseHandler(index, dayIndex)}
+        onPressSetsAndReps={() => onEditSetsRepsHandler(index, dayIndex)}
+        onPressReplace={() => onReplaceExercise(index, dayIndex)}
         isDragged={isActive}
         isClickable={isClickable}
         onViewVideo={() => onViewVideo(item)}
         showVolume={true}
-        isGreyedOut={
-          currentProgram.Weeks[currentWeekIndex].Days[props.dayIndex].isCompleted || false
-        }
+        isGreyedOut={currentProgram.Weeks[currentWeekIndex].Days[dayIndex].isCompleted || false}
         showDoneBefore={true}
         oldExercise={oldExercise}
       />
@@ -549,7 +576,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
   if (exercises.length === 0)
     return (
       <View>
-        <Text style={{ color: "grey", fontSize: 18 }}>Избери си упражнение от горе</Text>
+        <Text style={{ color: "grey", fontSize: 18 }}>В този ден все още няма упражнения</Text>
       </View>
     )
 
@@ -589,7 +616,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
       <FlatList
         data={exercises}
         renderItem={({ item, index, drag, isActive }) =>
-          renderExercises({ item, index, drag, isActive }, false, false)
+          renderExercises({ item, index, drag, isActive }, true, false)
         }
         scrollEnabled={false}
         initialNumToRender={20}

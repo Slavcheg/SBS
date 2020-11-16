@@ -23,6 +23,28 @@ import { ImageSource } from "react-native-vector-icons/Icon"
 import iStyles from "../Constants/Styles"
 import { TouchableOpacity } from "react-native-gesture-handler"
 
+type SmallIconButtonProps = {
+  icon: string
+  onPress: Function
+  color?: string
+  mode?: "text" | "outlined" | "contained"
+}
+
+export const SmallIconButton: React.FC<SmallIconButtonProps> = props => {
+  return (
+    <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <Button
+        icon={props.icon}
+        onPress={props.onPress}
+        style={iStyles.smallIcon}
+        color={props.color || iStyles.text1.color}
+        compact={true}
+        mode={props.mode ? props.mode : "text"}
+      ></Button>
+    </View>
+  )
+}
+
 type MoreInfoBaloonProps = {
   infoText: string
   infoTextStyle?: any
@@ -39,11 +61,11 @@ export const MoreInfoBaloon: React.FC<MoreInfoBaloonProps> = props => {
           borderWidth: 1,
           // right: 0,
           width: windowWidth,
-          backgroundColor: "white",
+          backgroundColor: iStyles.backGround.color,
           left: 0,
         }}
       >
-        <Text style={props.infoTextStyle}>{props.infoText}</Text>
+        <Text style={props.infoTextStyle || iStyles.text0}>{props.infoText}</Text>
       </View>
     </TouchableOpacity>
   )
@@ -123,8 +145,8 @@ export const ExpandCollapseButton: React.FC<ExpandCollapseButtonProps> = props =
     <ToggleButton
       onPress={props.onPress}
       status={status}
-      color="red"
-      colorFalse="green"
+      color={iStyles.textYellow.color}
+      colorFalse={iStyles.text2.color}
       icon="arrow-expand-up"
       iconFalse="arrow-expand-down"
       compact={true}

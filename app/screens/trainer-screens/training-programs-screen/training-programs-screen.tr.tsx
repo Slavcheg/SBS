@@ -167,7 +167,7 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
           onPress={onHideCompleted}
           color={iStyles.text1.color}
         />
-        <Text>Hide completed programs</Text>
+        <Text style={{ color: iStyles.text0.color }}>Hide completed programs</Text>
       </View>
       {/* {props.programs.length === 1 && (
         <Text style={{ textAlign: "center" }}>
@@ -194,7 +194,7 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
           let programSelected = props.selectedPrograms.includes(program.id) ? true : false
           let textStyle = {
             fontSize: 19,
-            color: programSelected ? iStyles.text1.color : "black",
+            color: programSelected ? iStyles.text1.color : iStyles.text0.color,
           }
 
           let checkedStatus = false
@@ -218,7 +218,7 @@ const ShowProgramsList: React.FunctionComponent<ShowProgramsListProps> = observe
                   alignItems: "center",
                 }}
               >
-                <View style={{ backgroundColor: "white" }}>
+                <View style={{ backgroundColor: iStyles.backGround.color }}>
                   <TouchableOpacity
                     activeOpacity={0.6}
                     onLongPress={() => props.onPressDeleteProgram(program.id)}
@@ -262,15 +262,16 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     const rootStore = useStores()
     const cardStore2 = useStores().cardyStore2
 
-    const [state, setState] = useState({
-      currentProgram: "",
-      userPrograms: [],
-    })
+    // const [state, setState] = useState({
+    //   currentProgram: "",
+    //   userPrograms: [],
+    // })
 
     const [selectedPrograms, setSelectedPrograms] = useState([])
 
     const [exercisesLoaded, setExercisesLoaded] = useState(false)
     const [users, setUsers] = useState([])
+    const [userProgramsState, setUserProgramsState] = useState([])
 
     useEffect(() => {
       programsStore.getItems()
@@ -312,12 +313,13 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       let userPrograms = allPrograms.filter(program =>
         program.item.Trainers.includes(rootStore.loggedUser.id),
       )
-      console.log("all programs got ", allPrograms.length, userPrograms.length)
+      console.log("all programs got ", allPrograms.length, userProgramsState.length)
       userPrograms.sort(
         (a, b) =>
           b.item.Weeks[0].Days[0].Exercises.length - a.item.Weeks[0].Days[0].Exercises.length,
       )
-      setState({ ...state, userPrograms: userPrograms })
+      // setState({ ...state, userPrograms: userPrograms })
+      setUserProgramsState(userProgramsState => [...userPrograms])
     }
 
     const onDownload = exerciseDatabase => {
@@ -355,9 +357,10 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         Trainers: [rootStore.loggedUser.id],
         Client: `${translate("selectPrograms.NoClientYet")}`,
       }
-      let newPrograms = state.userPrograms
+      const newPrograms = userProgramsState
       newPrograms.push({ id: "bogus", item: defProgram })
-      setState({ ...state, userPrograms: newPrograms })
+      // setState({ ...state, userPrograms: newPrograms })
+      setUserProgramsState([...newPrograms])
 
       await firestore()
         .collection(TRAINING_PROGRAMS_COLLECTION)
@@ -365,7 +368,8 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         .then(res => {
           console.log("Added new program with id: ", res.id)
           newPrograms[newPrograms.length - 1].id = res.id
-          setState({ ...state, userPrograms: newPrograms })
+          // setState({ ...state, userPrograms: newPrograms })
+          setUserProgramsState([...newPrograms])
         })
     }
 
@@ -373,8 +377,9 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
       const onConfirmDelete = async () => {
         // programsStore.deleteProgram(deleteID)
         // programsStore.getItems()
-        let newPrograms = state.userPrograms.filter(program => program.id != deleteID)
-        setState({ ...state, userPrograms: newPrograms })
+        let newPrograms = userProgramsState.filter(program => program.id != deleteID)
+        // setState({ ...state, userPrograms: newPrograms })
+        setUserProgramsState([...newPrograms])
         await fb.deleteItem(deleteID, TRAINING_PROGRAMS_COLLECTION)
       }
       Alert.alert(
@@ -395,14 +400,15 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     }
 
     const onPressEditProgramHandler = editID => {
-      const editedProgram = state.userPrograms.find(program => program.id === editID)
+      const editedProgram = userProgramsState.find(program => program.id === editID)
       const thisClientAllPrograms = rootStore.getUserPrograms(editedProgram.item.Client)
       const thisClientOtherPrograms = thisClientAllPrograms.filter(programID => programID != editID)
 
       navigation.navigate("EditProgramScreen", {
         programID: editedProgram.id,
+        trainerID: rootStore.loggedUser.id,
         otherProgramIDs: thisClientOtherPrograms,
-        allPrograms: state.userPrograms,
+        allPrograms: [...userProgramsState],
         allUsers: users,
       })
     }
@@ -425,7 +431,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     }
 
     const testHandler = () => {
-      console.log(state.userPrograms.length)
+      // console.log(state.userPrograms.length)
       // console.log(rootStore.getUserPrograms(rootStore.loggedUser.id))
     }
 
@@ -441,7 +447,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "flex-start",
-          backgroundColor: color.palette.transparent,
+          backgroundColor: iStyles.backGround.color,
         }}
       >
         {/* <View style={{ backgroundColor: "white", alignItems: "center" }}> */}
@@ -452,7 +458,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         />
 
         <ShowProgramsList
-          programs={state.userPrograms}
+          programs={userProgramsState}
           onPressEditProgram={onPressEditProgramHandler}
           onPressDeleteProgram={onPressDeleteProgramHandler}
           selectedPrograms={selectedPrograms}

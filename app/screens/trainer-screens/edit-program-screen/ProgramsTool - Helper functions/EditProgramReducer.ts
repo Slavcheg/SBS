@@ -133,7 +133,7 @@ export const EditProgramReducer = (state, action) => {
     }
     case "remove day": {
       const helperDays = _.cloneDeep(state.currentProgram.Weeks[state.currentWeekIndex].Days)
-      helperDays.splice(currentDayIndex, 1)
+      helperDays.splice(action.value, 1)
       state.currentProgram.Weeks[state.currentWeekIndex].Days = helperDays
       state.currentDayIndex = 0
 
@@ -148,11 +148,57 @@ export const EditProgramReducer = (state, action) => {
 
     case "delete exercise": {
       const newExercises = state.currentProgram.Weeks[currentWeekIndex].Days[
-        currentDayIndex
+        action.dayIndex
       ].Exercises.filter((exercise, index) => index != action.value)
-      state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = [
+      state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises = [
         ...newExercises,
       ]
+      return { ...state }
+    }
+
+    case "start to copy from another program": {
+      state.isProgramViewShown = false
+      state.isCopyProgramViewShown = true
+      return { ...state }
+    }
+
+    case "close program picker without choosing a program": {
+      state.isProgramViewShown = true
+      state.isCopyProgramViewShown = false
+      return { ...state }
+    }
+
+    case "copy program and close ProgramPicker": {
+      const programToCopy = action.value.item
+
+      state.currentProgram.Weeks[currentWeekIndex].Days = programToCopy.Weeks[0].Days
+      state.currentProgram.Weeks[currentWeekIndex].Days.forEach((day, dayIndex) => {
+        state.currentProgram.Weeks[currentWeekIndex].Days[dayIndex].isCompleted = false
+        state.currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises.forEach(
+          (ex, exIndex) => {
+            //ако сме го правили - слагаме сериите от последния път както сме го правили. Ако не сме - оставяме тези на копираната програма
+            let addLastSets = false
+            let Sets = []
+
+            state.oldExercises.forEach(oldEx => {
+              if (oldEx.Name === ex.Name) {
+                addLastSets = true
+                Sets = oldEx.latestSet.Sets
+              }
+            })
+
+            if (addLastSets)
+              state.currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises[
+                exIndex
+              ].Sets = Sets
+          },
+        )
+      })
+      if (currentWeekIndex < currentProgram.Weeks.length - 1)
+        state.currentProgram = updateFollowingWeeks(state)
+
+      state.isProgramViewShown = true
+      state.isCopyProgramViewShown = false
       return { ...state }
     }
 
@@ -216,11 +262,13 @@ export const EditProgramReducer = (state, action) => {
         ...action.exercises,
       ]
 
-      // state.currentProgram = updateFollowingWeeks(state)
+      state.currentProgram = updateFollowingWeeks(state)
       return { ...state }
     }
 
     case "change position number": {
+      state.currentDayIndex = action.dayIndex
+
       const exercises = [...currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises]
       let newPosition = exercises[action.value].Position
       // get position of last exercise and set as max for now
@@ -237,7 +285,15 @@ export const EditProgramReducer = (state, action) => {
         action.value
       ].Position = newPosition
 
-      // state.currentProgram = updateFollowingWeeks(state)
+      state.currentProgram = updateFollowingWeeks(state)
+      return { ...state }
+    }
+
+    case "add exercise from end of day button": {
+      state.currentDayIndex = action.dayIndex
+      state.isExercisePickerShown = true
+      state.isProgramViewShown = false
+      state.isManuallySearchingExercises = true
       return { ...state }
     }
 
@@ -257,19 +313,28 @@ export const EditProgramReducer = (state, action) => {
     }
 
     case "toggle reorder": {
+      state.currentDayIndex = action.dayIndex
       state.isReordering = !state.isReordering
       return { ...state }
     }
 
     case "expand exercise info": {
-      let newArray = state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises
-      newArray.forEach((exercise, index) => {
-        if (index !== action.value) exercise.isExpanded = false
-      })
+      state.currentDayIndex = action.dayIndex
+      // let newArray = state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises
+      // newArray.forEach((exercise, index) => {
+      //   if (index !== action.value) exercise.isExpanded = false
+      // })
 
-      newArray[action.value].isExpanded = !newArray[action.value].isExpanded
+      // newArray[action.value].isExpanded = !newArray[action.value].isExpanded
 
-      state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = newArray
+      // state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = newArray
+
+      state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises[
+        action.value
+      ].isExpanded = !state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises[
+        action.value
+      ].isExpanded
+
       return { ...state }
     }
 
@@ -311,14 +376,21 @@ export const EditProgramReducer = (state, action) => {
     }
 
     case "change client": {
-      state.currentProgram.Client = action.value
+      if (action.value) state.currentProgram.Client = action.value
 
       let newUser = state.allUsers.find(user => user.id === action.value)
 
-      state.oldPrograms = state.allPrograms.filter(program => program.item.Client === newUser.id)
-      state.oldPrograms = state.oldPrograms.filter(program => program.id != state.programID)
-      state.currentProgram.Name = `${newUser.item.first} ${state.oldPrograms.length + 1}`
-      state.oldExercises = updateOldExercises(state)
+      if (newUser) {
+        state.oldPrograms = state.allPrograms.filter(program => program.item.Client === newUser.id)
+        state.oldPrograms = state.oldPrograms.filter(program => program.id != state.programID)
+        state.currentProgram.Name = `${newUser.item.first} ${state.oldPrograms.length + 1}`
+        state.oldExercises = updateOldExercises(state)
+      } else {
+        state.oldPrograms = []
+        state.currentProgram.Name = `New program`
+        state.oldExercises = []
+      }
+
       return { ...state }
     }
 
@@ -337,6 +409,7 @@ export const EditProgramReducer = (state, action) => {
     }
 
     case "replace exercise with another from picker": {
+      state.currentDayIndex = action.dayIndex
       state.isExercisePickerShown = true
       state.isProgramViewShown = false
       state.isManuallySearchingExercises = true
@@ -382,15 +455,16 @@ export const EditProgramReducer = (state, action) => {
           }
         })
 
-        if (addLastSets)
+        if (addLastSets) {
           state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push({
             ...defaultExData,
             Sets: Sets,
           })
-        else
+        } else {
           state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.push(
             defaultExData,
           )
+        }
       }
 
       state.isExercisePickerShown = false

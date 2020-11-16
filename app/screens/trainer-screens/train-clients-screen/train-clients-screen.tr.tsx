@@ -103,6 +103,7 @@ const Header = props => {
             currentDate={program.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn}
             onToggle={newDate => props.onToggleDayCompleted(currentDayIndex, newDate)}
             color={iStyles.text1.color}
+            uncheckedColor={iStyles.text0.color}
           />
         </View>
       </View>
@@ -226,7 +227,9 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
           </View>
         </View>
       )}
-      <Button onPress={props.onStartPicking}>Подреди програмите</Button>
+      <Button color={iStyles.text3.color} onPress={props.onStartPicking}>
+        Подреди програмите
+      </Button>
     </View>
   )
 }
@@ -455,6 +458,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Dimensions.get("window").width,
+    backgroundColor: iStyles.backGround.color,
     // height: Dimensions.get("window").height,
   },
   programArrangeBoxBox: {
