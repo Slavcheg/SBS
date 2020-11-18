@@ -179,6 +179,9 @@ export const ExerciseProgressChart: React.FC<ExerciseProgressChartProps> = props
               {HighestReps} reps at {HighestWeight}
               {addKg} on {FinishedOn}
             </Text>
+            <Text style={iStyles.text0}>
+              {((FinishPercentCoef - 1) * 100).toPrecision(3)}% progress
+            </Text>
           </View>
         </View>
         <View style={{ paddingHorizontal: 20 }}>

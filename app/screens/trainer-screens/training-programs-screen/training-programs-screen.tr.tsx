@@ -270,6 +270,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
     const [selectedPrograms, setSelectedPrograms] = useState([])
 
     const [exercisesLoaded, setExercisesLoaded] = useState(false)
+    const [programsLoaded, setProgramsLoaded] = useState(false)
     const [users, setUsers] = useState([])
     const [userProgramsState, setUserProgramsState] = useState([])
 
@@ -292,6 +293,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
 
     const getPrograms = async () => {
       const allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
+
       await firestore()
         .collection(USERS_COLLECTION)
         .get()
@@ -314,6 +316,7 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         program.item.Trainers.includes(rootStore.loggedUser.id),
       )
       console.log("all programs got ", allPrograms.length, userProgramsState.length)
+      setProgramsLoaded(programsLoaded => true)
       userPrograms.sort(
         (a, b) =>
           b.item.Weeks[0].Days[0].Exercises.length - a.item.Weeks[0].Days[0].Exercises.length,
@@ -468,8 +471,8 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
         />
         <Button
           onPress={addProgramHandler}
-          loading={!exercisesLoaded}
-          disabled={!exercisesLoaded}
+          loading={!(exercisesLoaded && programsLoaded)}
+          disabled={!(exercisesLoaded && programsLoaded)}
           color={iStyles.text2.color}
         >
           {translate("selectPrograms.AddNewProgram")}
@@ -486,8 +489,8 @@ export const TrainingProgramsScreen: React.FunctionComponent<ProgramsScreenProps
           onPress={onStartViewingHandler}
           mode="contained"
           color={iStyles.text1.color}
-          loading={!exercisesLoaded}
-          disabled={!exercisesLoaded}
+          loading={!(exercisesLoaded && programsLoaded)}
+          disabled={!(exercisesLoaded && programsLoaded)}
         >
           {translate("selectPrograms.TrainButton")}
         </Button>

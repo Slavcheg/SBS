@@ -45,6 +45,7 @@ import {
   EditableText,
   PlusButton,
   TrashButton,
+  ExerciseProgressChart,
 } from "./index"
 // import StoreProvider, { StoreContext } from "../../StoreProvider"
 
@@ -591,6 +592,9 @@ export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => 
         onToggleProgramCompleted={props.onToggleProgramCompleted}
       />
       <ProgramVolumeTable state={state} />
+      <ExpandableContent title="Прогрес" startMinimized={true} titleStyle={iStyles.text1}>
+        <ExerciseProgressChart state={state} />
+      </ExpandableContent>
       <ProgramInfoOldPrograms state={state} />
     </ScrollView>
   )
@@ -652,7 +656,7 @@ const ProgramVolumeTable = props => {
     return (
       <View style={{ flexDirection: "row", width: "100%" }}>
         <View style={styles.muscleColumns}>
-          <Text style={textStyle}>{item.muscleName} </Text>
+          <Text style={textStyle}>{_.capitalize(item.muscleName)} </Text>
         </View>
         <View style={styles.muscleCoefColumns}>
           <Text style={greyTextStyle}>{item.programVolume} </Text>
@@ -672,7 +676,7 @@ const ProgramVolumeTable = props => {
   }
 
   return (
-    <ExpandableContent title="Whole program volume" titleStyle={iStyles.text1}>
+    <ExpandableContent title="Тренировъчен обем" titleStyle={iStyles.text1} startMinimized={true}>
       <FlatList
         data={coefsArray}
         keyExtractor={(item, index) => `${item.Name}-${index}`}
@@ -757,7 +761,7 @@ const ProgramGeneralInfo = props => {
   const clickableStyle = { ...rightTextStyle, color: iStyles.text1.color }
 
   return (
-    <ExpandableContent title="General info" titleStyle={iStyles.text1}>
+    <ExpandableContent title="Обща информация" titleStyle={iStyles.text1}>
       {programInfo.map((info, index) => {
         if (info.Name === "Program name")
           return (

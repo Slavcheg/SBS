@@ -31,7 +31,8 @@
     "adminSquareButtonCaption": "Админ",
     "progressCircleTextTop": "тренировки",
     "progressCircleTextBottom": "до",
-    "trainingPrograms": "Тренировъчни програми"
+    "trainingPrograms": "Тренировъчни програми",
+    "toClientMenu": "Клиентско меню"
   },
   "selectPrograms": {
     "TrainButton": "Тренирай",

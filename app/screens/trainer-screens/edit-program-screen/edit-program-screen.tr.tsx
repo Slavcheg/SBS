@@ -160,9 +160,9 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
     if (scrollRef.current) scrollRef.current.scrollTo({ x: windowWidth, y: 0, animated: false })
   }
 
-  useEffect(() => {
-    setTimeout(() => scroll(), 10)
-  }, [])
+  // useEffect(() => {
+  //   setTimeout(() => scroll(), 10)
+  // }, [])
 
   const testHandler = () => {
     let newWeight = getWeightEquivalent(54, 10, 8)
@@ -182,7 +182,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
       />
       <ScrollView horizontal={true} pagingEnabled={true} ref={scrollRef}>
         {/* <View style={iStyles.carouselScreen}> */}
-        <View style={{ width: windowWidth }}>
+        {/* <View style={{ width: windowWidth }}>
           <Text style={{ fontSize: 30, textAlign: "center", color: iStyles.text0.color }}>
             Таблици с прогрес
           </Text>
@@ -190,7 +190,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
             Малко статистики за упражненията, килограмите са изравнени за 8 повторения!
           </Text>
           <ExerciseProgressChart state={state} />
-        </View>
+        </View> */}
         <View style={iStyles.carouselScreen}>
           <ShowProgramDays
             state={state}

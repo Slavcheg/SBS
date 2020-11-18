@@ -463,7 +463,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                       )}
                     </ImageBackgroundToggle>
                     <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-                      {dayindex === currentProgram.Weeks[currentWeekIndex].Days.length - 1 && (
+                      {dayindex === currentProgram.Weeks[currentWeekIndex].Days.length - 1 ? (
                         <Button
                           icon="plus-circle"
                           mode={"outlined"}
@@ -476,6 +476,8 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                           {" "}
                           Day{" "}
                         </Button>
+                      ) : (
+                        <View style={{ width: 100 }}></View>
                       )}
                       {isDayShown[dayindex] && (
                         <Button
@@ -555,10 +557,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
         onPressPosition={() => onEditPositionHandler(index, dayIndex)}
         textStyle={textStyle}
         item={item}
-        onPressExercise={() => {
-          console.log("dayIndex", dayIndex)
-          onExpandExerciseInfo(index, dayIndex)
-        }}
+        onPressExercise={() => onExpandExerciseInfo(index, dayIndex)}
         onDeleteExercise={() => onDeleteExerciseHandler(index, dayIndex)}
         onPressSetsAndReps={() => onEditSetsRepsHandler(index, dayIndex)}
         onPressReplace={() => onReplaceExercise(index, dayIndex)}

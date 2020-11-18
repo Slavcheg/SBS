@@ -35,7 +35,8 @@
     "adminSquareButtonCaption": "Admin",
     "progressCircleTextTop": "trainings",
     "progressCircleTextBottom": "until",
-    "trainingPrograms": "Training programs"
+    "trainingPrograms": "Training programs",
+    "toClientMenu": "Client menu"
   },
   "selectPrograms": {
     "TrainButton": "Train",

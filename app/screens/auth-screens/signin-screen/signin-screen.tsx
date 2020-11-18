@@ -38,9 +38,7 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
     console.log(userEmail)
     if (userEmail) {
       sessionStore.logIn(userEmail)
-      //Временно сменено, докато оправим и Мони да може да се логва през Гугъл
-      // navigation.navigate('home_cl')
-      navigation.navigate("home_tr")
+      navigation.navigate("home_cl")
     } else {
       setServerError("Непознат потребител. Моля свържете се с вашия треньор.")
       setInfoMessage("")

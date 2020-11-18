@@ -30,5 +30,13 @@
         "onClick": "home_ad",
         "show": true,
         "needsAdminRights": true
+    },
+    {
+        "iconLeft": "bl_arrow_forward",
+        "title": "trainerHomeScreen.toClientMenu",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "home_cl",
+        "show": true,
+        "needsAdminRights": false
     }
 ]
