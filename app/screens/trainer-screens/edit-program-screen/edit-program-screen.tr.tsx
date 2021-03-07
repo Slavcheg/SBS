@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useReducer, useCallback, useRef } from "react"
 import { useFocusEffect } from "@react-navigation/native"
-import { Picker } from "@react-native-community/picker"
+
+import firestore from "@react-native-firebase/firestore"
 
 import {
   View,
@@ -18,7 +19,7 @@ import _ from "lodash"
 
 import { NavigationProps } from "../../../models/commomn-navigation-props"
 import { observer } from "mobx-react-lite"
-import { useStores } from "../../../models/root-store"
+import { useGlobalState, getState } from "../../../models/global-state-regular"
 import { Button, TextInput, Checkbox } from "react-native-paper"
 
 import {
@@ -36,20 +37,15 @@ import {
   ProgramPicker,
   getWeightEquivalent,
   ExerciseProgressChart,
+  filteredByMuscleGroup,
+  getInitialState,
+  EditProgramHeader,
 } from "./ProgramsTool - Helper functions"
 
 import iStyles from "./Constants/Styles"
+import { NO_CLIENT_YET } from "./Constants"
 
-import {
-  EMPTY_PROGRAM_DATA2,
-  state,
-  TRAINING_PROGRAMS_COLLECTION,
-  DEFAULT_SET_DATA2,
-  Exercise,
-} from "../../../models/sub-stores"
-import * as fb from "../../../services/firebase/firebase.service"
-
-import { MAX_SETS, MAX_REPS } from "./Constants/programCreationConstants"
+import { state, TRAINING_PROGRAMS_COLLECTION } from "../../../components3"
 
 interface EditProgramScreenProps extends NavigationProps {}
 
@@ -102,6 +98,7 @@ const changeUserAlert = (onRemove: Function) => {
     { cancelable: true },
   )
 }
+let scrollEnabled = true
 
 type ShowProgramProps = {
   state: state
@@ -127,6 +124,8 @@ type ShowProgramProps = {
   onRemoveWeek?: Function
   onPressCopy?: Function
   onAddExercise?: Function
+  scrollPosition: number
+  changeScroll: Function
 }
 
 const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
@@ -156,18 +155,92 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
 
   const scrollRef = useRef()
 
-  const scroll = () => {
-    if (scrollRef.current) scrollRef.current.scrollTo({ x: windowWidth, y: 0, animated: false })
+  useEffect(() => {
+    const onBackPress = () => {
+      if (props.scrollPosition === 1) {
+        scroll(-1)
+        return true
+        // } else if (state.isEditExerciseModalVisible) {
+        //   dispatch({ type: "stop editing an exercise" })
+        //   return true
+      } else return false
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", onBackPress)
+
+    return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
+  }, [props.scrollPosition])
+
+  const onScroll = obj => {
+    if (obj.nativeEvent.contentOffset.x > 0) {
+      if (props.scrollPosition !== 1) props.changeScroll(1)
+    } else {
+      if (props.scrollPosition !== 0) props.changeScroll(0)
+    }
+  }
+
+  const scroll = page => {
+    if (scrollRef.current)
+      scrollRef.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
   }
 
   // useEffect(() => {
-  //   setTimeout(() => scroll(), 10)
+  //   returnScrollToStart()
   // }, [])
 
-  const testHandler = () => {
-    let newWeight = getWeightEquivalent(54, 10, 8)
-    console.log(newWeight)
+  const SCROLL_SIZE = 3
+
+  const scrollRef2 = useRef()
+  const onScroll2 = obj => {
+    console.log(obj.nativeEvent.contentOffset.x)
+    // if (scrollEnabled) {
+    //   if (obj.nativeEvent.contentOffset.x > SCROLL_SIZE + 1) {
+    //     onChangeWeek({ type: "increase" })
+    //     console.log("tried changing one up")
+    //     scrollEnabled = false
+    //     setTimeout(() => (scrollEnabled = true), 300)
+    //   }
+    //   if (obj.nativeEvent.contentOffset.x < SCROLL_SIZE - 1) {
+    //     onChangeWeek({ type: "decrease" })
+    //     console.log("tried changing one down")
+    //     scrollEnabled = false
+    //     setTimeout(() => (scrollEnabled = true), 300)
+    //   }
+    // }
+    // returnScrollToStart()
   }
+  const [currentScrolledPage, setCurrentScrolledPage] = useState(0)
+  const onScroll2End = obj => {
+    const pageIndex = Math.round(obj.nativeEvent.contentOffset.x / windowWidth)
+    onChangeWeek({
+      type: "custom",
+      weekValue: pageIndex,
+      dayValue: 0,
+    })
+    setCurrentScrolledPage(pageIndex)
+  }
+
+  const scroll2to = page => {
+    if (scrollRef2.current) {
+      scrollRef2.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
+      setCurrentScrolledPage(page)
+    }
+  }
+
+  useEffect(() => {
+    //find first uncompleted day and scroll to that day's screen
+    if (currentProgram) {
+      let newWeekIndex = 0
+      newWeekIndex = getInitialState(currentProgram).currentWeekIndex
+      scroll2to(newWeekIndex)
+    }
+  }, [currentProgram])
+
+  useEffect(() => {
+    if (currentProgram) {
+      if (currentScrolledPage !== currentWeekIndex) scroll2to(currentWeekIndex)
+    }
+  }, [currentWeekIndex])
 
   return (
     <View style={{ flex: 1 }}>
@@ -180,38 +253,40 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
         onRemoveWeek={props.onRemoveWeek}
         onPressCopy={props.onPressCopy}
       />
-      <ScrollView horizontal={true} pagingEnabled={true} ref={scrollRef}>
-        {/* <View style={iStyles.carouselScreen}> */}
-        {/* <View style={{ width: windowWidth }}>
-          <Text style={{ fontSize: 30, textAlign: "center", color: iStyles.text0.color }}>
-            Таблици с прогрес
-          </Text>
-          <Text style={{ color: iStyles.text0.color }}>
-            Малко статистики за упражненията, килограмите са изравнени за 8 повторения!
-          </Text>
-          <ExerciseProgressChart state={state} />
-        </View> */}
-        <View style={iStyles.carouselScreen}>
-          <ShowProgramDays
-            state={state}
-            mode="allDays"
-            //  client={client}
-            onRemoveDay={onRemoveDay}
-            onAddNewDay={onAddNewDay}
-            onChangeDay={onChangeDay}
-            onChangeDayName={onChangeDayName}
-            onToggleDayCompleted={onToggleDayCompleted}
-            onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercises}
-            onDragEndHandler={onDragEndHandler}
-            onDeleteExerciseHandler={onDeleteExerciseHandler}
-            onEditPositionHandler={onEditPositionHandler}
-            onEditSetsRepsHandler={onEditSetsRepsHandler}
-            onExpandExerciseInfo={onExpandExerciseInfo}
-            onReplaceExercise={onReplaceExercise}
-            onToggleReorder={onToggleReorder}
-            onAddExercise={onAddExercise}
-          />
-        </View>
+
+      <ScrollView>
+        <ScrollView
+          horizontal={true}
+          ref={scrollRef2}
+          onMomentumScrollEnd={onScroll2End}
+          pagingEnabled={true}
+        >
+          {currentProgram.Weeks.map((week, weekIndex) => {
+            return (
+              <View style={iStyles.carouselScreen} key={weekIndex}>
+                <ShowProgramDays
+                  state={{ ...state, currentWeekIndex: weekIndex }}
+                  mode="allDays"
+                  //  client={client}
+                  onRemoveDay={onRemoveDay}
+                  onAddNewDay={onAddNewDay}
+                  onChangeDay={onChangeDay}
+                  onChangeDayName={onChangeDayName}
+                  onToggleDayCompleted={onToggleDayCompleted}
+                  onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercises}
+                  onDragEndHandler={onDragEndHandler}
+                  onDeleteExerciseHandler={onDeleteExerciseHandler}
+                  onEditPositionHandler={onEditPositionHandler}
+                  onEditSetsRepsHandler={onEditSetsRepsHandler}
+                  onExpandExerciseInfo={onExpandExerciseInfo}
+                  onReplaceExercise={onReplaceExercise}
+                  onToggleReorder={onToggleReorder}
+                  onAddExercise={onAddExercise}
+                />
+              </View>
+            )
+          })}
+        </ScrollView>
         <View style={iStyles.carouselScreen}>
           <ShowProgramMoreInfo
             state={state}
@@ -226,18 +301,19 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
 
 export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(props => {
   const { navigation, route } = props
-  const { programID, otherProgramIDs, allPrograms, allUsers, trainerID } = route.params
+  const { programID, otherProgramIDs, trainerID } = route.params
+  const [globalState, setGlobalState] = useGlobalState()
+  const [scrollPosition, setScrollPosition] = useState(0)
   // const  = route.params.otherProgramIDs
-
-  const exercisesStore = useStores().exerciseDataStore
 
   const initialState = {
     selectedMuscleGroup: "chest",
 
+    // currentProgram: globalState.allPrograms.find(program => program.id === programID).item || null,
     currentProgram: null,
     programID: route.params.programID,
     isExercisePickerShown: false,
-    isButtonsRowShown: true,
+    isButtonsRowShown: false,
     isProgramViewBig: true,
     shownExercises: [],
     oldExercises: [],
@@ -257,40 +333,10 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     isReordering: false,
     isReplacingExercise: false,
     isCopyProgramViewShown: false,
+    isButtonsRowExpanded: false,
   }
 
   const [state, dispatch] = useReducer(EditProgramReducer, initialState)
-
-  const getPrograms = async () => {
-    const allProgramsDownloaded = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
-    const ourProgram = allProgramsDownloaded.find(program => program.id === programID)
-
-    // const ourProgram = allPrograms.find(program => program.id === programID) като прехвърлям целите програми през navigation става бъгаво
-
-    const oldPrograms = []
-    otherProgramIDs.forEach(otherProgramID => {
-      oldPrograms.push(allPrograms.find(program => program.id === otherProgramID))
-    })
-
-    dispatch({
-      type: "update current program",
-      value: ourProgram.item,
-      oldPrograms: oldPrograms,
-      allPrograms: allProgramsDownloaded.filter(program =>
-        program.item.Trainers.includes(trainerID),
-      ),
-      allUsers: allUsers,
-    })
-  }
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      getPrograms()
-    })
-    console.log("refreshed with navigation")
-    return unsubscribe
-  }, [navigation])
-
   const {
     currentProgram,
     currentProgramID,
@@ -301,15 +347,48 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     isReplacingExercise,
     isCopyProgramViewShown,
   } = state
+  let mounted = true
+
+  useEffect(() => {
+    console.log("trying to get state")
+    getState(setGlobalState)
+    return () => (mounted = false)
+  }, [])
+
+  useEffect(() => {
+    if (globalState.allPrograms.length > 0) {
+      const allProgramsDownloaded = globalState.allPrograms
+      const ourProgram = _.cloneDeep(
+        allProgramsDownloaded.find(program => program.id === globalState.currentProgramID),
+      )
+      const oldPrograms = getOtherPrograms(allProgramsDownloaded, ourProgram.id)
+      dispatch({
+        type: "update current program",
+        value: ourProgram.item,
+        oldPrograms: oldPrograms,
+        allPrograms: globalState.allPrograms,
+        allUsers: globalState.allUsers,
+        exercises: globalState.allExercises,
+      })
+      console.log("updated programs from state")
+    }
+  }, [globalState.allPrograms])
+
+  useEffect(() => {
+    const onTimePassed = () => {
+      if (mounted && globalState.allPrograms.length === 0) {
+        navigation.goBack()
+      }
+    }
+
+    setTimeout(onTimePassed, 5000)
+  }, [])
 
   useEffect(() => {
     const onBackPress = () => {
       if (state.isExercisePickerShown) {
         dispatch({ type: "close exercise picker" })
         return true
-        // } else if (state.isEditExerciseModalVisible) {
-        //   dispatch({ type: "stop editing an exercise" })
-        //   return true
       } else {
         onSaveProgramHandler()
         return false
@@ -319,26 +398,32 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     BackHandler.addEventListener("hardwareBackPress", onBackPress)
 
     return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
-  }, [state.isExercisePickerShown, state.isEditExerciseModalVisible])
-
-  const testHandler = () => {
-    console.log("test complete", currentProgram.Client)
-  }
+  }, [state.isExercisePickerShown])
 
   const onGoBackHandler = () => {
     if (state.isExercisePickerShown) {
       dispatch({ type: "close exercise picker" })
-    } else if (state.isEditExerciseModalVisible) {
-      dispatch({ type: "stop editing an exercise" })
+      // } else if (state.isEditExerciseModalVisible) {
+      //   dispatch({ type: "stop editing an exercise" })
     } else {
       onSaveProgramHandler()
       navigation.goBack()
     }
   }
 
-  const onSaveProgramHandler = () => {
-    console.log("currentProgram", currentProgram)
-    if (currentProgram) fb.updateItem(programID, currentProgram, TRAINING_PROGRAMS_COLLECTION)
+  const onSaveProgramHandler = async () => {
+    if (currentProgram) {
+      setGlobalState({
+        type: "update one program",
+        programID: globalState.currentProgramID,
+        value: _.cloneDeep(currentProgram),
+      })
+      await firestore()
+        .collection(TRAINING_PROGRAMS_COLLECTION)
+        .doc(globalState.currentProgramID)
+        .update(currentProgram)
+        .catch(err => console.error(err))
+    }
   }
 
   const onPressSearchHandler = () => {
@@ -443,7 +528,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
         value: exerciseIndex,
         dayIndex: dayIndex,
       })
-    if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted)
+    if (currentProgram.Weeks[currentWeekIndex].Days[dayIndex].isCompleted)
       greyedoutSetsAndRepsAlert(onConfirm)
     else onConfirm()
   }
@@ -451,6 +536,10 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   const onCloseExerciseModal = newExercise => {
     dispatch({ type: "close modal and update exercise", value: newExercise })
     setTimeout(onSaveProgramHandler, 100)
+  }
+
+  const onRequestCloseExerciseModal = () => {
+    dispatch({ type: "close EditExerciseModal" })
   }
 
   const onChangeClient = newClientID => {
@@ -498,18 +587,37 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     console.log(program.id)
   }
 
-  const onAddExercise = dayIndex => {
-    dispatch({ type: "add exercise from end of day button", dayIndex: dayIndex })
+  const onAddExercise = (dayIndex, weekIndex) => {
+    dispatch({
+      type: "add exercise from end of day button",
+      dayIndex: dayIndex,
+      weekIndex: weekIndex,
+    })
   }
+
+  const onChangeScroll = (newPosition: number) => {
+    setScrollPosition(newPosition)
+  }
+
+  const onPressHeaderMenu = () => {
+    Alert.alert("", "Това още не сме го измислили :(", [{ text: "еми ок" }], {
+      cancelable: false,
+    })
+  }
+
+  // const filteredAll = filteredByMuscleGroup(globalState.allExercises)
+  const filteredAll = globalState.filteredExercises || []
 
   return (
     <View style={iStyles.screenViewWrapper}>
+      <EditProgramHeader onPressBack={onGoBackHandler} onPressMenu={onPressHeaderMenu} />
       <ButtonsRow
-        // isVisible={true}
         isVisible={state.isButtonsRowShown}
         onPressMuscleGroup={onPressMuscleGroupFilterHandler}
         onPressSearch={onPressSearchHandler}
         goBack={onGoBackHandler}
+        onExpand={() => dispatch({ type: "expand buttons row" })}
+        onCollapse={() => dispatch({ type: "collapse buttons row" })}
       />
       <ProgramPicker
         isVisible={isCopyProgramViewShown}
@@ -519,10 +627,11 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
         onCopyWholeProgram={onCopyProgram}
       />
       <ExercisePicker
-        shownArray={exercisesStore.filteredByMuscleGroup[state.selectedMuscleGroup]}
+        shownArray={filteredAll[state.selectedMuscleGroup]}
         onClickMainText={onAddNewExerciseHandler}
         isVisible={state.isExercisePickerShown}
         autoFocusSearch={state.autoFocusSearch}
+        state={state}
       />
 
       {currentProgram &&
@@ -535,6 +644,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
               ]
             }
             onClose={onCloseExerciseModal}
+            onRequestClose={onRequestCloseExerciseModal}
           />
         )}
       {currentProgram && state.isProgramViewShown && (
@@ -562,12 +672,26 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
             onRemoveWeek={onRemoveWeek}
             onPressCopy={onPressCopy}
             onAddExercise={onAddExercise}
+            changeScroll={onChangeScroll}
+            scrollPosition={scrollPosition}
           />
         </View>
       )}
 
       <View style={{ flex: 1, justifyContent: "flex-end" }}>
-        {/* <Button onPress={testHandler}>test</Button> */}
+        {/* <Button onPress={testHandler}>😁 test 😁</Button>
+        <Button onPress={() => setGlobalState({ type: "test" })}>success</Button>
+        <Text>{globalState.allPrograms.length}</Text>
+        <Text>
+          {globalState.allPrograms.find(program => program.id === globalState.currentProgramID)
+            ? JSON.stringify(
+                globalState.allPrograms.find(program => program.id === globalState.currentProgramID)
+                  .item.Weeks,
+              )
+            : ""}
+        </Text>
+        <Text>{globalState.test || ""}</Text>
+        <Text>{globalState.currentProgramID || "no id"}</Text> */}
       </View>
     </View>
   )
@@ -582,3 +706,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 })
+
+const getOtherPrograms = (allPrograms, thisProgramID) => {
+  console.log("trying to get old programs, allPrograms, thisProgramID")
+  console.log(allPrograms.length, thisProgramID)
+  const editedProgram = allPrograms.find(program => program.id === thisProgramID)
+  if (editedProgram.item.Client === NO_CLIENT_YET) return []
+  const thisClientAllPrograms = allPrograms.filter(
+    program => program.item.Client === editedProgram.item.Client,
+  )
+  const thisClientOtherPrograms = thisClientAllPrograms.filter(
+    program => program.id != thisProgramID,
+  )
+  console.log(thisClientOtherPrograms)
+  return thisClientOtherPrograms
+}

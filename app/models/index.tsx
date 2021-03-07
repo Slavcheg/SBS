@@ -1,1 +1,1 @@
-export * from './cardy.model'
+export * from "./cardy.model"

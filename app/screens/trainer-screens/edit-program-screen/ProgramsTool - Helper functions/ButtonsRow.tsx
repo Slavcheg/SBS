@@ -5,35 +5,23 @@ import { Button } from "react-native-paper"
 import { translate } from "../../../../i18n"
 import iStyles from "../Constants/Styles"
 
+import { muscleGroups, muscleGroups2 } from "../Constants/MuscleGroups"
+import { getColorByMuscleName } from "../ProgramsTool - Helper functions"
+
 // const ExerciseButton = React.memo(function ExerciseButton(props) {
 const ExerciseButton = props => {
   const { title } = props
 
-  let realMuscleGroupTitle, passedColor
+  let realMuscleGroupTitle
 
   if (props.realMuscleGroupTitle === undefined) realMuscleGroupTitle = title
   else realMuscleGroupTitle = props.realMuscleGroupTitle
-  if (props.passedColor === undefined) passedColor = 1
-  else passedColor = props.passedColor
 
-  // muscleVolume.forEach(value, index);
-  let finalColor = iStyles.text1.color
-
-  switch (passedColor) {
-    case 2:
-      finalColor = iStyles.text2.color
-      break
-    case 3:
-      finalColor = iStyles.text3.color
-      break
-    default:
-      break
-  }
   return (
     <Button
       mode="outlined"
       compact={true}
-      color={finalColor}
+      color={props.passedColor || iStyles.text3.color}
       style={{ margin: 2 }}
       onPress={() => {
         props.onPress()
@@ -49,113 +37,146 @@ const ExerciseButton = props => {
 
 export const ButtonsRow = React.memo(function ButtonsRow(props: any) {
   // console.log('rendered ButtonsRow');
-  let mainColorRow1 = 1
-  let mainColorRow2 = 2
-  let mainColorRow3 = 3
+
+  const [showAllButtons, setShowAllButtons] = useState(false)
+
+  let mainMusclesArray = [
+    "chest",
+    "shoulders",
+    "back",
+    "glutes",
+    "quads",
+    "hams",
+    "biceps",
+    "triceps",
+    "core",
+  ]
+  let arrayToShowAfterShown = []
+
+  muscleGroups.forEach(group => {
+    if (!mainMusclesArray.includes(group)) arrayToShowAfterShown.push(group)
+  })
+
+  const onPressExpand = () => {
+    if (showAllButtons) {
+      setShowAllButtons(false)
+      props.onCollapse()
+    } else {
+      setShowAllButtons(true)
+      props.onExpand()
+    }
+  }
   if (!props.isVisible) return <View></View>
   else
     return (
       <View>
         <View style={{ marginVertical: 1 }}>
           <View style={{ flexDirection: "row" }}>
-            <Button
+            {/* <Button
               icon="arrow-left-bold"
               compact={true}
               mode="outlined"
               style={{ margin: 2 }}
               color={iStyles.text1.color}
               onPress={props.goBack}
-            >
-              {""}
-            </Button>
+            ></Button> */}
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-              <Button
-                icon="magnify"
-                compact={true}
-                mode="outlined"
-                style={{ margin: 2 }}
-                color={iStyles.text3.color}
-                onPress={props.onPressSearch}
-              >
-                {""}
-              </Button>
+              {!props.disableMagnify && (
+                <Button
+                  icon="magnify"
+                  compact={true}
+                  mode="outlined"
+                  style={{ margin: 2 }}
+                  color={iStyles.text3.color}
+                  onPress={props.onPressSearch}
+                ></Button>
+              )}
               <ExerciseButton
                 title={translate("muscleGroups.Chest")}
                 onPress={props.onPressMuscleGroup.bind(this, "chest")}
+                passedColor={iStyles.text1.color}
                 // muscleVolume={props.muscleVolume['chest']}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Shoulders")}
                 onPress={props.onPressMuscleGroup.bind(this, "shoulders")}
-                // muscleVolume={props.muscleVolume['shoulders']}
+                passedColor={iStyles.text1.color}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Back")}
                 onPress={props.onPressMuscleGroup.bind(this, "back")}
-                // muscleVolume={props.muscleVolume['back']}
+                passedColor={iStyles.text1.color}
               />
               {/* </View>
             <View style={{flexDirection: 'row'}}> */}
               <ExerciseButton
                 title={translate("muscleGroups.Glutes")}
-                passedColor={mainColorRow2}
+                passedColor={iStyles.text2.color}
                 onPress={props.onPressMuscleGroup.bind(this, "glutes")}
-                // muscleVolume={props.muscleVolume['glutes']}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Quads")}
-                passedColor={mainColorRow2}
+                passedColor={iStyles.text2.color}
                 onPress={props.onPressMuscleGroup.bind(this, "quads")}
                 // muscleVolume={props.muscleVolume['quads']}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Hams")}
-                passedColor={mainColorRow2}
+                passedColor={iStyles.text2.color}
                 onPress={props.onPressMuscleGroup.bind(this, "hams")}
                 // muscleVolume={props.muscleVolume['hams']}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Biceps")}
-                passedColor={mainColorRow3}
+                passedColor={iStyles.text3.color}
                 onPress={props.onPressMuscleGroup.bind(this, "biceps")}
                 // muscleVolume={props.muscleVolume['biceps']}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Triceps")}
-                passedColor={mainColorRow3}
+                passedColor={iStyles.text3.color}
                 onPress={props.onPressMuscleGroup.bind(this, "triceps")}
                 // muscleVolume={props.muscleVolume['triceps']}
               />
               <ExerciseButton
                 title={translate("muscleGroups.Core")}
-                passedColor={mainColorRow3}
+                passedColor={iStyles.text3.color}
                 onPress={props.onPressMuscleGroup.bind(this, "core")}
                 // muscleVolume={props.muscleVolume['core']}
               />
-              <ExerciseButton
-                title={translate("muscleGroups.Traps")}
-                passedColor={mainColorRow3}
-                onPress={props.onPressMuscleGroup.bind(this, "traps")}
-                // muscleVolume={props.muscleVolume['traps']}
-              />
-              <ExerciseButton
+              {/* <ExerciseButton
                 title={translate("muscleGroups.Calves")}
-                passedColor={mainColorRow3}
+                passedColor={iStyles.text3.color}
                 onPress={props.onPressMuscleGroup.bind(this, "calves")}
                 // muscleVolume={props.muscleVolume['calves']}
-              />
+              /> */}
               <Button
-                icon="magnify"
+                icon={showAllButtons ? "arrow-up-bold" : "arrow-down-bold"}
                 compact={true}
                 mode="outlined"
                 style={{ margin: 2 }}
-                color={iStyles.text3.color}
-                onPress={props.onPressSearch}
-              >
-                {""}
-              </Button>
+                color={iStyles.text1.color}
+                onPress={onPressExpand}
+              ></Button>
             </ScrollView>
           </View>
+          {showAllButtons && (
+            <View style={{ flexDirection: "row" }}>
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                {arrayToShowAfterShown.map((muscleName, index) => {
+                  const color = getColorByMuscleName(muscleName)
+                  return (
+                    <ExerciseButton
+                      key={index}
+                      title={muscleName}
+                      passedColor={color}
+                      onPress={() => props.onPressMuscleGroup(muscleName)}
+                    />
+                  )
+                })}
+              </ScrollView>
+            </View>
+          )}
         </View>
       </View>
     )

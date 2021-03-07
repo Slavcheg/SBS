@@ -89,7 +89,10 @@
     "gymHallsSquareButtonCaption": "Фитнеси",
     "referralsSquareButtonCaption": "Реферали",
     "trainersHomeSquareButtonCaption": "Меню треньори",
-    "other": "Други"
+    "other": "Други",
+    "exerciseDatabase": "База данни с упражнения",
+    "clients2": "Clients 2",
+    "admin_programs": "Manage programs"
   },
   "clients_list_ad": {
     "header_label": "Списък трениращи"

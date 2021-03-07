@@ -4,7 +4,7 @@
         "title": "trainerHomeScreen.trainingsTodaySquareButtonCaption",
         "iconRight": "bl_arrow_forward",
         "onClick": "training_today",
-        "show": true,
+        "show": false,
         "needsAdminRights": false
     },
     {
@@ -35,7 +35,7 @@
         "iconLeft": "bl_arrow_forward",
         "title": "trainerHomeScreen.toClientMenu",
         "iconRight": "bl_arrow_forward",
-        "onClick": "home_cl",
+        "onClick": "homeScreenClient2",
         "show": true,
         "needsAdminRights": false
     }

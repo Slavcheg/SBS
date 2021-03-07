@@ -33,6 +33,7 @@ export const SignInScreen: React.FunctionComponent<SignInScreenProps> = observer
   }, [])
 
   const signInUser = () => {
+    console.log("went here")
     setScreenVisible(true)
     let userEmail = userStore2.clientLogIn(email.toLocaleLowerCase(), pass)
     console.log(userEmail)

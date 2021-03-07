@@ -1,17 +1,16 @@
 import React from "react"
-import { View, Text, FlatList } from "react-native"
+import { View, FlatList } from "react-native"
 import { Button } from "react-native-paper"
 
-import { IProgram_Model, state } from "../../../../models/sub-stores"
-
-import { ExpandableContent, ShowProgramDays } from "./index"
+import { ExpandableContent, ShowProgramDays, Text } from "./index"
 import iStyles from "../Constants/Styles"
+import { colors } from "../Constants"
 
 type ProgramPicker = {
   isVisible?: boolean
-  programs: IProgram_Model[]
+  programs: any[]
   onGoBack: Function
-  state: state
+  state: any
   onCopyWholeProgram: Function
 }
 
@@ -31,7 +30,7 @@ export const ProgramPicker: React.FC<ProgramPicker> = props => {
             color={iStyles.text1.color}
             onPress={() => props.onCopyWholeProgram(item)}
           >
-            Copy this program
+            Копирай от тази програма
           </Button>
 
           <ShowProgramDays
@@ -50,6 +49,11 @@ export const ProgramPicker: React.FC<ProgramPicker> = props => {
   if (!props.isVisible) return <View></View>
   return (
     <View>
+      <Text style={{ fontSize: 20, color: colors.grey1 }}>
+        Тази настройка ще копира всички дни от избраната програма върху тази, която редактирате.
+        Заместването на седмиците ще започне от 'сегашната' избрана седмица в програмата (в случая
+        това е седмица {props.state.currentWeekIndex + 1})
+      </Text>
       <FlatList
         data={props.programs.filter(program => program.id != props.state.programID)}
         renderItem={renderPrograms}

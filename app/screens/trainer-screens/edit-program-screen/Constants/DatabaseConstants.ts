@@ -1,7 +1,5 @@
-export const COLLECTION = "userData"
-export const DB_EXERCISE_COLLECTION = "exerciseData"
 export const YOUTUBE_API_KEY = "AIzaSyDuXat0OD-fWydacIPC7na_3ONE_S9dl_k"
-export const PROGRAMS_COLLECTION = "programsDatabase"
+export const TRAINING_PROGRAMS_COLLECTION = "trainingPrograms"
 
 export const NEW_USER = {
   Name: "noNameYet",
@@ -10,3 +8,5 @@ export const NEW_USER = {
   isTrainer: false,
   Clients: [],
 }
+
+export const NO_CLIENT_YET = "No client yet"

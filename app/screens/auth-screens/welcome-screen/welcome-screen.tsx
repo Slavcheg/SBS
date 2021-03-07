@@ -1,12 +1,15 @@
 import React, { useEffect } from "react"
-import { View, ImageBackground } from 'react-native';
-import { spacing, color } from '../../../theme';
-import { imgs } from '../../../assets'
-import {Button, Screen, GoogleLogin} from '../../../components'
-import { googleInitialize } from "../../../services/auth/auth.service";
-import { NavigationProps } from "../../../models/commomn-navigation-props";
-import { observer } from "mobx-react-lite";
-import {useStores } from "../../../models/root-store"
+import { View, ImageBackground } from "react-native"
+import { spacing, color } from "../../../theme"
+import { imgs } from "../../../assets"
+import { Button, Screen, GoogleLogin } from "../../../components"
+import { googleInitialize } from "../../../services/auth/auth.service"
+import { NavigationProps } from "../../../models/commomn-navigation-props"
+import { observer } from "mobx-react-lite"
+import { useStores } from "../../../models/root-store"
+
+import { Button as PaperButton } from "react-native-paper"
+import { fixTrainees } from "../../trainer-screens/edit-program-screen/ProgramsTool - Helper functions"
 
 interface WelcomeScreenProps extends NavigationProps {}
 
@@ -14,21 +17,21 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
   const { green_sbs, blue_sbs } = color.palette
   const rootStore = useStores()
   const { navigation } = props
-  
+
   useEffect(() => {
     googleInitialize()
     rootStore.hideLoader()
   }, [])
 
   return (
-    <Screen 
+    <Screen
       preset="scroll"
-      unsafe={true} 
-      style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'flex-start',
-        backgroundColor: 'white'
+      unsafe={true}
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "flex-start",
+        backgroundColor: "white",
       }}
     >
       <ImageBackground
@@ -36,17 +39,17 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
         style={{
           flex: 1,
           width: "100%",
-          alignItems: 'center', 
+          alignItems: "center",
         }}
-        resizeMode= "cover"
+        resizeMode="cover"
       >
-      <View
-        style={{
-            flex:1
-        }}
-      ></View>
+        <View
+          style={{
+            flex: 1,
+          }}
+        ></View>
 
-      {/* <Button
+        {/* <Button
         style={{
           width: '90%',
           marginTop: spacing[8],
@@ -60,24 +63,26 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
         tx={'welcomeScreen.registrationBtn'}
         onPress={()=> navigation.navigate('registration')} 
       />     */}
-      <Button
-        style={{
-          width: '90%',
-          marginTop: spacing[6],
-          paddingVertical: spacing[4],
-          backgroundColor: green_sbs,
-        }}
-        textStyle={{
-          color: 'white',
-          fontSize: 16
-        }}
-        tx={'welcomeScreen.entryBtn'}
-        onPress={()=> { navigation.navigate('signin') }} 
-      />
-      <GoogleLogin navigation={navigation}/>
-      <View style={{marginBottom: "10%"}}></View>
+        {/* <Button
+          style={{
+            width: "90%",
+            marginTop: spacing[6],
+            paddingVertical: spacing[4],
+            backgroundColor: green_sbs,
+          }}
+          textStyle={{
+            color: "white",
+            fontSize: 16,
+          }}
+          tx={"welcomeScreen.entryBtn"}
+          onPress={() => {
+            navigation.navigate("signin")
+          }}
+        /> */}
+        <GoogleLogin navigation={navigation} />
+        {/* <PaperButton onPress={() => fixTrainees(() => console.log("fixed"))}> test</PaperButton> */}
+        <View style={{ marginBottom: "10%" }}></View>
       </ImageBackground>
     </Screen>
-  );
+  )
 })
-  

@@ -38,3 +38,5 @@ export * from "../components-custom/edit-dialogs/edit-cardy-type2"
 export * from "../components-custom/edit-dialogs/edit-cardy2"
 export * from "../components-custom/sbs-card-purchased/sbs-card-purchased"
 export * from "../components-custom/active-inactive-card-avatar/active-inactive-card-avatar"
+
+export * from "../components-custom-2"

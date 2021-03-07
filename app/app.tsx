@@ -13,6 +13,8 @@ import { SafeAreaProvider, initialWindowSafeAreaInsets } from "react-native-safe
 import { RootNavigator, exitRoutes, setRootNavigation } from "./navigation"
 import { useBackButtonHandler } from "./navigation/use-back-button-handler"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models/root-store"
+// добавям си малко стандартен Global State, да тествам с него дали ще се оправям по-добре
+import { GlobalStateProvider } from "./models/global-state-regular"
 import * as storage from "./utils/storage"
 import getActiveRouteName from "./navigation/get-active-routename"
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -72,7 +74,7 @@ const App: React.FunctionComponent<{}> = () => {
       __DEV__ && console.tron.log(currentRouteName)
     }
 
-    // Save the current route name for later comparision
+    // Save the current route name for later comparison
     routeNameRef.current = currentRouteName
 
     // Persist state to storage
@@ -124,13 +126,16 @@ const App: React.FunctionComponent<{}> = () => {
   // otherwise, we're ready to render the app
   return (
     <RootStoreProvider value={rootStore}>
-      <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
-        <RootNavigator
-          ref={navigationRef}
-          initialState={initialNavigationState}
-          onStateChange={onNavigationStateChange}
-        />
-      </SafeAreaProvider>
+      {/* Добавен от мен GlobalState да тествам дали ще се оправям по-добре. Сори за мазалото xD*/}
+      <GlobalStateProvider>
+        <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
+          <RootNavigator
+            ref={navigationRef}
+            initialState={initialNavigationState}
+            onStateChange={onNavigationStateChange}
+          />
+        </SafeAreaProvider>
+      </GlobalStateProvider>
     </RootStoreProvider>
   )
 }

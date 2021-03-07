@@ -1,7 +1,11 @@
 import { types, SnapshotIn } from "mobx-state-tree"
 import { firebaseFuncs } from "../../services/firebase/firebase.service"
+import firestore from "@react-native-firebase/firestore"
+import { return_todays_datestamp } from "../../global-helper"
+
 import {
   muscleGroups,
+  muscleGroups2,
   muscleGroupsObject,
 } from "../../screens/trainer-screens/edit-program-screen/Constants/MuscleGroups"
 
@@ -36,6 +40,7 @@ export const Exercise = types.model({
   MainMuscleGroup: types.string,
   YouTubeLink: types.string,
   Coefs: Coefs,
+  AddedOn: types.optional(types.union(types.number, types.string, types.undefined), 0),
 })
 
 // const Exercise_Model = types.model({
@@ -80,6 +85,48 @@ export const exerciseDataStoreModel = types
       //     self.exercises[index] = exercise)
       //   })
     },
+    addOneExercise: (exercise, userID) => {
+      let newExercise = exercise
+
+      let newID
+
+      const getNewId = () => {
+        newID = Math.random().toString(25)
+        let duplicateID = false
+        self.exercises.forEach(exercise => {
+          if (exercise.ID === newID) duplicateID = true
+        })
+        if (duplicateID) getNewId()
+        else return newID
+      }
+      getNewId()
+
+      newExercise.ID = newID
+      if (!newExercise.YouTubeLink) newExercise.YouTubeLink = "No link"
+      if (!newExercise.MainMuscleGroup) newExercise.MainMuscleGroup = "No group"
+      newExercise.AddedOn = return_todays_datestamp()
+
+      let exerciseWithAllCoefs = _.cloneDeep(newExercise)
+
+      firestore()
+        .collection("personalExercisesAdded")
+        .doc(userID)
+        .get()
+        .then(docs => {
+          let oldExercises = []
+          if (docs.data()) oldExercises = docs.data().exercises
+          oldExercises.push(newExercise)
+          firestore()
+            .collection("personalExercisesAdded")
+            .doc(userID)
+            .set({ exercises: oldExercises, ownerID: userID })
+        })
+
+      muscleGroups2.forEach(muscle => {
+        if (!exerciseWithAllCoefs.Coefs[muscle]) exerciseWithAllCoefs.Coefs[muscle] = 0
+      })
+      self.exercises.push(exerciseWithAllCoefs)
+    },
   }))
   .views(self => ({
     get filteredByMuscleGroup() {
@@ -99,6 +146,11 @@ export const exerciseDataStoreModel = types
 
       return filtered
     },
+
+    getAllExercises: () => {
+      return self.exercises
+    },
+
     getExerciseYouTubeLink: exerciseName => {
       let exercise = self.exercises.find(element => element.Name === exerciseName)
       return exercise.YouTubeLink
@@ -107,10 +159,19 @@ export const exerciseDataStoreModel = types
       let exercise = self.exercises.find(element => element.Name === exerciseName)
       return exercise
     },
+    getExerciseByID: exerciseID => {
+      let exercise = self.exercises.find(element => element.ID === exerciseID)
+      return exercise
+    },
     getExerciseVolume: exerciseWithSets => {
       // exerciseWithSets is what the program contains. simply 'exercise' refers to exercise in database
-      let exercise = self.exercises.find(element => element.Name === exerciseWithSets.Name)
+      let exercise = self.exercises.find(element => element.ID === exerciseWithSets.ID)
       let volumes = {}
+      if (!exercise) {
+        console.error("Exercise not found in DB")
+        return null
+      }
+
       for (const property in exercise.Coefs) {
         volumes[property] = exercise.Coefs[property] * exerciseWithSets.Sets.length
       }

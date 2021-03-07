@@ -8,20 +8,20 @@ import {
   WelcomeScreen,
   SignInScreen,
   RegistrationScreen,
-  HomeScreenClient,
+  // HomeScreenClient,
   HomeScreenTrainer,
-  RenewCardScreen,
+  // RenewCardScreen,
   PaymentsScreen,
   ClientsListScreen,
   TrainingTodayScreen,
   TrainingsHistoryScreen,
-  ContactUsScreen,
-  TrainingsHistoryScreen_Cl,
-  CardsHistoryScreen,
+  // ContactUsScreen,
+  // TrainingsHistoryScreen_Cl,
+  // CardsHistoryScreen,
   HomeScreenAdmin,
   TrainersListScreen,
   ReportScreen,
-  DiaryScreen,
+  // DiaryScreen,
   ClientsListScreenAd,
   ReferralsScreen,
   GymHallsScreen,
@@ -33,6 +33,11 @@ import {
   AdminOtherScreen,
   EditProgramScreen,
   TrainClientsScreen,
+  ExerciseDatabaseScreen,
+  Admin_Clients2,
+  AdminPrograms,
+  HomeScreenClient2,
+  DiaryScreen,
 } from "../screens"
 // import { PrimaryParamList } from "./types"
 
@@ -47,26 +52,26 @@ export function PrimaryNavigator() {
       }}
       initialRouteName="welcome"
     >
-      <Stack.Screen name="_welcome" component={_WelcomeScreen} />
+      {/* <Stack.Screen name="_welcome" component={_WelcomeScreen} />
       <Stack.Screen name="_demo" component={_DemoScreen} />
-      <Stack.Screen name="play" component={_PlayScreen} />
+      <Stack.Screen name="play" component={_PlayScreen} /> */}
 
       <Stack.Screen name="welcome" component={WelcomeScreen} />
       <Stack.Screen name="registration" component={RegistrationScreen} />
       <Stack.Screen name="signin" component={SignInScreen} />
 
-      <Stack.Screen name="home_cl" component={HomeScreenClient} />
-      <Stack.Screen name="diary" component={DiaryScreen} />
-      <Stack.Screen name="renewCard" component={RenewCardScreen} />
+      {/* <Stack.Screen name="home_cl" component={HomeScreenClient} /> */}
+      {/* <Stack.Screen name="diary" component={DiaryScreen} /> */}
+      {/* <Stack.Screen name="renewCard" component={RenewCardScreen} /> */}
       <Stack.Screen name="home_tr" component={HomeScreenTrainer} />
       <Stack.Screen name="clientMulti" component={ClientMultiScreen} />
       <Stack.Screen name="payments" component={PaymentsScreen} />
       <Stack.Screen name="clients_list" component={ClientsListScreen} />
       <Stack.Screen name="training_today" component={TrainingTodayScreen} />
       <Stack.Screen name="trainings_history" component={TrainingsHistoryScreen} />
-      <Stack.Screen name="contact_us" component={ContactUsScreen} />
+      {/* <Stack.Screen name="contact_us" component={ContactUsScreen} />
       <Stack.Screen name="trainings_history_cl" component={TrainingsHistoryScreen_Cl} />
-      <Stack.Screen name="cards_history_cl" component={CardsHistoryScreen} />
+      <Stack.Screen name="cards_history_cl" component={CardsHistoryScreen} /> */}
       <Stack.Screen name="home_ad" component={HomeScreenAdmin} />
       <Stack.Screen name="trainers_list" component={TrainersListScreen} />
       <Stack.Screen name="clients_list_ad" component={ClientsListScreenAd} />
@@ -80,7 +85,12 @@ export function PrimaryNavigator() {
       <Stack.Screen name="trainingProgramsScreen" component={TrainingProgramsScreen} />
       <Stack.Screen name="EditProgramScreen" component={EditProgramScreen} />
       <Stack.Screen name="admin_other" component={AdminOtherScreen} />
+      <Stack.Screen name="exerciseDatabase_admin" component={ExerciseDatabaseScreen} />
       <Stack.Screen name="TrainClientsScreen" component={TrainClientsScreen} />
+      <Stack.Screen name="admin_clients2" component={Admin_Clients2} />
+      <Stack.Screen name="admin_programs" component={AdminPrograms} />
+      <Stack.Screen name="homeScreenClient2" component={HomeScreenClient2} />
+      <Stack.Screen name="diaryScreen" component={DiaryScreen} />
     </Stack.Navigator>
   )
 }

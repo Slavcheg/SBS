@@ -1,3 +1,4 @@
+//for arranging by MainMuscleGroup
 export const muscleGroups = [
   "chest",
   "shoulders",
@@ -10,8 +11,38 @@ export const muscleGroups = [
   "core",
   "traps",
   "calves",
+  "climbing",
+  "low back",
+  "cardio",
+  "circuits",
+  "neck",
 ]
 
+//for Coefs
+export const muscleGroups2 = [
+  "glutes",
+  "chest",
+  "shoulders",
+  "triceps",
+  "back",
+  "rShoulders",
+  "quads",
+  "hamstrings",
+  "biceps",
+  "lats",
+  "abs",
+  "calves",
+  "cardio",
+  "forearms",
+  "lowBack",
+  "traps",
+  "lowTraps",
+  "neck",
+  "adductors",
+  "abductors",
+]
+
+//for arranging by MainMuscleGroup
 export const muscleGroupsObject = () => {
   let newObj = {}
   muscleGroups.forEach(muscle => {

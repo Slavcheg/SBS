@@ -82,6 +82,12 @@ const iStyles = StyleSheet.create({
   smallIcon: {
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 10,
+    marginHorizontal: 1,
+  },
+  smallIconOld: {
+    alignItems: "center",
+    justifyContent: "center",
     width: 47,
     height: 20,
     borderRadius: 10,
@@ -98,7 +104,7 @@ const iStyles = StyleSheet.create({
     marginHorizontal: 1,
   },
   carouselScreen: {
-    // flex: 1,
+    flex: 1,
     width: Dimensions.get("window").width,
   },
   text1Small: {

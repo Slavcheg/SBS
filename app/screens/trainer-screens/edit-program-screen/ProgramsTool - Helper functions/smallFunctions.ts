@@ -1,10 +1,288 @@
 import iStyles from "../Constants/Styles"
-import { useStores } from "../../../../models/root-store"
-import { IProgram, IProgram_Model, state } from "../../../../models/sub-stores"
+
+import firestore from "@react-native-firebase/firestore"
 
 import _ from "lodash"
 
-import { repComparisonCoefs as repComp } from "../Constants"
+import { repComparisonCoefs as repComp, colors, state } from "../Constants"
+
+import { muscleGroups2, muscleGroupsObject } from "../Constants/MuscleGroups"
+
+export function omit(obj, props) {
+  props = props instanceof Array ? props : [props]
+  return eval(`(({${props.join(",")}, ...o}) => o)(obj)`)
+}
+
+// usage
+// const obj = { a: 1, b: 2, c: 3, d: 4 }
+// const clone = omit(obj, ['b', 'c'])
+// console.log(clone)
+
+export const getInitialState = program => {
+  let state = {
+    locked: true,
+    currentWeekIndex: 0,
+    currentDayIndex: 0,
+    currentExerciseIndex: 0,
+    currentProgram: program,
+    isExerciseModalVisible: false,
+  }
+
+  let breakFlag = false
+  for (let weekIndex = 0; weekIndex < program.Weeks.length; weekIndex++) {
+    if (breakFlag === true) break
+    for (let dayIndex = 0; dayIndex < program.Weeks[weekIndex].Days.length; dayIndex++) {
+      if (breakFlag) break
+      if (program.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
+        breakFlag = true
+        state = { ...state, locked: true, currentWeekIndex: weekIndex, currentDayIndex: dayIndex }
+      }
+    }
+  }
+  return state
+}
+
+export const getProgressions = (lastWeekExercise: any) => {
+  let progressions = { newReps: 1, newWeight: "errorWeight" }
+  const RELATIVE_CALCULATION = false
+
+  const isPure = isPureWeight(lastWeekExercise)
+  const averageReps = getAverageReps(lastWeekExercise)
+
+  progressions.newReps = averageReps + lastWeekExercise.increaseReps
+  if (isPure) {
+    const averageWeight = getAverageWeightFromExercise(
+      lastWeekExercise,
+      RELATIVE_CALCULATION,
+      averageReps,
+    )
+    progressions.newWeight = `${(
+      averageWeight + parseFloat(lastWeekExercise.increaseWeight)
+    ).toPrecision(5)}`
+  } else progressions.newWeight = lastWeekExercise.Sets[0].Weight
+
+  return progressions
+}
+
+export const fixTrainees = (onFix: Function) => {
+  //updating clients values if something breaks
+  // console.log(allClients.find(client => client.ID === "JMxV035wcHXjmYjYyHGR"))
+  firestore()
+    .collection("trainingPrograms")
+    .get()
+    .then(docs => {
+      let programs = []
+      docs.forEach(doc => {
+        programs.push(doc.data())
+      })
+      console.log("got all programs ", programs.length)
+
+      firestore()
+        .collection("users2")
+        .get()
+        .then(users => {
+          let newUsers = []
+          users.forEach(user => {
+            if (user.data().first)
+              newUsers.push({
+                Name: user.data().first,
+                ID: user.id,
+                FamilyName: user.data().last,
+                ClientNumber: 0,
+                email: user.data().email,
+                Trainers: [{ Name: user.data().first, ID: user.id }],
+                Clients: [
+                  {
+                    ClientNumber: 0,
+                    FamilyName: user.data().last || "",
+                    Name: user.data().first,
+                    ID: user.id,
+                  },
+                ],
+                isTrainer: user.data().isTrainer,
+              })
+          })
+
+          console.log("got all users ", newUsers.length)
+
+          newUsers.forEach((user, index) => {
+            let thisTrainerclientsList = [user.ID]
+            programs.forEach(program => {
+              if (program.Client === user.ID)
+                program.Trainers.forEach(trainerID => {
+                  let addnewTrainer = true
+                  newUsers[index].Trainers.forEach(trainer => {
+                    if (trainer.ID === trainerID) addnewTrainer = false
+                  })
+                  if (addnewTrainer)
+                    newUsers[index].Trainers.push({
+                      ID: trainerID,
+                      Name: newUsers.find(user => user.ID === trainerID).Name,
+                    })
+                })
+              if (user.isTrainer) {
+                if (program.Trainers.includes(user.ID)) {
+                  if (!thisTrainerclientsList.includes(program.Client)) {
+                    thisTrainerclientsList.push(program.Client)
+                    const newClient = newUsers.find(user => user.ID === program.Client)
+                    if (newClient) {
+                      const newClientInfo = {
+                        Name: newClient.Name,
+                        FamilyName: newClient.FamilyName,
+                        ClientNumber: newClient.ClientNumber,
+                        ID: newClient.ID,
+                      }
+                      newUsers[index].Clients.push(newClientInfo)
+                    }
+                  }
+                }
+              }
+            })
+          })
+          newUsers.forEach(user => {
+            firestore()
+              .collection("trainees")
+              .doc(user.ID)
+              .set(user)
+          })
+          onFix()
+        })
+    })
+}
+
+export const getExerciseVolume = (exerciseWithSets, allExercises) => {
+  // exerciseWithSets is what the program contains. simply 'exercise' refers to exercise in database
+  let exercise = allExercises.find(element => element.ID === exerciseWithSets.ID)
+  let volumes = {}
+  if (!exercise) {
+    console.error("Exercise not found in DB")
+    return null
+  }
+
+  for (const property in exercise.Coefs) {
+    volumes[property] = exercise.Coefs[property] * exerciseWithSets.Sets.length
+  }
+  return volumes
+}
+
+export const getVolumeStrings = (exerciseWithSets, allExercises) => {
+  let volumes = getExerciseVolume(exerciseWithSets, allExercises)
+  if (volumes === null) return "exercise not found"
+  let volumesArray = []
+
+  let volumesString = ""
+
+  for (const property in volumes) {
+    volumesArray.push({ muscleName: property, value: volumes[property] })
+  }
+
+  const sortFunction = (a, b) => {
+    return b.value - a.value
+  }
+
+  volumesArray.sort(sortFunction)
+
+  for (let i = 0; i <= volumesArray.length; i++) {
+    if (volumesArray[i].value === 0 || i >= 4) break //максимална бройка на мускулните групи, които да показва
+    let oneVolumeString = volumesArray[i].value
+    if (!Number.isInteger(volumesArray[i].value)) oneVolumeString = volumesArray[i].value.toFixed(1)
+    volumesString += `${volumesArray[i].muscleName} ${oneVolumeString} `
+  }
+
+  return volumesString
+}
+
+export const getProgramVolume = (state, allExercises) => {
+  const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = state
+
+  //get muscle groups and set volume to zero
+
+  let exercise = allExercises.find(element => element.Name === "Bench Press")
+
+  const allVolumesZero = () => {
+    let emptyObj = {}
+    for (const property in exercise.Coefs) {
+      emptyObj[property] = 0
+    }
+    return emptyObj
+  }
+
+  let programCoefs = {}
+  let weeklyCoefs = []
+
+  programCoefs = allVolumesZero()
+
+  currentProgram.Weeks[currentWeekIndex].Days.forEach(day => {
+    weeklyCoefs.push({ coefs: {} })
+  })
+
+  //calculate all coefs
+  currentProgram.Weeks[currentWeekIndex].Days.map((day, dayIndex) => {
+    day.Exercises.forEach((exercise, exerciseIndex) => {
+      let execiseVolumes = getExerciseVolume(exercise, allExercises)
+      for (const property in programCoefs) {
+        if (!execiseVolumes) continue
+        programCoefs[property] += execiseVolumes[property]
+        if (!weeklyCoefs[dayIndex]) weeklyCoefs.push({ coefs: {} })
+        if (!weeklyCoefs[dayIndex].coefs[property]) weeklyCoefs[dayIndex].coefs[property] = 0 //zero out value if undefined
+        weeklyCoefs[dayIndex].coefs[property] += execiseVolumes[property]
+      }
+    })
+  })
+
+  //reduce float numbers to 1 digit
+  for (const property in programCoefs) {
+    if (!Number.isInteger(programCoefs[property]))
+      programCoefs[property] = parseFloat(programCoefs[property].toFixed(1))
+    weeklyCoefs.forEach((coef, index) => {
+      if (weeklyCoefs[index].coefs[property])
+        if (!Number.isInteger(weeklyCoefs[index].coefs[property]))
+          weeklyCoefs[index].coefs[property] = parseFloat(
+            weeklyCoefs[index].coefs[property].toFixed(1),
+          )
+    })
+  }
+
+  let volumeArray = []
+  let i = 0
+  for (const muscleName in programCoefs) {
+    volumeArray.push({
+      muscleName: muscleName,
+      programVolume: programCoefs[muscleName],
+      weeklyVolume: [],
+    })
+    weeklyCoefs.forEach((week, index) => {
+      volumeArray[i].weeklyVolume.push(weeklyCoefs[index].coefs[muscleName])
+    })
+    i++
+  }
+
+  const sortFunction = (a, b) => {
+    return b.programVolume - a.programVolume
+  }
+
+  volumeArray.sort(sortFunction)
+
+  return volumeArray
+}
+
+export const filteredByMuscleGroup = allExercises => {
+  let type = muscleGroupsObject()
+  let filtered = type
+  allExercises.forEach(exercise => {
+    if (!exercise.MainMuscleGroup) return
+    if (!exercise.Name) return
+    let newArray = filtered[exercise.MainMuscleGroup] ? filtered[exercise.MainMuscleGroup] : []
+
+    newArray.push(exercise)
+    filtered = {
+      ...filtered,
+      [exercise.MainMuscleGroup]: newArray,
+    }
+  })
+
+  return filtered
+}
 
 export const getWeightEquivalent = (
   originalWeight: number,
@@ -12,13 +290,46 @@ export const getWeightEquivalent = (
   toNumberOfReps: number,
 ) => {
   if (originalReps > 30) return 0
-  const weightRepCoef = repComp.find(el => el.Reps === originalReps)
-  const toNumberOfRepsCoef = repComp.find(el => el.Reps === toNumberOfReps)
+
+  const weightRepCoef = repComp.find(el => el.Reps === Math.round(originalReps))
+  const toNumberOfRepsCoef = repComp.find(el => el.Reps === Math.round(toNumberOfReps))
   const newWeight = (originalWeight / weightRepCoef.Weight) * toNumberOfRepsCoef.Weight
   return newWeight
 }
 
+export const getAverageReps = exercise => {
+  let average = 0
+  exercise.Sets.forEach(set => {
+    average += parseFloat(set.Reps)
+  })
+  return parseFloat((average / exercise.Sets.length).toPrecision(5))
+}
+
+export const getAverageWeightFromExercise = (
+  exercise,
+  calculateRelative = false,
+  repEqualizer: number = 8,
+) => {
+  let weightSum = 0
+  exercise.Sets.forEach(set => {
+    const absoluteWeight = parseFloat(set.Weight)
+    const realWeight = getWeightEquivalent(absoluteWeight, set.Reps, repEqualizer)
+    if (calculateRelative) weightSum += realWeight
+    else weightSum += absoluteWeight
+  })
+  return weightSum / exercise.Sets.length
+}
+
+export const isPureWeight = exercise => {
+  let pureWeight = true
+  exercise.Sets.forEach(set => {
+    if (set.WeightType !== "pureWeight") pureWeight = false
+  })
+  return pureWeight
+}
+
 export const updateFollowingWeeks = state => {
+  //copy next weeks to be exactly the same as previous (with applied progressions)
   const {
     currentWeekIndex,
     currentDayIndex,
@@ -30,38 +341,29 @@ export const updateFollowingWeeks = state => {
     isProgramSaving,
     isProgramSaved,
   } = state
-  let newProgram = _.cloneDeep(currentProgram)
 
+  if (currentWeekIndex >= currentProgram.Weeks.length - 1) return currentProgram
+
+  let newProgram = _.cloneDeep(currentProgram)
+  // return _.cloneDeep(newProgram)
   console.log("currentWeekIndex", currentWeekIndex)
   console.log("currentDayIndex", currentDayIndex)
   console.log("currentProgram.Weeks.length", currentProgram.Weeks.length)
 
-  if (
-    //ако операцията е била добавяне на нов ден - само копираме дните. Ако нещо друго се е ъпдейтвало - упражнение по упражнение
-    newProgram.Weeks[currentWeekIndex + 1].Days.length !==
-    currentProgram.Weeks[currentWeekIndex].Days.length
-  )
-    for (
-      let i = currentWeekIndex + 1;
-      i < currentProgram.Weeks.length;
-      i++ // i = weekIndex
-    )
-      newProgram.Weeks[i].Days = _.cloneDeep(currentProgram.Weeks[currentWeekIndex].Days)
-  else
-    for (
-      let i = currentWeekIndex + 1;
-      i < currentProgram.Weeks.length;
-      i++ // i = weekIndex
-    ) {
-      // всяка седмица напред се копира да е същата, като настоящата, освен 'Days[x].isCompleted
-      newProgram.Weeks[i].Days.forEach((day, dayIndex) => {
-        newProgram.Weeks[i].Days[dayIndex].Exercises = _.cloneDeep(
-          currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises,
-        )
-        newProgram.Weeks[i].Days[dayIndex].DayName =
-          currentProgram.Weeks[currentWeekIndex].Days[dayIndex].DayName
-      })
-    }
+  for (
+    let i = currentWeekIndex + 1;
+    i < currentProgram.Weeks.length;
+    i++ // i = weekIndex
+  ) {
+    // всяка седмица напред се копира да е същата, като настоящата, освен 'Days[x].isCompleted
+    newProgram.Weeks[i].Days.forEach((day, dayIndex) => {
+      newProgram.Weeks[i].Days[dayIndex].Exercises = _.cloneDeep(
+        currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises,
+      )
+      newProgram.Weeks[i].Days[dayIndex].DayName =
+        currentProgram.Weeks[currentWeekIndex].Days[dayIndex].DayName
+    })
+  }
 
   //block for updating exercises by their +reps +weight values
 
@@ -73,34 +375,43 @@ export const updateFollowingWeeks = state => {
     if (newProgram.Weeks[i].Days[currentDayIndex].Exercises.length > 0) {
       newProgram.Weeks[i].Days.forEach((day, dayIndex: number) => {
         newProgram.Weeks[i].Days[dayIndex].Exercises.forEach((exercise, exerciseIndex: number) => {
-          let currentExercise =
-            currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises[exerciseIndex]
-          newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets.forEach(
-            (set, setIndex) => {
-              newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex].Reps =
-                newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
-                  .Reps + currentExercise.increaseReps
-              if (
-                newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
-                  .WeightType === "pureWeight"
-              )
-                newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[
-                  setIndex
-                ].Weight = `${parseFloat(
-                  newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
-                    .Weight,
-                ) + parseFloat(currentExercise.increaseWeight)}`
-            },
-          )
+          const lastWeekExercise = newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex]
+
+          const progressions = getProgressions(lastWeekExercise)
+
+          const { Sets } = newProgram.Weeks[i].Days[currentDayIndex].Exercises[exerciseIndex]
+          Sets.forEach((set, setIndex) => {
+            Sets[setIndex].Reps = progressions.newReps
+            Sets[setIndex].Weight = progressions.newWeight
+          })
+          console.log("reordered exercises hehe")
+          // newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets.forEach(
+          //   (set, setIndex) => {
+
+          //     newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex].Reps =
+          //       newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
+          //         .Reps + currentExercise.increaseReps
+          //     if (
+          //       newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
+          //         .WeightType === "pureWeight"
+          //     )
+          //       newProgram.Weeks[i].Days[dayIndex].Exercises[exerciseIndex].Sets[
+          //         setIndex
+          //       ].Weight = `${parseFloat(
+          //         newProgram.Weeks[i - 1].Days[dayIndex].Exercises[exerciseIndex].Sets[setIndex]
+          //           .Weight,
+          //       ) + parseFloat(currentExercise.increaseWeight)}`
+          //   },
+          // )
         })
       })
     }
   }
 
-  return { ...newProgram }
+  return _.cloneDeep(newProgram)
 }
 
-export const getLatestCompletedWeekIndexForOneDay = (program: IProgram, dayIndex: number) => {
+export const getLatestCompletedWeekIndexForOneDay = (program: any, dayIndex: number) => {
   let weekIndex = -1 //stays -1 if no weeks found
   program.Weeks.forEach((week, wIndex) => {
     if (program.Weeks[wIndex].Days[dayIndex])
@@ -230,6 +541,7 @@ export function getColorByMuscleName(muscleName) {
     }
     case "glutes":
     case "quads":
+    case "hams":
     case "hamstrings": {
       return color2
     }
@@ -241,9 +553,9 @@ export function getColorByMuscleName(muscleName) {
 }
 
 export function getColorByExercisePosition(position) {
-  let color1 = iStyles.text1.color
-  let color2 = iStyles.text2.color
-  let color3 = iStyles.text3.color
+  let color1 = colors.blue3
+  let color2 = colors.green3
+  let color3 = colors.purple1
 
   switch (position) {
     case 1: {
@@ -286,18 +598,20 @@ export const getDoneBeforeColor = (doneBefore: number) => {
   let color3 = iStyles.text3.color
   let colorYellow = iStyles.textYellow.color
 
-  switch (doneBefore) {
-    case 0: {
-      return color2
-    }
-    case 1:
-    case 2:
-    case 3: {
-      return colorYellow
-    }
+  // switch (doneBefore) {
+  //   case 0: {
+  //     return color2
+  //   }
+  //   case 1:
+  //   case 2:
+  //   case 3: {
+  //     return colorYellow
+  //   }
 
-    default: {
-      return "red"
-    }
-  }
+  //   default: {
+  //     return "red"
+  //   }
+  // }
+
+  return "grey"
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useCallback } from "react"
-
+import firestore from "@react-native-firebase/firestore"
 import {
   View,
   Text,
@@ -36,6 +36,8 @@ import {
   displayDateFromTimestamp2,
 } from "../../../global-helper"
 
+import { useGlobalState } from "../../../models/global-state-regular"
+
 import { useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
 
@@ -55,6 +57,7 @@ import {
   updateFollowingWeeks,
   DayCompletedCheckbox,
   DaysBox,
+  getInitialState,
 } from "../edit-program-screen/ProgramsTool - Helper functions"
 
 import iStyles from "../edit-program-screen/Constants/Styles"
@@ -96,7 +99,7 @@ const Header = props => {
         {/* <Text style={style1}>{program.Name}</Text> */}
         <ClientName clientID={program.Client} disabled={true} style={iStyles.text1} />
         <View style={{ flexDirection: "row" }}>
-          <Text style={style1}>{translate("trainClientsScreen.Completed")}?</Text>
+          {/* <Text style={style1}>{translate("trainClientsScreen.Completed")}?</Text> */}
 
           <DayCompletedCheckbox
             isCompleted={program.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted}
@@ -234,34 +237,11 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
   )
 }
 
-//find first uncompleted day
-const getInitialState = program => {
-  let state = {
-    locked: true,
-    currentWeekIndex: 0,
-    currentDayIndex: 0,
-    currentExerciseIndex: 0,
-    currentProgram: program,
-    isExerciseModalVisible: false,
-  }
-
-  let breakFlag = false
-  for (let weekIndex = 0; weekIndex < program.Weeks.length; weekIndex++) {
-    if (breakFlag === true) break
-    for (let dayIndex = 0; dayIndex < program.Weeks[weekIndex].Days.length; dayIndex++) {
-      if (breakFlag) break
-      if (program.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
-        breakFlag = true
-        state = { ...state, locked: true, currentWeekIndex: weekIndex, currentDayIndex: dayIndex }
-      }
-    }
-  }
-  return state
-}
-
 const ProgramView = props => {
   // const client = store.getClient(program.ClientID);
   const [state, setState] = useState(() => getInitialState(props.program))
+  const [globalState, setGlobalState] = useGlobalState()
+
   const {
     currentWeekIndex,
     currentDayIndex,
@@ -295,12 +275,19 @@ const ProgramView = props => {
     saveProgram(currentProgram)
   }
 
-  const saveProgram = updatedProgram => {
+  const saveProgram = async updatedProgram => {
     if (updatedProgram) {
-      fb.updateItem(props.programID, updatedProgram, TRAINING_PROGRAMS_COLLECTION).catch(error =>
-        console.error(error),
-      )
-      console.log("saved ", props.programID)
+      setGlobalState({
+        type: "update one program",
+        programID: props.programID,
+        value: updatedProgram,
+      })
+
+      await firestore()
+        .collection(TRAINING_PROGRAMS_COLLECTION)
+        .doc(props.programID)
+        .update(updatedProgram)
+        .catch(err => console.error(err))
     }
   }
 
@@ -322,7 +309,8 @@ const ProgramView = props => {
     newProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
       currentExerciseIndex
     ] = newExercise
-    newProgram = updateFollowingWeeks({ ...state, currentProgram: newProgram })
+    if (currentWeekIndex < currentProgram.Weeks.length - 1)
+      newProgram = updateFollowingWeeks({ ...state, currentProgram: newProgram })
     setState({ ...state, isExerciseModalVisible: false, currentProgram: newProgram })
     saveProgram(newProgram)
   }
@@ -386,23 +374,41 @@ const ProgramView = props => {
 export const TrainClientsScreen = ({ navigation, route }) => {
   const [programs, setPrograms] = useState([])
   const [isRearranging, setIsRearranging] = useState(false)
+  const [globalState, setGlobalState] = useGlobalState()
 
   const rootStore = useStores()
 
-  const getPrograms = async () => {
+  const getPrograms = () => {
+    console.log("went to get programs")
     let programIDsArray = []
     Object.keys(route.params).forEach(key => {
       programIDsArray.push(route.params[key])
     })
 
-    let allPrograms = await fb.getItems(TRAINING_PROGRAMS_COLLECTION)
+    let allPrograms = globalState.allPrograms
     let newProgramsArray = allPrograms.filter(program => programIDsArray.includes(program.id))
     setPrograms([...newProgramsArray])
   }
 
   useEffect(() => {
+    console.log("went here")
+    setTimeout(() => {
+      if (globalState.allPrograms.length === 0) navigation.goBack()
+    }, 1000)
+  }, [])
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (programs.length === 0) {
+        console.log("programs got with useEffect []")
+        getPrograms()
+      }
+    }, 100)
+  }, [])
+
+  useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      getPrograms().catch(error => console.error(error))
+      getPrograms()
     })
     return unsubscribe
   }, [navigation])

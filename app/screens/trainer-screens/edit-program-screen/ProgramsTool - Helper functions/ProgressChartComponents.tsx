@@ -13,7 +13,7 @@ import {
 import { Button } from "react-native-paper"
 
 import { displayDateFromTimestamp2 } from "../../../../global-helper"
-import { Exercise, state } from "../../../../models/sub-stores"
+
 import {
   getWeightEquivalent,
   getExerciseLatestSet,
@@ -26,7 +26,7 @@ import { findIndex } from "ramda"
 
 type ExerciseProgressChartProps = {
   //   exercise: any[]
-  state: state
+  state: any
 }
 
 export const ExerciseProgressChart: React.FC<ExerciseProgressChartProps> = props => {
@@ -58,7 +58,6 @@ export const ExerciseProgressChart: React.FC<ExerciseProgressChartProps> = props
 
   let exerciseArray: exObject[] = []
   let includedExercisesArray: string[] = []
-  let completedDayFound = false //if we don't find any completed days - to show just a message
 
   currentProgram.Weeks.forEach((week, weekIndex) => {
     week.Days.forEach((day, dayIndex) => {
@@ -153,8 +152,9 @@ export const ExerciseProgressChart: React.FC<ExerciseProgressChartProps> = props
           When: "Finish",
           ProgressCoef: FinishPercentCoef * 100,
           label: HighestReps,
+          fill: iStyles.text2.color,
         },
-        { When: "Start", ProgressCoef: 100, label: StartingReps },
+        { When: "Start", ProgressCoef: 100, label: StartingReps, fill: iStyles.text0.color },
       ]
     else
       barData = [
@@ -162,8 +162,15 @@ export const ExerciseProgressChart: React.FC<ExerciseProgressChartProps> = props
           When: "Finish",
           ProgressCoef: FinishPercentCoef * 100,
           label: HighestWeightValue.toPrecision(3),
+          fill: iStyles.text2.color,
         },
-        { When: "Start", ProgressCoef: 100, label: StartingWeightValue.toPrecision(3) },
+        {
+          When: "Start",
+          ProgressCoef: 100,
+
+          label: StartingWeightValue.toPrecision(3),
+          fill: iStyles.text0.color,
+        },
       ]
 
     return (
@@ -193,22 +200,22 @@ export const ExerciseProgressChart: React.FC<ExerciseProgressChartProps> = props
           >
             <VictoryBar
               data={barData}
-              //   animate={{
-              //     duration: 4000,
-              //     onLoad: { duration: 5000 },
-              //   }}
+              // animate={{
+              //   duration: 4000,
+              //   onLoad: { duration: 5000 },
+              // }}
               barWidth={16}
               name="exercise"
               x={"When"}
               y={"ProgressCoef"}
               style={{
                 data: {
-                  fill: iStyles.text1.color,
+                  fill: ({ datum }) => datum.fill,
                   fontSize: 8,
                 },
                 labels: {
                   fontSize: 15,
-                  fill: iStyles.text2.color,
+                  fill: ({ datum }) => datum.fill,
                 },
               }}
               labels={({ datum }) => `x: ${datum.y}`}

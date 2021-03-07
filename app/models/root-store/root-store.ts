@@ -11,7 +11,7 @@ import { UserStoreModel2 } from "../sub-stores/v2-user-store"
 import { CardTypesStoreModel2 } from "../sub-stores/v2-cardy-types-store"
 import { CardStoreModel2 } from "../sub-stores/v2-cardy-store"
 
-import { trainingProgramsStoreModel } from "../sub-stores/trainingPrograms-store"
+// import { trainingProgramsStoreModel } from "../sub-stores/trainingPrograms-store"
 import { exerciseDataStoreModel } from "../sub-stores/exerciseData-store"
 
 /**
@@ -35,7 +35,7 @@ export const RootStoreModel = types.model("RootStore").props({
     sessionStore: types.optional(SessionStoreModel,{}),
     progressLoader: types.optional(types.boolean, false),
 
-    trainingProgramsStore: types.optional(trainingProgramsStoreModel, {}),
+    // trainingProgramsStore: types.optional(trainingProgramsStoreModel, {}),
     exerciseDataStore: types.optional(exerciseDataStoreModel, {}),
     
 })
@@ -88,21 +88,21 @@ export const RootStoreModel = types.model("RootStore").props({
         return {counterDone, counterTotal}
     },
 
-    getUserPrograms (clientID: string) {
-        const loggedUser = values(self.userStore2.users)
-        .find(user => user.item.email == self.sessionStore.userEmail)
+    // getUserPrograms (clientID: string) {
+    //     const loggedUser = values(self.userStore2.users)
+    //     .find(user => user.item.email == self.sessionStore.userEmail)
         
-        const allTrainersPrograms = self.trainingProgramsStore.trainersPrograms(loggedUser.id);
+    //     // const allTrainersPrograms = self.trainingProgramsStore.trainersPrograms(loggedUser.id);
 
-        const oneTraineePrograms = allTrainersPrograms.filter(program => program.item.Client === clientID)
+    //     const oneTraineePrograms = allTrainersPrograms.filter(program => program.item.Client === clientID)
 
-        const justProgramIDs = [];
-        oneTraineePrograms.map((program => {
-            justProgramIDs.push(program.id)
-        }))
+    //     const justProgramIDs = [];
+    //     oneTraineePrograms.map((program => {
+    //         justProgramIDs.push(program.id)
+    //     }))
 
-        return justProgramIDs
-    },
+    //     return justProgramIDs
+    // },
 
 }))
 

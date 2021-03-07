@@ -93,7 +93,10 @@
     "gymHallsSquareButtonCaption": "Gym Halls",
     "referralsSquareButtonCaption": "Referrals",
     "trainersHomeSquareButtonCaption": "Trainer home",
-    "other": "Other"
+    "exerciseDatabase": "Exercise Database",
+    "other": "Other",
+    "clients2": "Clients 2",
+    "admin_programs": "Manage programs"
   },
   "clients_list_ad": {
     "header_label": "Clients list"

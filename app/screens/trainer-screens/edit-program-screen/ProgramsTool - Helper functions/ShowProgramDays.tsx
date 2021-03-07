@@ -3,12 +3,14 @@ import {
   View,
   FlatList,
   Pressable,
-  Text,
+  // Text,
   StyleSheet,
   ScrollView,
   ScrollViewComponent,
+  Dimensions,
 } from "react-native"
 
+import { useGlobalState } from "../../../../models/global-state-regular"
 import { Button, Portal, Modal, TextInput, Checkbox } from "react-native-paper"
 import DraggableFlatList from "react-native-draggable-flatlist"
 import { observer } from "mobx-react-lite"
@@ -25,13 +27,17 @@ import {
 } from "../../../../global-helper"
 
 import { useStores } from "../../../../models/root-store"
-import { IProgram, state } from "../../../../models/sub-stores"
 
 import { imgs } from "../../../../assets"
 
 import { YOUTUBE_API_KEY } from "../Constants/DatabaseConstants"
 import { getVideoID, getVideoTime, getColorByExercisePosition } from "./smallFunctions"
 import iStyles from "../Constants/Styles"
+import { icons, colors, fonts } from "../Constants/"
+
+const windowWidth = Dimensions.get("window").width
+const windowHeight = Dimensions.get("window").height
+
 import {
   ShowExercise,
   EditableText,
@@ -44,10 +50,14 @@ import {
   DaysBox,
   TextWithInfoBaloon,
   SmallIconButton,
+  DeleteButton,
+  Text,
 } from "./index"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { MediumButtonIcon } from "./smallComponents"
 
 type HeaderProps = {
-  state: state
+  state: any
   onChangeWeek: Function
   onChangeProgramName: Function
   onChangeClient: Function
@@ -60,6 +70,23 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
   const { currentWeekIndex, currentDayIndex, currentProgram, deselectAllDays } = props.state
   return (
     <View>
+      <View style={{ flexDirection: "row" }}>
+        <Text
+          style={{ fontSize: 23, fontFamily: fonts.jost.semi_bold, textAlignVertical: "bottom" }}
+        >
+          Трениращ:
+        </Text>
+        <ClientName
+          clientID={currentProgram.Client}
+          style={{
+            fontSize: 20,
+            fontFamily: fonts.jost.semi_bold,
+            color: colors.grey1,
+            textAlignVertical: "top",
+          }}
+          onChange={clientID => props.onChangeClient(clientID)}
+        />
+      </View>
       <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
         {/* <EditableText
           textStyle={{ ...iStyles.text1, fontSize: 21 }}
@@ -75,20 +102,22 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
             width: "100%",
           }}
         >
-          <ClientName
-            clientID={currentProgram.Client}
-            style={{ ...iStyles.text2 }}
-            onChange={clientID => props.onChangeClient(clientID)}
-          />
-          <View style={{ flexDirection: "row" }}>
-            <Button
+          <View
+            style={{
+              flexDirection: "row",
+              width: windowWidth,
+              justifyContent: "space-between",
+            }}
+          >
+            {/* <Button
               icon="arrow-left"
               compact={true}
               onPress={() => props.onChangeWeek({ type: "decrease" })}
               color={iStyles.text3.color}
             >
               {""}
-            </Button>
+            </Button> */}
+
             <DaysBox
               state={props.state}
               program={currentProgram}
@@ -98,14 +127,41 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
               editWeeks={true}
               onAddWeek={props.onAddWeek}
               onRemoveWeek={props.onRemoveWeek}
+              mode="week only"
+              onPressLeft={() => props.onChangeWeek({ type: "decrease" })}
+              onPressRight={() => props.onChangeWeek({ type: "increase" })}
+              headerStyle={{ height: 45 }}
             />
-            <Button
+
+            {/* <Button
               icon="arrow-right"
               compact={true}
               onPress={() => props.onChangeWeek({ type: "increase" })}
               color={iStyles.text3.color}
-            ></Button>
-            <SmallIconButton icon="content-copy" onPress={props.onPressCopy} />
+            ></Button> */}
+            <View style={{ width: 10 }}></View>
+            <View
+              style={{
+                backgroundColor: colors.blue_transparent,
+                height: 45,
+                flex: 1,
+              }}
+            >
+              <TouchableOpacity onPress={props.onPressCopy}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <MediumButtonIcon
+                    icon={icons.copy}
+                    onPress={props.onPressCopy}
+                    color={colors.grey1}
+                  ></MediumButtonIcon>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 15, color: colors.black }}>
+                      Копирай от друга програма
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -162,23 +218,26 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
     setIsDayShown(initialState)
   }, [currentProgram.Weeks[currentWeekIndex].Days.length])
 
-  const exercisesStore = useStores().exerciseDataStore
+  const [globalState, setGlobalState] = useGlobalState()
 
   let doneTextStyle = iStyles.greyText
   let dayDone = false
-  if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted) dayDone = true
 
   const viewVideoHandler = exercise => {
-    let youTubeLink = exercisesStore.getExerciseYouTubeLink(exercise.Name)
-    YouTubeStandaloneAndroid.playVideo({
-      apiKey: YOUTUBE_API_KEY, //
-      videoId: getVideoID(youTubeLink),
-      autoplay: true,
-      lightboxMode: true,
-      startTime: getVideoTime(youTubeLink),
-    })
-      .then(() => console.log("Standalone Player Exited"))
-      .catch(errorMessage => console.error(errorMessage))
+    const ex = globalState.allExercises.find(ex => ex.ID === exercise.ID)
+    if (!ex) console.log("exercise not found")
+    else {
+      const videoLink = ex.YouTubeLink
+      YouTubeStandaloneAndroid.playVideo({
+        apiKey: YOUTUBE_API_KEY, //
+        videoId: getVideoID(videoLink),
+        autoplay: true,
+        lightboxMode: true,
+        startTime: getVideoTime(videoLink),
+      })
+        .then(() => console.log("Standalone Player Exited"))
+        .catch(errorMessage => console.error(errorMessage))
+    }
   }
 
   const isDayShownHandler = dayIndex => {
@@ -188,6 +247,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
   }
 
   if (mode === "oneDay") {
+    if (currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted) dayDone = true
     const renderExercises = ({ item, index }) => {
       let exercise = { ...item }
       dayDone ? (exercise.isExpanded = false) : (exercise.isExpanded = !locked)
@@ -284,10 +344,10 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
         <ScrollView>
           {currentProgram.Weeks[currentWeekIndex].Days.map((day, dayindex) => {
             let isCurrent = false
-            let exercises = currentProgram.Weeks[currentWeekIndex].Days[0].Exercises
+            let exercises = day.Exercises
+            // let exercises = currentProgram.Weeks[currentWeekIndex].Days[0].Exercises
             let moreINfoExpanded = false //flag for whether expand arrow to point up or down
             if (exercises.length > 0) if (exercises[0].isExpanded) moreINfoExpanded = true
-            let arrowIcon = moreINfoExpanded ? "arrow-expand-up" : "arrow-expand-down"
             let backgroundColor = iStyles.backGround
             if (dayindex === currentDayIndex && !props.state.deselectAllDays) {
               // backgroundColor = "lightcyan" // lightcyan azure aliceblue ivory whitesmoke
@@ -312,6 +372,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                     // height: isProgramViewBig ? '100%' : 200,
                     width: "100%",
                     backgroundColor: backgroundColor,
+                    marginVertical: 5,
                     // maxHeight: "80%",
                     // flexDirection: 'row',
                   }}
@@ -331,14 +392,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                           alignItems: "center",
                         }}
                       > */}
-                    <Button
-                      icon="trash-can-outline"
-                      mode={"contained"}
-                      compact={true}
-                      color="red"
-                      style={iStyles.mediumRoundIcon}
-                      onPress={() => props.onRemoveDay(dayindex)}
-                    ></Button>
+
                     {/* </View>
                     )} */}
                     {/* <Checkbox
@@ -351,35 +405,30 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                       // disabled={props.state.locked}
                       onPress={() => props.onToggleDayCompleted(dayindex)}
                     /> */}
-                    <DayCompletedCheckbox
-                      isCompleted={
-                        currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted
-                      }
-                      currentDate={
-                        currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn
-                      }
-                      onToggle={newDate => props.onToggleDayCompleted(dayindex, newDate)}
-                      color={iStyles.text1.color}
-                    />
+
                     {/* <Button
                       icon="arrow-split-horizontal"
                       onPress={() => isDayShownHandler(dayindex)}
                     ></Button> */}
                     <ToggleButton
-                      icon="arrow-split-horizontal"
+                      icon={icons.chevronUp}
+                      iconFalse={icons.chevronDown}
                       onPress={() => isDayShownHandler(dayindex)}
                       status={isDayShown[dayindex]}
                       color={iStyles.text1.color}
                       style={iStyles.mediumRoundIcon}
                       compact={true}
+                      labelStyle={{ fontSize: iStyles.mediumRoundIcon.height }}
                     ></ToggleButton>
                     <ToggleButton
-                      icon="swap-vertical-bold"
+                      icon={icons.chevron_left_right}
                       onPress={() => onToggleReorder(dayindex)}
                       status={state.isReordering}
                       color={iStyles.text1.color}
                       style={iStyles.mediumRoundIcon}
                       compact={true}
+                      labelStyle={{ fontSize: iStyles.mediumRoundIcon.height }}
+                      disabled={!isDayShown[dayindex]}
                     ></ToggleButton>
                     {/* {currentProgram.Weeks[currentWeekIndex].Days[dayindex]
                             .isCompleted && (
@@ -402,9 +451,10 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                         flexDirection: "row",
                       }}
                     >
-                      {dayindex === 0 && (
-                        <View style={{ flexDirection: "row" }}>
-                          <Button
+                      {/* {dayindex === 0 && ( */}
+                      <View style={{ flexDirection: "row" }}>
+                        {/* <Button
+                            style={iStyles.mediumRoundIcon}
                             icon={arrowIcon}
                             color={iStyles.text3.color}
                             compact={true}
@@ -417,9 +467,31 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                             onPress={props.onExpandMoreInfoAllExercises}
                           >
                             {""}
-                          </Button>
-                        </View>
-                      )}
+                          </Button> */}
+                        <ToggleButton
+                          icon={icons.arrow_collapse_vertical}
+                          iconFalse={icons.arrow_expand_vertical}
+                          onPress={props.onExpandMoreInfoAllExercises}
+                          status={moreINfoExpanded}
+                          color={iStyles.text1.color}
+                          style={iStyles.mediumRoundIcon}
+                          compact={true}
+                          labelStyle={{ fontSize: iStyles.mediumRoundIcon.height }}
+                          disabled={!isDayShown[dayindex]}
+                        ></ToggleButton>
+                      </View>
+                      {/* )} */}
+                      <DayCompletedCheckbox
+                        isCompleted={
+                          currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted || false
+                        }
+                        currentDate={
+                          currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn
+                        }
+                        onToggle={newDate => props.onToggleDayCompleted(dayindex, newDate)}
+                        color={colors.green3}
+                      />
+                      <DeleteButton onPress={() => props.onRemoveDay(dayindex)} forever={true} />
                     </View>
                     {/* <ShowWeekName
                             index={currentWeekIndex}
@@ -427,7 +499,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                             onPress={() => onChangeDay(dayindex)}
                           /> */}
                   </View>
-                  {currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted &&
+                  {/* {currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted &&
                     isDayShown[dayindex] && (
                       <Text style={{ textAlign: "center", color: iStyles.text0.color }}>
                         Day completed on{" "}
@@ -435,7 +507,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                           currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn,
                         )}
                       </Text>
-                    )}
+                    )} */}
                   <View style={{ flex: 1 }}>
                     <ImageBackgroundToggle
                       imageURL={imgs.rotate}
@@ -446,9 +518,10 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                     >
                       {isDayShown[dayindex] && (
                         <ShowDayExercises
-                          exercises={
-                            currentProgram.Weeks[currentWeekIndex].Days[dayindex].Exercises
-                          }
+                          exercises={day.Exercises}
+                          // exercises={
+                          //   currentProgram.Weeks[currentWeekIndex].Days[dayindex].Exercises
+                          // }
                           isActive={isCurrent && props.state.deselectAllDays !== true}
                           state={state}
                           onDragEndHandler={onDragEndHandler}
@@ -462,35 +535,35 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                         />
                       )}
                     </ImageBackgroundToggle>
-                    <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-                      {dayindex === currentProgram.Weeks[currentWeekIndex].Days.length - 1 ? (
-                        <Button
-                          icon="plus-circle"
-                          mode={"outlined"}
-                          // compact={true}
-                          color={iStyles.text2.color}
-                          // style={iStyles.mediumRoundIcon}
-                          style={{ width: 100 }}
-                          onPress={props.onAddNewDay}
-                        >
-                          {" "}
-                          Day{" "}
-                        </Button>
-                      ) : (
-                        <View style={{ width: 100 }}></View>
-                      )}
-                      {isDayShown[dayindex] && (
+                    {isDayShown[dayindex] && (
+                      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
                         <Button
                           mode="outlined"
                           compact={true}
-                          color={iStyles.text1.color}
+                          color={colors.green2}
                           style={{ width: "60%" }}
-                          onPress={() => props.onAddExercise(dayindex)}
+                          onPress={() => props.onAddExercise(dayindex, state.currentWeekIndex)}
                         >
                           + упражнение
                         </Button>
-                      )}
-                    </View>
+                        {dayindex === currentProgram.Weeks[currentWeekIndex].Days.length - 1 ? (
+                          <Button
+                            icon="plus-circle"
+                            mode={"outlined"}
+                            // compact={true}
+                            color={colors.blue3}
+                            // style={iStyles.mediumRoundIcon}
+                            style={{ width: 100 }}
+                            onPress={props.onAddNewDay}
+                          >
+                            {" "}
+                            ден{" "}
+                          </Button>
+                        ) : (
+                          <View style={{ width: 100 }}></View>
+                        )}
+                      </View>
+                    )}
                   </View>
                 </View>
               </Pressable>

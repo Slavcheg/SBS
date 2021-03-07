@@ -1,6 +1,6 @@
 import { Button, Portal, Modal, TextInput } from "react-native-paper"
 // import crashlytics from '@react-native-firebase/crashlytics';
-import { Picker } from "@react-native-community/picker"
+import { Picker } from "@react-native-picker/picker"
 
 import React, { useState, useEffect, useReducer } from "react"
 
@@ -39,6 +39,7 @@ type EasyNumberPickerProps = {
   onLongPressMode?: string
   validSelection?: number[]
   convertToNumber?: boolean
+  separatorMargin?: number
 }
 
 const PickerReducer = (state, action) => {
@@ -215,7 +216,10 @@ const HorizontalList = (props: any) => {
                   onLongPress={props.onLongPress}
                   onPress={() => props.onPressRecommended(number)}
                 >
-                  <PrintNumber state={props.state} number={number} />
+                  <View style={{ flexDirection: "row" }}>
+                    {index !== 0 && <View style={{ width: props.separatorMargin }}></View>}
+                    <PrintNumber state={props.state} number={number} />
+                  </View>
                 </Pressable>
               )
             })}
@@ -375,6 +379,7 @@ export const EasyNumberPicker = (props: EasyNumberPickerProps) => {
               onPressCustom={onPressCustomHandler}
               customPrintedStyle={customPrintedStyle}
               customNumber={customNumber}
+              separatorMargin={props.separatorMargin ? props.separatorMargin : 0}
             />
           )}
           {easyMode === "square" && (

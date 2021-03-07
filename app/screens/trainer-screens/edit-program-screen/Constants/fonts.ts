@@ -1,0 +1,33 @@
+export const fonts = {
+  jost: {
+    black: "Jost-Black",
+    black_italic: "Jost-BlackItalic",
+    bold: "Jost-Bold",
+    bold_italic: "Jost-BoldItalic",
+    extra_bold: "Jost-ExtraBold",
+    extra_bold_italic: "Jost-ExtraBoldItalic",
+    extra_light: "Jost-ExtraLight",
+    extra_light_italic: "Jost-ExtraLightItalic",
+    italic: "Jost-Italic",
+    light: "Jost-Light",
+    light_italic: "Jost-LightItalic",
+    medium: "Jost-Medium",
+    medium_italic: "Jost-MediumItalic",
+    regular: "Jost-Regular",
+    semi_bold: "Jost-SemiBold",
+    semi_bold_italic: "Jost-SemiBoldItalic",
+    thin: "Jost-Thin",
+    thin_italic: "Jost-ThinItalic",
+  },
+  optimum: {
+    bold: "SPOPT2B",
+    bold_italic: "SPOPT2BI",
+    italic: "SPOPT2I",
+    roman: "SPOPT2R",
+    semi_bold: "SPOPT2SB",
+    semi_bold_italic: "SPOPT2SI",
+  },
+  stempel: {
+    regular: "SPSTMPEL",
+  },
+}
