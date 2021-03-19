@@ -1,5 +1,5 @@
 import { types, SnapshotIn } from "mobx-state-tree"
-import { firebaseFuncs } from "../../services/firebase/firebase.service"
+
 import firestore from "@react-native-firebase/firestore"
 import { return_todays_datestamp } from "../../global-helper"
 
@@ -7,7 +7,7 @@ import {
   muscleGroups,
   muscleGroups2,
   muscleGroupsObject,
-} from "../../screens/trainer-screens/edit-program-screen/Constants/MuscleGroups"
+} from "../../components3/Constants/MuscleGroups"
 
 import _ from "lodash"
 

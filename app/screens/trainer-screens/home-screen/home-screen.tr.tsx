@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Text, View } from "react-native"
+import { Text, View, BackHandler } from "react-native"
 import { Button } from "react-native-paper"
 import { spacing, color } from "../../../theme"
 import { Screen, MainHeader_Tr, ButtonSquare } from "../../../components"
@@ -9,25 +9,25 @@ import { NavigationProps } from "../../../models/commomn-navigation-props"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
-import { useGlobalState, getState } from "../../../models/global-state-regular"
-import { colors } from "../edit-program-screen/Constants"
+import { useGlobalState, getState } from "../../../components3/globalState/global-state-regular"
+import {
+  colors,
+  T_card,
+  T_session,
+  useGlobalState3,
+  useLoggedTrainerCards,
+  useTrainerSessions,
+  useAsyncState3,
+} from "../../../components3/"
+import { useFocusEffect } from "@react-navigation/native"
 
+import { ShowSessions } from "./Components"
 interface menuProps extends NavigationProps {}
 
 const MenuButtonsList: React.FunctionComponent<menuProps> = props => {
   const { navigation } = props
 
-  const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false)
   const [globalState, setGlobalState] = useGlobalState()
-
-  // useEffect(() => {
-  //   let mounted = true
-  //   if (mounted) {
-  //     setIsUserAdmin(globalState.loggedUser.isAdmin)
-  //     console.log("user is admin: ", isUserAdmin)
-  //   }
-  //   return () => (mounted = false)
-  // }, [isUserAdmin])
 
   const menuList = require("./menu-list-tr.json")
   return menuList.map((el, i) => {
@@ -55,6 +55,8 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
   const [globalState, setGlobalState] = useGlobalState()
   const [isUserLoaded, setIsUserLoaded] = useState(false)
 
+  // const { state, dispatch } = useGlobalState3()
+  useAsyncState3()
   useEffect(() => {
     if (!isUserLoaded) {
       if (!globalState.loggedUser.ID) {
@@ -64,6 +66,17 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
       } else setIsUserLoaded(true)
     }
   }, [globalState.loggedUser.ID])
+
+  useFocusEffect(() => {
+    const backAction = () => {
+      BackHandler.exitApp()
+      return true
+    }
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction)
+
+    return () => backHandler.remove()
+  })
 
   return (
     <Screen
@@ -78,76 +91,19 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
       }}
     >
       <MainHeader_Tr navigation={navigation} style={{ paddingHorizontal: 25 }} />
-      <View
-        style={[
-          {
-            paddingVertical: spacing[8],
-          },
-        ]}
-      >
-        <ProgressCircle
-          percent={today_vs_last_day() * 100}
-          radius={100}
-          borderWidth={15}
-          color={color.palette.blue_sbs}
-          shadowColor="#CCCCCC"
-          bgColor="#fff"
-        >
-          <View
-            style={{
-              alignItems: "center",
-            }}
-          >
-            {/* <Text
-                style={{
-                  fontSize: 30,
-                  fontWeight: "bold",
-                  color: color.palette.blue_sbs,
-                }}
-              >
-                {rootStore.numberOfTrainingsForLoggedTrainerThisMonth}
-              </Text> */}
-            <Text
-              style={{
-                color: "#666666",
-              }}
-            >
-              {translate("trainerHomeScreen.progressCircleTextTop")}
-            </Text>
-            <Text
-              style={{
-                color: "#666666",
-              }}
-            >
-              {translate("trainerHomeScreen.progressCircleTextBottom") +
-                " " +
-                displayDateFromTimestamp()}
-            </Text>
-          </View>
-        </ProgressCircle>
-      </View>
-      <View
-        style={[
-          {
-            flex: 1,
-            width: "100%",
-            backgroundColor: "#F4F8FB",
-            paddingTop: 5,
-            paddingHorizontal: 25,
-          },
-        ]}
-      >
-        <MenuButtonsList navigation={navigation} />
-        {globalState.loggedUser.isExerciseEditor && (
-          <Button
-            onPress={() => navigation.navigate("exerciseDatabase_admin")}
-            color={colors.blue3}
-            mode="contained"
-          >
-            Edit exercise database
-          </Button>
-        )}
-      </View>
+      <ShowSessions />
+      <MenuButtonsList navigation={navigation} />
+      <ButtonSquare title={"Измервания"} onPress={() => navigation.navigate("measureClients_trainer")}></ButtonSquare>
+      {globalState.loggedUser.isExerciseEditor && (
+        <ButtonSquare
+          title={"Edit exercise database"}
+          onPress={() => navigation.navigate("exerciseDatabase_admin")}
+        ></ButtonSquare>
+      )}
+      {globalState.loggedUser.isAdmin && (
+        <ButtonSquare title={"Тренировки 2"} onPress={() => navigation.navigate("choose_Program_Screen_trainer")}></ButtonSquare>
+      )}
+      <ButtonSquare title={"Към клиентско меню"} onPress={() => navigation.navigate("homeScreenClient2")}></ButtonSquare>
     </Screen>
   )
 }

@@ -1,18 +1,10 @@
 [
     {
-        "iconLeft": "bl_trainings_today",
-        "title": "trainerHomeScreen.trainingsTodaySquareButtonCaption",
+        "iconLeft": "gr_schedule",
+        "title": "trainerHomeScreen.markSessions",
         "iconRight": "bl_arrow_forward",
-        "onClick": "training_today",
-        "show": false,
-        "needsAdminRights": false
-    },
-    {
-        "iconLeft": "bl_clients",
-        "title": "trainerHomeScreen.clientsButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "clients_list",
-        "show": false,
+        "onClick": "markSessions_trainer",
+        "show": true,
         "needsAdminRights": false
     },
     {
@@ -36,7 +28,7 @@
         "title": "trainerHomeScreen.toClientMenu",
         "iconRight": "bl_arrow_forward",
         "onClick": "homeScreenClient2",
-        "show": true,
+        "show": false,
         "needsAdminRights": false
     }
 ]

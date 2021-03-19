@@ -42,8 +42,11 @@ export const displayDateFromTimestampFullMonth = (
   return moment(stamp).format("DD MMMM")
 }
 
-export const return_timeStamp_x_days_ago = (number: number = return_todays_datestamp()) => {
-  return +moment()
+export const return_timeStamp_x_days_ago = (
+  number: number,
+  todayStamp: number = return_todays_datestamp(),
+) => {
+  return +moment(moment(todayStamp).toDate())
     .subtract(number, "days")
     .format(moment_date_formats.date_stamp_mill)
 }
@@ -54,8 +57,25 @@ export const subtractDaysFromDateStamp = (dateStamp: number, substractDays: numb
     .format(moment_date_formats.date_stamp_mill)
 }
 
-export const addDaysFromDateStamp = (dateStamp: number, substractDays: number) => {
+export const addDaysFromDateStamp = (dateStamp: number, addDays: number) => {
   return +moment(moment(dateStamp).toDate())
-    .add(substractDays, "days")
+    .add(addDays, "days")
     .format(moment_date_formats.date_stamp_mill)
+}
+
+export const test = (dateStamp: number) => {
+  return moment(dateStamp).hours()
+}
+
+export const getLastXDaysStamps = (
+  lastXDays: number,
+  todayStamp: number = return_todays_datestamp(),
+) => {
+  const days = []
+  for (let i = lastXDays - 1; i >= 0; i--) days.push(return_timeStamp_x_days_ago(i, todayStamp))
+  return days
+}
+export const compareDates = (date1, date2) => {
+  if (displayDateFromTimestamp2(date1) === displayDateFromTimestamp2(date2)) return true
+  else return false
 }

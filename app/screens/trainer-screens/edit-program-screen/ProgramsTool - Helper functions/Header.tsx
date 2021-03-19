@@ -2,7 +2,7 @@ import React from "react"
 import { View, useWindowDimensions } from "react-native"
 import { BackButton, MenuButton } from "./index"
 
-import { colors, icons, fonts } from "../Constants"
+import { colors, icons, fonts } from "../../../../components3/Constants"
 import { Text } from "./index"
 
 type EditProgramHeaderProps = {

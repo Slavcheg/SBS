@@ -36,7 +36,8 @@
     "progressCircleTextTop": "trainings",
     "progressCircleTextBottom": "until",
     "trainingPrograms": "Training programs",
-    "toClientMenu": "Client menu"
+    "toClientMenu": "Client menu",
+    "markSessions": "Mark sessions"
   },
   "selectPrograms": {
     "TrainButton": "Train",
@@ -97,6 +98,10 @@
     "other": "Other",
     "clients2": "Clients 2",
     "admin_programs": "Manage programs"
+  },
+  "managerHomeScreen": {
+    "manageCards": "Manage cards",
+    "cardTypes": "Card types"
   },
   "clients_list_ad": {
     "header_label": "Clients list"

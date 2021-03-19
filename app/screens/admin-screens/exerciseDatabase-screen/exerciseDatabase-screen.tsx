@@ -4,19 +4,13 @@ import { Button, TextInput } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
 import firestore from "@react-native-firebase/firestore"
 
-import iStyles from "../../trainer-screens/edit-program-screen/Constants/Styles"
+import iStyles from "../../../components3/Constants/Styles"
 
-import { useGlobalState } from "../../../models/global-state-regular"
+import { useGlobalState } from "../../../components3/globalState/global-state-regular"
 // import { Picker } from "@react-native-community/picker"
 import { Picker } from "@react-native-picker/picker"
 
-import {
-  COLLECTION,
-  DB_EXERCISE_COLLECTION,
-  YOUTUBE_API_KEY,
-  muscleGroups,
-  muscleGroups2,
-} from "../../trainer-screens/edit-program-screen/Constants"
+import { YOUTUBE_API_KEY, muscleGroups, muscleGroups2 } from "../../../components3/Constants"
 import YouTube, { YouTubeStandaloneAndroid } from "react-native-youtube"
 import _ from "lodash"
 
@@ -47,7 +41,7 @@ import {
   deleteOneExerciseForever,
 } from "./Components"
 import { FAB } from "../../../components"
-import { colors, icons, fonts } from "../../trainer-screens/edit-program-screen/Constants"
+import { colors, icons, fonts } from "../../../components3/Constants"
 import { randomString } from "../../../global-helper"
 
 // import { Text } from "../../trainer-screens/edit-program-screen/ProgramsTool - Helper functions"

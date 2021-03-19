@@ -1,7 +1,7 @@
 import React from "react"
 import { Text as TextOriginal, View, Pressable } from "react-native"
-import iStyles from "../Constants/Styles"
-import { colors, fonts } from "../Constants"
+import iStyles from "../../../../components3/Constants/Styles"
+import { colors, fonts } from "../../../../components3/Constants"
 import { Button as ButtonOriginal } from "react-native-paper"
 
 type OriginalTextProps = React.ComponentProps<typeof TextOriginal>

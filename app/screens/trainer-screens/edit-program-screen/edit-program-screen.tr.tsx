@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback, useRef } from "react"
+import React, { useState, useEffect, useReducer, useCallback, useRef, useMemo } from "react"
 import { useFocusEffect } from "@react-navigation/native"
 
 import firestore from "@react-native-firebase/firestore"
@@ -19,7 +19,7 @@ import _ from "lodash"
 
 import { NavigationProps } from "../../../models/commomn-navigation-props"
 import { observer } from "mobx-react-lite"
-import { useGlobalState, getState } from "../../../models/global-state-regular"
+import { useGlobalState, getState } from "../../../components3/globalState/global-state-regular"
 import { Button, TextInput, Checkbox } from "react-native-paper"
 
 import {
@@ -40,10 +40,11 @@ import {
   filteredByMuscleGroup,
   getInitialState,
   EditProgramHeader,
+  ShowProgramDaysProps,
 } from "./ProgramsTool - Helper functions"
 
-import iStyles from "./Constants/Styles"
-import { NO_CLIENT_YET } from "./Constants"
+import iStyles from "../../../components3/Constants/Styles"
+import { NO_CLIENT_YET } from "../../../components3/Constants"
 
 import { state, TRAINING_PROGRAMS_COLLECTION } from "../../../components3"
 
@@ -128,6 +129,19 @@ type ShowProgramProps = {
   changeScroll: Function
 }
 
+const ShowProgramFakeDays: React.FC<ShowProgramDaysProps> = props => {
+  // console.log(props.state.renders.programChangeID)
+  return useMemo(() => {
+    return <ShowProgramDays {...props} />
+  }, [props.state.renders.programChangeID])
+}
+
+// const ShowProgram: React.FC<ShowProgramProps> = props => {
+//   return useMemo(() => {
+//     return <ShowProgram2 {...props} />
+//   }, [props.state.currentProgram.programChangeID])
+// }
+
 const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   const {
     onRemoveDay,
@@ -180,8 +194,7 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   }
 
   const scroll = page => {
-    if (scrollRef.current)
-      scrollRef.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
+    if (scrollRef.current) scrollRef.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
   }
 
   // useEffect(() => {
@@ -242,6 +255,31 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
     }
   }, [currentWeekIndex])
 
+  const isCloseWeekstate = (currIndex, index) => {
+    if (currIndex === index || currIndex + 1 === index || currIndex - 1 === index) return true
+    return false
+  }
+
+  const showProgramDaysProps: ShowProgramDaysProps = {
+    state: state,
+    mode: "allDays",
+    //  client={client}
+    onRemoveDay: onRemoveDay,
+    onAddNewDay: onAddNewDay,
+    onChangeDay: onChangeDay,
+    onChangeDayName: onChangeDayName,
+    onToggleDayCompleted: onToggleDayCompleted,
+    onExpandMoreInfoAllExercises: onExpandMoreInfoAllExercises,
+    onDragEndHandler: onDragEndHandler,
+    onDeleteExerciseHandler: onDeleteExerciseHandler,
+    onEditPositionHandler: onEditPositionHandler,
+    onEditSetsRepsHandler: onEditSetsRepsHandler,
+    onExpandExerciseInfo: onExpandExerciseInfo,
+    onReplaceExercise: onReplaceExercise,
+    onToggleReorder: onToggleReorder,
+    onAddExercise: onAddExercise,
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <ProgramViewHeader
@@ -255,33 +293,29 @@ const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
       />
 
       <ScrollView>
-        <ScrollView
-          horizontal={true}
-          ref={scrollRef2}
-          onMomentumScrollEnd={onScroll2End}
-          pagingEnabled={true}
-        >
+        <ScrollView horizontal={true} ref={scrollRef2} onMomentumScrollEnd={onScroll2End} pagingEnabled={true}>
           {currentProgram.Weeks.map((week, weekIndex) => {
             return (
               <View style={iStyles.carouselScreen} key={weekIndex}>
-                <ShowProgramDays
+                <ShowProgramFakeDays
+                  {...showProgramDaysProps}
                   state={{ ...state, currentWeekIndex: weekIndex }}
-                  mode="allDays"
-                  //  client={client}
-                  onRemoveDay={onRemoveDay}
-                  onAddNewDay={onAddNewDay}
-                  onChangeDay={onChangeDay}
-                  onChangeDayName={onChangeDayName}
-                  onToggleDayCompleted={onToggleDayCompleted}
-                  onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercises}
-                  onDragEndHandler={onDragEndHandler}
-                  onDeleteExerciseHandler={onDeleteExerciseHandler}
-                  onEditPositionHandler={onEditPositionHandler}
-                  onEditSetsRepsHandler={onEditSetsRepsHandler}
-                  onExpandExerciseInfo={onExpandExerciseInfo}
-                  onReplaceExercise={onReplaceExercise}
-                  onToggleReorder={onToggleReorder}
-                  onAddExercise={onAddExercise}
+                  // mode="allDays"
+                  // //  client={client}
+                  // onRemoveDay={onRemoveDay}
+                  // onAddNewDay={onAddNewDay}
+                  // onChangeDay={onChangeDay}
+                  // onChangeDayName={onChangeDayName}
+                  // onToggleDayCompleted={onToggleDayCompleted}
+                  // onExpandMoreInfoAllExercises={onExpandMoreInfoAllExercises}
+                  // onDragEndHandler={onDragEndHandler}
+                  // onDeleteExerciseHandler={onDeleteExerciseHandler}
+                  // onEditPositionHandler={onEditPositionHandler}
+                  // onEditSetsRepsHandler={onEditSetsRepsHandler}
+                  // onExpandExerciseInfo={onExpandExerciseInfo}
+                  // onReplaceExercise={onReplaceExercise}
+                  // onToggleReorder={onToggleReorder}
+                  // onAddExercise={onAddExercise}
                 />
               </View>
             )
@@ -334,6 +368,9 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     isReplacingExercise: false,
     isCopyProgramViewShown: false,
     isButtonsRowExpanded: false,
+    renders: {
+      programChangeID: Math.random(),
+    },
   }
 
   const [state, dispatch] = useReducer(EditProgramReducer, initialState)
@@ -358,9 +395,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
   useEffect(() => {
     if (globalState.allPrograms.length > 0) {
       const allProgramsDownloaded = globalState.allPrograms
-      const ourProgram = _.cloneDeep(
-        allProgramsDownloaded.find(program => program.id === globalState.currentProgramID),
-      )
+      const ourProgram = _.cloneDeep(allProgramsDownloaded.find(program => program.id === globalState.currentProgramID))
       const oldPrograms = getOtherPrograms(allProgramsDownloaded, ourProgram.id)
       dispatch({
         type: "update current program",
@@ -511,8 +546,9 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
     dispatch({ type: "delete exercise", value: exerciseIndex, dayIndex: dayIndex })
     setTimeout(onSaveProgramHandler, 100)
   }
-  const onEditPositionHandler = (exerciseIndex, dayIndex) => {
-    dispatch({ type: "change position number", value: exerciseIndex, dayIndex: dayIndex })
+  const onEditPositionHandler = (exerciseIndex, dayIndex, weekIndex) => {
+    console.log(exerciseIndex, dayIndex, weekIndex)
+    dispatch({ type: "change position number", value: exerciseIndex, dayIndex: dayIndex, weekIndex: weekIndex })
   }
   const onExpandExerciseInfo = (exerciseIndex, dayIndex) => {
     dispatch({
@@ -521,15 +557,14 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
       dayIndex: dayIndex,
     })
   }
-  const onEditSetsRepsHandler = (exerciseIndex, dayIndex) => {
+  const onEditSetsRepsHandler = (exerciseIndex, dayIndex, weekIndex) => {
     const onConfirm = () =>
       dispatch({
         type: "open modal and start editing exercise",
         value: exerciseIndex,
         dayIndex: dayIndex,
       })
-    if (currentProgram.Weeks[currentWeekIndex].Days[dayIndex].isCompleted)
-      greyedoutSetsAndRepsAlert(onConfirm)
+    if (currentProgram.Weeks[weekIndex].Days[dayIndex].isCompleted) greyedoutSetsAndRepsAlert(onConfirm)
     else onConfirm()
   }
 
@@ -544,8 +579,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
 
   const onChangeClient = newClientID => {
     if (newClientID !== currentProgram.Client)
-      if (!currentProgram.Weeks[0].Days[0].isCompleted)
-        dispatch({ type: "change client", value: newClientID })
+      if (!currentProgram.Weeks[0].Days[0].isCompleted) dispatch({ type: "change client", value: newClientID })
       else changeUserAlert(() => dispatch({ type: "change client", value: newClientID }))
   }
 
@@ -634,19 +668,14 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(prop
         state={state}
       />
 
-      {currentProgram &&
-        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
-          <EditExerciseModal
-            visible={state.isEditExerciseModalVisible}
-            exercise={
-              currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
-                currentExerciseIndex
-              ]
-            }
-            onClose={onCloseExerciseModal}
-            onRequestClose={onRequestCloseExerciseModal}
-          />
-        )}
+      {currentProgram && currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
+        <EditExerciseModal
+          visible={state.isEditExerciseModalVisible}
+          exercise={currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex]}
+          onClose={onCloseExerciseModal}
+          onRequestClose={onRequestCloseExerciseModal}
+        />
+      )}
       {currentProgram && state.isProgramViewShown && (
         <View style={styles.programStyle}>
           <ShowProgram
@@ -712,12 +741,8 @@ const getOtherPrograms = (allPrograms, thisProgramID) => {
   console.log(allPrograms.length, thisProgramID)
   const editedProgram = allPrograms.find(program => program.id === thisProgramID)
   if (editedProgram.item.Client === NO_CLIENT_YET) return []
-  const thisClientAllPrograms = allPrograms.filter(
-    program => program.item.Client === editedProgram.item.Client,
-  )
-  const thisClientOtherPrograms = thisClientAllPrograms.filter(
-    program => program.id != thisProgramID,
-  )
+  const thisClientAllPrograms = allPrograms.filter(program => program.item.Client === editedProgram.item.Client)
+  const thisClientOtherPrograms = thisClientAllPrograms.filter(program => program.id != thisProgramID)
   console.log(thisClientOtherPrograms)
   return thisClientOtherPrograms
 }

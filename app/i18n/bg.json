@@ -32,7 +32,8 @@
     "progressCircleTextTop": "тренировки",
     "progressCircleTextBottom": "до",
     "trainingPrograms": "Тренировъчни програми",
-    "toClientMenu": "Клиентско меню"
+    "toClientMenu": "Клиентско меню",
+    "markSessions": "Отбележи тренировки"
   },
   "selectPrograms": {
     "TrainButton": "Тренирай",
@@ -93,6 +94,10 @@
     "exerciseDatabase": "База данни с упражнения",
     "clients2": "Clients 2",
     "admin_programs": "Manage programs"
+  },
+  "managerHomeScreen": {
+    "manageCards": "Закупени карти",
+    "cardTypes": "Видове карти"
   },
   "clients_list_ad": {
     "header_label": "Списък трениращи"

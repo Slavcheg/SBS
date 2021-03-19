@@ -36,7 +36,7 @@ import {
   displayDateFromTimestamp2,
 } from "../../../global-helper"
 
-import { useGlobalState } from "../../../models/global-state-regular"
+import { useGlobalState } from "../../../components3/globalState/global-state-regular"
 
 import { useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
@@ -60,14 +60,14 @@ import {
   getInitialState,
 } from "../edit-program-screen/ProgramsTool - Helper functions"
 
-import iStyles from "../edit-program-screen/Constants/Styles"
+import iStyles from "../../../components3/Constants/Styles"
 import { getSnapshot, onSnapshot } from "mobx-state-tree"
 import {
   EMPTY_PROGRAM_DATA2,
   state,
   TRAINING_PROGRAMS_COLLECTION,
   DEFAULT_SET_DATA2,
-} from "../../../models/sub-stores"
+} from "../../../components3"
 import * as fb from "../../../services/firebase/firebase.service"
 
 import { MAX_SETS, MAX_REPS } from "./Constants/programCreationConstants"
@@ -271,8 +271,8 @@ const ProgramView = props => {
       newDate || newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn
 
     newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn = updatedDate
+    saveProgram(newState)
     setState({ ...state, currentProgram: { ...newState } })
-    saveProgram(currentProgram)
   }
 
   const saveProgram = async updatedProgram => {
@@ -295,8 +295,8 @@ const ProgramView = props => {
     console.log(newDate)
     const newState = currentProgram
     newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn = getStampFromDate(newDate)
+    saveProgram(newState)
     setState({ ...state, currentProgram: { ...newState } })
-    saveProgram(currentProgram)
   }
 
   const onEditSetsRepsHandler = exerciseIndex => {

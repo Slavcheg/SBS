@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from "react-native"
 
-import { useGlobalState } from "../../../../models/global-state-regular"
+import { useGlobalState } from "../../../../components3/globalState/global-state-regular"
 import { Button, Portal, Modal, TextInput, Checkbox } from "react-native-paper"
 import DraggableFlatList from "react-native-draggable-flatlist"
 import { observer } from "mobx-react-lite"
@@ -30,10 +30,10 @@ import { useStores } from "../../../../models/root-store"
 
 import { imgs } from "../../../../assets"
 
-import { YOUTUBE_API_KEY } from "../Constants/DatabaseConstants"
+import { YOUTUBE_API_KEY } from "../../../../components3/Constants/DatabaseConstants"
 import { getVideoID, getVideoTime, getColorByExercisePosition } from "./smallFunctions"
-import iStyles from "../Constants/Styles"
-import { icons, colors, fonts } from "../Constants/"
+import iStyles from "../../../../components3/Constants/Styles"
+import { icons, colors, fonts } from "../../../../components3/Constants"
 
 const windowWidth = Dimensions.get("window").width
 const windowHeight = Dimensions.get("window").height
@@ -71,11 +71,7 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
   return (
     <View>
       <View style={{ flexDirection: "row" }}>
-        <Text
-          style={{ fontSize: 23, fontFamily: fonts.jost.semi_bold, textAlignVertical: "bottom" }}
-        >
-          Трениращ:
-        </Text>
+        <Text style={{ fontSize: 23, fontFamily: fonts.jost.semi_bold, textAlignVertical: "bottom" }}>Трениращ:</Text>
         <ClientName
           clientID={currentProgram.Client}
           style={{
@@ -149,15 +145,9 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
             >
               <TouchableOpacity onPress={props.onPressCopy}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <MediumButtonIcon
-                    icon={icons.copy}
-                    onPress={props.onPressCopy}
-                    color={colors.grey1}
-                  ></MediumButtonIcon>
+                  <MediumButtonIcon icon={icons.copy} onPress={props.onPressCopy} color={colors.grey1}></MediumButtonIcon>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 15, color: colors.black }}>
-                      Копирай от друга програма
-                    </Text>
+                    <Text style={{ fontSize: 15, color: colors.black }}>Копирай от друга програма</Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -171,7 +161,7 @@ export const ProgramViewHeader: React.FunctionComponent<HeaderProps> = observer(
 
 type ShowProgramDaysModes = "oneDay" | "allDays" | "smallPreview"
 
-type ShowProgramDaysProps = {
+export type ShowProgramDaysProps = {
   state: state
   mode: ShowProgramDaysModes
   onChangeDay?: Function
@@ -211,9 +201,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
   useEffect(() => {
     const initialState = []
     currentProgram.Weeks[currentWeekIndex].Days.map((day, dayindex) => {
-      isDayShown[dayindex] === false
-        ? (initialState[dayindex] = false)
-        : (initialState[dayindex] = true)
+      isDayShown[dayindex] === false ? (initialState[dayindex] = false) : (initialState[dayindex] = true)
     })
     setIsDayShown(initialState)
   }, [currentProgram.Weeks[currentWeekIndex].Days.length])
@@ -283,9 +271,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
           <View style={{ alignItems: "center" }}>
             <Text style={{ color: iStyles.text0.color }}>
               Day completed on{" "}
-              {displayDateFromTimestamp2(
-                currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn,
-              )}
+              {displayDateFromTimestamp2(currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn)}
             </Text>
           </View>
         )}
@@ -330,9 +316,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
               renderItem={renderExercises}
               keyExtractor={(item, index) => `${item.Name}-${index}`}
               ListHeaderComponent={() => renderHeader(day.DayName)}
-              listKey={`${dayindex.toString()}+${currentProgram.Name}+${
-                currentProgram.Client
-              }+${Math.random().toString()}`}
+              listKey={`${dayindex.toString()}+${currentProgram.Name}+${currentProgram.Client}+${Math.random().toString()}`}
             />
           )
         })}
@@ -482,12 +466,8 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                       </View>
                       {/* )} */}
                       <DayCompletedCheckbox
-                        isCompleted={
-                          currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted || false
-                        }
-                        currentDate={
-                          currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn
-                        }
+                        isCompleted={currentProgram.Weeks[currentWeekIndex].Days[dayindex].isCompleted || false}
+                        currentDate={currentProgram.Weeks[currentWeekIndex].Days[dayindex].completedOn}
                         onToggle={newDate => props.onToggleDayCompleted(dayindex, newDate)}
                         color={colors.green3}
                       />
@@ -511,9 +491,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
                   <View style={{ flex: 1 }}>
                     <ImageBackgroundToggle
                       imageURL={imgs.rotate}
-                      status={
-                        state.isReordering && isCurrent && props.state.deselectAllDays !== true
-                      }
+                      status={state.isReordering && isCurrent && props.state.deselectAllDays !== true}
                       opacity={0.25}
                     >
                       {isDayShown[dayindex] && (
@@ -627,12 +605,12 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
           console.log("tried dragging")
           if (isDraggable) drag()
         }}
-        onPressPosition={() => onEditPositionHandler(index, dayIndex)}
+        onPressPosition={() => onEditPositionHandler(index, dayIndex, state.currentWeekIndex)}
         textStyle={textStyle}
         item={item}
         onPressExercise={() => onExpandExerciseInfo(index, dayIndex)}
         onDeleteExercise={() => onDeleteExerciseHandler(index, dayIndex)}
-        onPressSetsAndReps={() => onEditSetsRepsHandler(index, dayIndex)}
+        onPressSetsAndReps={() => onEditSetsRepsHandler(index, dayIndex, currentWeekIndex)}
         onPressReplace={() => onReplaceExercise(index, dayIndex)}
         isDragged={isActive}
         isClickable={isClickable}
@@ -687,9 +665,7 @@ const ShowDayExercises: React.FC<ShowDayExercisesProps> = props => {
     return (
       <FlatList
         data={exercises}
-        renderItem={({ item, index, drag, isActive }) =>
-          renderExercises({ item, index, drag, isActive }, true, false)
-        }
+        renderItem={({ item, index, drag, isActive }) => renderExercises({ item, index, drag, isActive }, true, false)}
         scrollEnabled={false}
         initialNumToRender={20}
         keyExtractor={(item, index) => `${item.ID}-${index}`}

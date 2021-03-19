@@ -14,7 +14,8 @@ import { RootNavigator, exitRoutes, setRootNavigation } from "./navigation"
 import { useBackButtonHandler } from "./navigation/use-back-button-handler"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models/root-store"
 // добавям си малко стандартен Global State, да тествам с него дали ще се оправям по-добре
-import { GlobalStateProvider } from "./models/global-state-regular"
+import { getState, GlobalStateProvider, useGlobalState } from "./components3/globalState/global-state-regular"
+import { GlobalStateProvider3 } from "./components3"
 import * as storage from "./utils/storage"
 import getActiveRouteName from "./navigation/get-active-routename"
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -56,6 +57,11 @@ const App: React.FunctionComponent<{}> = () => {
   const [initialNavigationState, setInitialNavigationState] = useState()
   const [isRestoringNavigationState, setIsRestoringNavigationState] = useState(true)
 
+  // const [globalState, setGlobalState] = useGlobalState()
+  // useEffect(() => {
+  //   getState(setGlobalState)
+  // }, [])
+
   setRootNavigation(navigationRef)
   useBackButtonHandler(navigationRef, canExit)
 
@@ -77,39 +83,40 @@ const App: React.FunctionComponent<{}> = () => {
     // Save the current route name for later comparison
     routeNameRef.current = currentRouteName
 
+    console.log(currentRouteName)
     // Persist state to storage
     storage.save(NAVIGATION_PERSISTENCE_KEY, state)
   }
 
-  useEffect(() => {
-    ;(async () => {
-      setupRootStore().then(setRootStore)
-    })()
-  }, [])
+  // useEffect(() => {
+  //   ;(async () => {
+  //     setupRootStore().then(setRootStore)
+  //   })()
+  // }, [])
 
-  useEffect(() => {
-    const restoreState = async () => {
-      try {
-        const state = await storage.load(NAVIGATION_PERSISTENCE_KEY)
+  // useEffect(() => {
+  //   const restoreState = async () => {
+  //     try {
+  //       const state = await storage.load(NAVIGATION_PERSISTENCE_KEY)
 
-        if (state) {
-          setInitialNavigationState(state)
-        }
-      } finally {
-        setIsRestoringNavigationState(false)
-      }
-    }
+  //       if (state) {
+  //         setInitialNavigationState(state)
+  //       }
+  //     } finally {
+  //       setIsRestoringNavigationState(false)
+  //     }
+  //   }
 
-    if (isRestoringNavigationState) {
-      restoreState()
-    }
-  }, [isRestoringNavigationState])
+  //   if (isRestoringNavigationState) {
+  //     restoreState()
+  //   }
+  // }, [isRestoringNavigationState])
 
-  useEffect(() => {
-    if (!(rootStore?.sessionStore?.userEmail !== "")) {
-      navigationRef.current?.navigate("welcome")
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (!(rootStore?.sessionStore?.userEmail !== "")) {
+  //     navigationRef.current?.navigate("welcome")
+  //   }
+  // }, [])
 
   // Before we show the app, we have to wait for our state to be ready.
   // In the meantime, don't render anything. This will be the background
@@ -119,22 +126,20 @@ const App: React.FunctionComponent<{}> = () => {
   //
   // You're welcome to swap in your own component to render if your boot up
   // sequence is too slow though.
-  if (!rootStore) {
-    return null
-  }
+  // if (!rootStore) {
+  //   return null
+  // }
 
   // otherwise, we're ready to render the app
   return (
     <RootStoreProvider value={rootStore}>
       {/* Добавен от мен GlobalState да тествам дали ще се оправям по-добре. Сори за мазалото xD*/}
       <GlobalStateProvider>
-        <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
-          <RootNavigator
-            ref={navigationRef}
-            initialState={initialNavigationState}
-            onStateChange={onNavigationStateChange}
-          />
-        </SafeAreaProvider>
+        <GlobalStateProvider3>
+          <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
+            <RootNavigator ref={navigationRef} initialState={initialNavigationState} onStateChange={onNavigationStateChange} />
+          </SafeAreaProvider>
+        </GlobalStateProvider3>
       </GlobalStateProvider>
     </RootStoreProvider>
   )

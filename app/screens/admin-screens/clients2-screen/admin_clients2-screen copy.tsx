@@ -6,15 +6,15 @@ import { Button, TextInput } from "react-native-paper"
 import firestore from "@react-native-firebase/firestore"
 import { SearchBar } from "react-native-elements"
 
-import { icons } from "../../trainer-screens/edit-program-screen/Constants/"
+import { icons } from "../../../components3/Constants"
 import {
   PickAnItem,
   alertWithInfoString,
   InfoButton,
 } from "../../trainer-screens/edit-program-screen/ProgramsTool - Helper functions"
-import iStyles from "../../trainer-screens/edit-program-screen/Constants/Styles"
+import iStyles from "../../../components3/Constants/Styles"
 
-import { useGlobalState } from "../../../models/global-state-regular"
+import { useGlobalState } from "../../../components3/globalState/global-state-regular"
 
 import { randomString } from "../../../global-helper"
 

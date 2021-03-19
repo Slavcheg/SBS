@@ -1,12 +1,12 @@
 import { Button, Portal, Modal, TextInput, Checkbox } from "react-native-paper"
 
 import firestore from "@react-native-firebase/firestore"
-import React, { useState, useEffect, useReducer, FunctionComponent, ReactNode, useRef } from "react"
+import React, { useState, useEffect, useReducer, FunctionComponent, ReactNode, useRef, useMemo } from "react"
 
 import { useStores } from "../../../../models/root-store"
 import { state } from "../../../../components3"
 
-import { useGlobalState } from "../../../../models/global-state-regular"
+import { useGlobalState } from "../../../../components3/globalState/global-state-regular"
 
 import {
   View,
@@ -40,7 +40,7 @@ import {
   ClickableEditableText,
 } from "../ProgramsTool - Helper functions"
 
-import { NO_CLIENT_YET } from "../Constants"
+import { NO_CLIENT_YET } from "../../../../components3/Constants"
 
 import DateTimePicker from "@react-native-community/datetimepicker"
 import moment from "moment"
@@ -49,8 +49,8 @@ import { observer } from "mobx-react-lite"
 import { translate } from "../../../../i18n"
 
 import { GetText, getDoneBeforeColor, getVolumeStrings, getProgramVolume } from "./index"
-import iStyles from "../Constants/Styles"
-import { muscleGroups } from "../Constants/MuscleGroups"
+import iStyles from "../../../../components3/Constants/Styles"
+import { muscleGroups } from "../../../../components3/Constants/MuscleGroups"
 
 import {
   getColorByExercisePosition,
@@ -75,7 +75,7 @@ import {
   getStampFromDate,
   displayDateFromTimestamp2,
 } from "../../../../global-helper"
-import { icons, fonts, colors } from "../Constants"
+import { icons, fonts, colors } from "../../../../components3/Constants"
 import { Touch } from "react-powerplug"
 import { firebase } from "@react-native-firebase/firestore"
 
@@ -98,11 +98,7 @@ export const ExerciseMoreInfoButtons: React.FC<ExerciseMoreInfoButtonsProps> = p
   else fontSizeZ = 14
   return (
     <View style={{ flexDirection: "row" }}>
-      <SmallIconButton
-        icon={icons.info}
-        onPress={props.onPressMoreInfo}
-        disabled={!props.isClickable}
-      />
+      <SmallIconButton icon={icons.info} onPress={props.onPressMoreInfo} disabled={!props.isClickable} />
       {showVideo && (
         <Button
           icon="video"
@@ -336,8 +332,7 @@ export const SetsAndReps = props => {
     ...props.textStyle,
   }
 
-  if (props.textStyle.fontSize)
-    textStyle.fontSize = props.isActive ? textStyle.fontSize + 2 : textStyle.fontSize
+  if (props.textStyle.fontSize) textStyle.fontSize = props.isActive ? textStyle.fontSize + 2 : textStyle.fontSize
 
   const item = props.exercise
   let showItemRepsProgression = false
@@ -349,9 +344,7 @@ export const SetsAndReps = props => {
 
   const averageReps = getAverageReps(item)
   const averageRepsString =
-    averageReps < 100
-      ? `${cutDecimalpoint(averageReps.toFixed(1))}`
-      : `${cutDecimalpoint(averageReps.toFixed())}`
+    averageReps < 100 ? `${cutDecimalpoint(averageReps.toFixed(1))}` : `${cutDecimalpoint(averageReps.toFixed())}`
 
   return (
     <View>
@@ -388,7 +381,13 @@ export const SetsAndReps = props => {
   )
 }
 
-export const ShowExercise = observer(props => {
+export const ShowExercise = props => {
+  return useMemo(() => {
+    return <ShowExerciseMemo {...props} />
+  }, [props.item, props.item.Position])
+}
+
+export const ShowExerciseMemo = observer(props => {
   const DELAY_LONG_PRESS = 0
 
   const {
@@ -446,9 +445,7 @@ export const ShowExercise = observer(props => {
   let doneBeforeStyle = { ...positionAndExerciseNameStyle, color: getDoneBeforeColor(doneBefore) }
   const doneBeforeInfoText =
     doneBefore > 0
-      ? `Last time you did ${oldExercise.latestSet.wholeSetString} on ${displayDateFromTimestamp2(
-          oldExercise.completedOn,
-        )}`
+      ? `Last time you did ${oldExercise.latestSet.wholeSetString} on ${displayDateFromTimestamp2(oldExercise.completedOn)}`
       : `You haven't done this exercise before`
 
   const onPressMoreInfoBaloon = () => {
@@ -513,9 +510,7 @@ export const ShowExercise = observer(props => {
               <Text
                 style={{
                   ...positionAndExerciseNameStyle,
-                  fontSize: isDragged
-                    ? positionAndExerciseNameStyle.fontSize + 2
-                    : positionAndExerciseNameStyle.fontSize,
+                  fontSize: isDragged ? positionAndExerciseNameStyle.fontSize + 2 : positionAndExerciseNameStyle.fontSize,
                 }}
               >
                 {item.Name}
@@ -533,9 +528,7 @@ export const ShowExercise = observer(props => {
                 onPressMoreInfo={() => setShowMoreInfo(!showMoreInfo)}
               />
             )}
-            {item.isExpanded && showVolume && (
-              <Text style={{ color: positionAndExerciseNameStyle.color }}>{volumeText}</Text>
-            )}
+            {item.isExpanded && showVolume && <Text style={{ color: positionAndExerciseNameStyle.color }}>{volumeText}</Text>}
           </View>
 
           <View
@@ -723,12 +716,7 @@ export const ProgramNotes: React.FC<ProgramNotesType> = ({ clientID }) => {
 
   if (!clientID) return <ExpandableContent title="Бележки (зареждат..)"></ExpandableContent>
   if (!programHasClient)
-    return (
-      <ExpandableContent
-        title="Бележки (no client found)"
-        titleStyle={iStyles.text1}
-      ></ExpandableContent>
-    )
+    return <ExpandableContent title="Бележки (no client found)" titleStyle={iStyles.text1}></ExpandableContent>
   return (
     <ExpandableContent title={`Бележки (${note.noteClientName})`} titleStyle={iStyles.text1}>
       <View>
@@ -754,6 +742,12 @@ type ShowProgramMoreInfoProps = {
 }
 
 export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => {
+  return useMemo(() => {
+    return <ShowProgramMoreInfoMemoed {...props} />
+  }, [props.state.currentProgram])
+}
+
+export const ShowProgramMoreInfoMemoed: React.FC<ShowProgramMoreInfoProps> = props => {
   const { state } = props
   const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
 
@@ -788,11 +782,7 @@ export const ShowDayMoreInfo = props => {
   const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
   return (
     <View>
-      <ShowDayName
-        isCurrent={true}
-        day={currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex]}
-        disableEdit={true}
-      />
+      <ShowDayName isCurrent={true} day={currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex]} disableEdit={true} />
       <Text>тест</Text>
     </View>
   )
@@ -917,9 +907,7 @@ export const getProgramInfo = (program: any, returnObject?: boolean) => {
     Value: `${trainingsDone}/${numberOfSessionsInProgram}`,
   })
   let lastTrainedOnStringValue =
-    lastCompletedOn === 0
-      ? "Never"
-      : displayDateFromTimestamp2(parseInt(lastCompletedOn)) + lastCompletedOnDayString
+    lastCompletedOn === 0 ? "Never" : displayDateFromTimestamp2(parseInt(lastCompletedOn)) + lastCompletedOnDayString
   sessionsInfo.push({
     Name: "Last trained on",
     Value: lastTrainedOnStringValue,
@@ -932,8 +920,7 @@ export const getProgramInfo = (program: any, returnObject?: boolean) => {
     return {
       ProgramName: program.Name,
       TrainingsDone: `${trainingsDone}/${numberOfSessionsInProgram}`,
-      LastTrainedOn:
-        lastCompletedOn === 0 ? "Never" : displayDateFromTimestamp2(parseInt(lastCompletedOn)),
+      LastTrainedOn: lastCompletedOn === 0 ? "Never" : displayDateFromTimestamp2(parseInt(lastCompletedOn)),
       ProgramStatus: programStatus,
     }
   }
@@ -945,9 +932,7 @@ const ProgramGeneralInfo = props => {
   const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
   const [globalState, setGlobalState] = useGlobalState()
 
-  const thisClientPrograms = globalState.allPrograms.filter(
-    program => program.item.Client === currentProgram.Client,
-  )
+  const thisClientPrograms = globalState.allPrograms.filter(program => program.item.Client === currentProgram.Client)
 
   const [programInfo, setProgramInfo] = useState([
     ...getProgramInfo(currentProgram),
@@ -955,10 +940,7 @@ const ProgramGeneralInfo = props => {
   ])
 
   useEffect(() => {
-    setProgramInfo([
-      ...getProgramInfo(currentProgram),
-      { Name: "Programs count", Value: thisClientPrograms.length },
-    ])
+    setProgramInfo([...getProgramInfo(currentProgram), { Name: "Programs count", Value: thisClientPrograms.length }])
   }, [state])
 
   const leftTextStyle = { fontSize: 18, color: iStyles.text0.color, fontWeight: "bold" }
@@ -1016,12 +998,7 @@ const ProgramInfoOldPrograms = props => {
       {oldPrograms.length === 0 && <Text style={iStyles.text0}>No other programs found :(</Text>}
       {oldPrograms.map((program, index) => {
         return (
-          <ExpandableContent
-            title={program.item.Name}
-            titleStyle={iStyles.text1}
-            key={index}
-            startMinimized={true}
-          >
+          <ExpandableContent title={program.item.Name} titleStyle={iStyles.text1} key={index} startMinimized={true}>
             <ShowProgramDays
               mode="smallPreview"
               state={{
@@ -1054,8 +1031,7 @@ export const DayCompletedCheckbox: React.FC<DayCompletedCheckboxProps> = props =
   const checkBoxActiveColor = props.color || colors.green3
   const checkBoxColor = isCompleted ? checkBoxActiveColor : colors.grey1
   const backgroundColor = isCompleted ? colors.transparent("green3", 35) : `${colors.black}25`
-  const dateText =
-    displayDateFromTimestampFullMonth(getStampFromDate(currentDate)) || "invalid date"
+  const dateText = displayDateFromTimestampFullMonth(getStampFromDate(currentDate)) || "invalid date"
   const completedText = dateText
   const notCompletedText = "Ненаправен"
   const textColor = colors.black
@@ -1139,8 +1115,9 @@ export const DaysBox: React.FC<DaysBoxProps> = props => {
 
   const weeksLength = program.Weeks.length
   const weekOnlyText = `${currentWeekIndex + 1}/${weeksLength}`
-  const dayAndWeekText = `${translate("trainClientsScreen.Day")}${state.currentDayIndex +
-    1} ${translate("trainClientsScreen.W")}${state.currentWeekIndex + 1}`
+  const dayAndWeekText = `${translate("trainClientsScreen.Day")}${state.currentDayIndex + 1} ${translate(
+    "trainClientsScreen.W",
+  )}${state.currentWeekIndex + 1}`
 
   const textToShow = props.mode === "week only" ? weekOnlyText : dayAndWeekText
 
@@ -1192,11 +1169,7 @@ export const DaysBox: React.FC<DaysBoxProps> = props => {
             flex: 1,
           }}
         >
-          <MediumButtonIcon
-            icon={icons.chevron_left}
-            onPress={props.onPressLeft}
-            style={{ width: 25 }}
-          />
+          <MediumButtonIcon icon={icons.chevron_left} onPress={props.onPressLeft} style={{ width: 25 }} />
           <Button
             onPress={() => setIsChoosing(!isChoosing)}
             compact={true}
@@ -1209,11 +1182,7 @@ export const DaysBox: React.FC<DaysBoxProps> = props => {
             {props.mode === "week only" && <Text style={{ fontSize: 10 }}>седмица </Text>}
             <Text style={{ fontSize: 14 }}>{textToShow}</Text>
           </Button>
-          <MediumButtonIcon
-            icon={icons.chevron_right}
-            onPress={props.onPressRight}
-            style={{ width: 25 }}
-          />
+          <MediumButtonIcon icon={icons.chevron_right} onPress={props.onPressRight} style={{ width: 25 }} />
         </View>
       )
     else
@@ -1251,16 +1220,12 @@ export const DaysBox: React.FC<DaysBoxProps> = props => {
           {program.Weeks.map((week, weekIndex) => {
             return (
               <View key={weekIndex}>
-                <Text style={{ ...text1, fontSize: 15, textAlign: "center" }}>
-                  W{weekIndex + 1}
-                </Text>
+                <Text style={{ ...text1, fontSize: 15, textAlign: "center" }}>W{weekIndex + 1}</Text>
                 {program.Weeks[weekIndex].Days.map((day, dayIndex) => {
                   let textStyle = styles.notCompleted
                   let selected = false
-                  if (weekIndex === state.currentWeekIndex)
-                    if (dayIndex === state.currentDayIndex) selected = true
-                  if (program.Weeks[weekIndex].Days[dayIndex].isCompleted)
-                    textStyle = styles.completed
+                  if (weekIndex === state.currentWeekIndex) if (dayIndex === state.currentDayIndex) selected = true
+                  if (program.Weeks[weekIndex].Days[dayIndex].isCompleted) textStyle = styles.completed
                   return (
                     <Pressable
                       key={dayIndex}

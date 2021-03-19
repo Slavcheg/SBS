@@ -1,4 +1,4 @@
-import { muscleGroups } from "../Constants/MuscleGroups"
+import { muscleGroups } from "../../../../components3/Constants/MuscleGroups"
 
 // get all exercises, sort them into an object with key arrays for each muscle
 

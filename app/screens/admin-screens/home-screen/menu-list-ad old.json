@@ -58,5 +58,17 @@
         "title": "adminHomeScreen.other",
         "iconRight": "bl_arrow_forward",
         "onClick": "admin_other"
+    },
+    {
+        "iconLeft": "bl_stats",
+        "title": "adminHomeScreen.clients2",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "admin_clients2"
+    },
+    {
+        "iconLeft": "bl_stats",
+        "title": "adminHomeScreen.admin_programs",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "admin_programs"
     }
 ]

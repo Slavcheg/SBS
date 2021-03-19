@@ -1,51 +1,15 @@
 [
     {
-        "iconLeft": "bl_payments",
-        "title": "adminHomeScreen.clientsSquareButtonCaption",
+        "iconLeft": "bl_arrow_forward",
+        "title": "managerHomeScreen.manageCards",
         "iconRight": "bl_arrow_forward",
-        "onClick": "clients_list_ad"
+        "onClick": "manageCards_manager"
     },
     {
-        "iconLeft": "bl_payments",
-        "title": "adminHomeScreen.trainersSquareButtonCaption",
+        "iconLeft": "bl_arrow_forward",
+        "title": "managerHomeScreen.cardTypes",
         "iconRight": "bl_arrow_forward",
-        "onClick": "trainers_list"
-    },
-    {
-        "iconLeft": "bl_payments",
-        "title": "adminHomeScreen.purchasedCardsMonthlySquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "purchasedCardsList"
-    },
-    {
-        "iconLeft": "bl_payments",
-        "title": "adminHomeScreen.typesCardsMonthlySquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "cardTypesList"
-    },
-    {
-        "iconLeft": "",
-        "title": "flexGrow",
-        "iconRight": "",
-        "onClick": ""
-    },
-    {
-        "iconLeft": "bl_payments",
-        "title": "adminHomeScreen.gymHallsSquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "gymhalls"
-    },
-    {
-        "iconLeft": "bl_payments",
-        "title": "adminHomeScreen.referralsSquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "referrals"
-    },
-    {
-        "iconLeft": "bl_stats",
-        "title": "adminHomeScreen.trainersHomeSquareButtonCaption",
-        "iconRight": "bl_arrow_forward",
-        "onClick": "home_tr"
+        "onClick": "cardTypes_manager"
     },
     {
         "iconLeft": "bl_stats",
@@ -70,5 +34,11 @@
         "title": "adminHomeScreen.admin_programs",
         "iconRight": "bl_arrow_forward",
         "onClick": "admin_programs"
+    },
+    {
+        "iconLeft": "bl_payments",
+        "title": "adminHomeScreen.trainersHomeSquareButtonCaption",
+        "iconRight": "bl_arrow_forward",
+        "onClick": "home_tr"
     }
 ]

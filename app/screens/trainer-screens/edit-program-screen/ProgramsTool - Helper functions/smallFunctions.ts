@@ -1,12 +1,12 @@
-import iStyles from "../Constants/Styles"
+import iStyles from "../../../../components3/Constants/Styles"
 
 import firestore from "@react-native-firebase/firestore"
 
 import _ from "lodash"
 
-import { repComparisonCoefs as repComp, colors, state } from "../Constants"
+import { repComparisonCoefs as repComp, colors, state } from "../../../../components3/Constants"
 
-import { muscleGroups2, muscleGroupsObject } from "../Constants/MuscleGroups"
+import { muscleGroups2, muscleGroupsObject } from "../../../../components3/Constants/MuscleGroups"
 
 export function omit(obj, props) {
   props = props instanceof Array ? props : [props]

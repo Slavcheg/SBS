@@ -3,8 +3,8 @@ import { View, FlatList } from "react-native"
 import { Button } from "react-native-paper"
 
 import { ExpandableContent, ShowProgramDays, Text } from "./index"
-import iStyles from "../Constants/Styles"
-import { colors } from "../Constants"
+import iStyles from "../../../../components3/Constants/Styles"
+import { colors } from "../../../../components3/Constants"
 
 type ProgramPicker = {
   isVisible?: boolean

@@ -7,16 +7,21 @@ import { useStores } from "../../models/root-store"
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faGoogle } from "@fortawesome/free-brands-svg-icons"
 import { border_boxes } from "../../global-helper"
-import { useGlobalState } from "../../models/global-state-regular"
+import { useGlobalState } from "../../components3/globalState/global-state-regular"
 import firestore from "@react-native-firebase/firestore"
 
 import functions from "@react-native-firebase/functions"
+import { useGlobalState3 } from "../../components3"
 
 export function GoogleLogin({ navigation }) {
   const { userStore2, sessionStore } = useStores()
   const rootStore = useStores()
   const [globalState, setGlobalState] = useGlobalState()
   const [userReady, setUserReady] = useState(false)
+
+  // 3rd type of state :D
+  const { state, dispatch } = useGlobalState3()
+
   // useEffect(() => {
   //   userStore2.getItems()
   // }, [])
@@ -35,8 +40,7 @@ export function GoogleLogin({ navigation }) {
       .where("email", "==", profile.email)
       .get()
       .then(query => {
-        if (query.docs.length > 1)
-          console.error("critical error, more than 1 user with the same email found")
+        if (query.docs.length > 1) console.error("critical error, more than 1 user with the same email found")
         query.docs.forEach(doc => {
           userData = doc.data()
           if (!userData.profilePicture)
@@ -72,7 +76,10 @@ export function GoogleLogin({ navigation }) {
     const user = response.data.userData
     const userDiary = response.data.userDiary
     console.log("received response: ", user)
-    if (user) setGlobalState({ type: "login with user", user: user, userDiary: userDiary })
+    if (user) {
+      dispatch({ type: "login", user: user, userDiary: userDiary })
+      setGlobalState({ type: "login with user", user: user, userDiary: userDiary })
+    }
   }
   return (
     <Button
@@ -86,7 +93,7 @@ export function GoogleLogin({ navigation }) {
         borderRadius: 20,
         marginHorizontal: "5%",
       }}
-      onPress={() => onGoogleButtonPress(rootStore.showLoader).then(onGetToken)}
+      onPress={() => onGoogleButtonPress().then(onGetToken)}
     >
       <View
         style={[

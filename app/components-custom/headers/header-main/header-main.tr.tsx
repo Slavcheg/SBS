@@ -8,7 +8,7 @@ import { CustomHeader } from "../header-custom/header-custom"
 import { color } from "../../../theme"
 import { useStores } from "../../../models/root-store"
 
-import { useGlobalState, getState } from "../../../models/global-state-regular"
+import { useGlobalState, getState } from "../../../components3/globalState/global-state-regular"
 import { GoogleSignOut } from "../../../services/auth/auth.service"
 
 export const MainHeader_Tr: React.FunctionComponent<MainHeaderProps> = props => {

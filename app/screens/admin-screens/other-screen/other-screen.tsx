@@ -3,9 +3,9 @@ import _ from "lodash"
 
 import firestore from "@react-native-firebase/firestore"
 const COLLECTION = "exerciseData"
-import { useGlobalState } from "../../../models/global-state-regular"
+import { useGlobalState } from "../../../components3/globalState/global-state-regular"
 import { useStores } from "../../../models/root-store"
-import iStyles from "../../trainer-screens/edit-program-screen/Constants/Styles"
+import iStyles from "../../../components3/Constants/Styles"
 
 import React, { useState, useEffect, useCallback, VoidFunctionComponent } from "react"
 import { View, FlatList, Pressable, Text, StyleSheet, Modal, TouchableOpacity } from "react-native"
@@ -15,16 +15,15 @@ import { ButtonsRow } from "../../trainer-screens/edit-program-screen/ProgramsTo
 
 import { EditableText } from "../../trainer-screens/edit-program-screen/ProgramsTool - Helper functions"
 
-import { YOUTUBE_API_KEY } from "../../trainer-screens/edit-program-screen/Constants/DatabaseConstants"
+import { YOUTUBE_API_KEY } from "../../../components3/Constants/DatabaseConstants"
 import YouTube, { YouTubeStandaloneAndroid } from "react-native-youtube"
 import {
   getVideoID,
   getVideoTime,
   getColorByMuscleName,
 } from "../../trainer-screens/edit-program-screen/ProgramsTool - Helper functions/smallFunctions"
-import { Touch } from "react-powerplug"
 
-import { muscleGroups2 } from "../../trainer-screens/edit-program-screen/Constants"
+import { muscleGroups2 } from "../../../components3/Constants"
 
 export const AdminOtherScreen = ({ navigation }) => {
   const [globalState, setGlobalState] = useGlobalState()

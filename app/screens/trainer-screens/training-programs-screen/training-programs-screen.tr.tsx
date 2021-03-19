@@ -10,8 +10,8 @@ import { useStores } from "../../../models/root-store"
 import { translate } from "../../../i18n"
 import { SwipeRow } from "react-native-swipe-list-view"
 
-import { useGlobalState, getState } from "../../../models/global-state-regular"
-import { muscleGroups, muscleGroups2, muscleGroupsObject } from "../edit-program-screen/Constants"
+import { useGlobalState, getState } from "../../../components3/globalState/global-state-regular"
+import { muscleGroups, muscleGroups2, muscleGroupsObject } from "../../../components3/Constants"
 
 import { Button, Checkbox } from "react-native-paper"
 import firestore, { firebase } from "@react-native-firebase/firestore"
@@ -26,7 +26,7 @@ import {
 } from "../../../components3"
 import * as fb from "../../../services/firebase/firebase.service"
 
-import iStyles from "../edit-program-screen/Constants/Styles"
+import iStyles from "../../../components3/Constants/Styles"
 
 import {
   getProgramInfo,
@@ -35,7 +35,7 @@ import {
 } from "../edit-program-screen/ProgramsTool - Helper functions"
 import { FlatList, ScrollView } from "react-native-gesture-handler"
 import { Item } from "react-native-paper/lib/typescript/src/components/List/List"
-import { icons, colors } from "../edit-program-screen/Constants"
+import { icons, colors } from "../../../components3/Constants"
 
 // const getExerciseDB = async (onDownload: Function) => {
 //   const JSON_SHEET_ID =

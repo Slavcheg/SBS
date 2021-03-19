@@ -22,7 +22,7 @@ import {
   addDaysFromDateStamp,
 } from "../../../../global-helper"
 
-import { useGlobalState, getState } from "../../../../models/global-state-regular"
+import { useGlobalState, getState } from "../../../../components3/globalState/global-state-regular"
 
 import { fonts, colors, Text } from "../../../../components3"
 import {

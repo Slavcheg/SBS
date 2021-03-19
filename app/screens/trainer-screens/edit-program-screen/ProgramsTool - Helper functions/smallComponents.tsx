@@ -27,8 +27,8 @@ import {
 } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { ImageSource } from "react-native-vector-icons/Icon"
-import iStyles from "../Constants/Styles"
-import { icons, colors } from "../Constants/"
+import iStyles from "../../../../components3/Constants/Styles"
+import { icons, colors } from "../../../../components3/Constants"
 import { getColorByMuscleName } from "./index"
 import { Callback } from "react-powerplug"
 

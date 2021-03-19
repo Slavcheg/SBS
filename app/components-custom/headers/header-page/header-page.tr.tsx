@@ -8,7 +8,7 @@ import { color } from "../../../theme"
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons"
 import { useStores } from "../../../models/root-store"
-import { useGlobalState } from "../../../models/global-state-regular"
+import { useGlobalState } from "../../../components3/globalState/global-state-regular"
 
 export const PageHeader_Tr: React.FunctionComponent<PageHeaderProps> = props => {
   const { navigation, style, title } = props

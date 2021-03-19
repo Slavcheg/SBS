@@ -4,8 +4,8 @@ import { Button, TextInput } from "react-native-paper"
 
 import firestore from "@react-native-firebase/firestore"
 
-import iStyles from "../../../trainer-screens/edit-program-screen/Constants/Styles"
-import { icons, colors } from "../../../trainer-screens/edit-program-screen/Constants"
+import iStyles from "../../../../components3/Constants/Styles"
+import { icons, colors } from "../../../../components3/Constants"
 
 import {
   Text,
@@ -18,7 +18,7 @@ import {
 
 import { randomString } from "../../../../global-helper"
 
-import { useGlobalState } from "../../../../models/global-state-regular"
+import { useGlobalState } from "../../../../components3/globalState/global-state-regular"
 
 type AddNewClientProps = {
   onCancel: any

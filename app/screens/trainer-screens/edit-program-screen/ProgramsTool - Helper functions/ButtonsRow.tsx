@@ -3,9 +3,9 @@ import { View, ScrollView, TouchableOpacity, Text, FlatList } from "react-native
 import { Button } from "react-native-paper"
 
 import { translate } from "../../../../i18n"
-import iStyles from "../Constants/Styles"
+import iStyles from "../../../../components3/Constants/Styles"
 
-import { muscleGroups, muscleGroups2 } from "../Constants/MuscleGroups"
+import { muscleGroups, muscleGroups2 } from "../../../../components3/Constants/MuscleGroups"
 import { getColorByMuscleName } from "../ProgramsTool - Helper functions"
 
 // const ExerciseButton = React.memo(function ExerciseButton(props) {

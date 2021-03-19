@@ -21,8 +21,7 @@ import {
   Text,
 } from "./index"
 
-import iStyles from "../Constants/Styles"
-import { findIndex } from "ramda"
+import iStyles from "../../../../components3/Constants/Styles"
 
 type ExerciseProgressChartProps = {
   //   exercise: any[]

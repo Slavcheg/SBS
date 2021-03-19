@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react"
 import { View, ScrollView, Alert, useWindowDimensions, FlatList } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 
-import iStyles from "../../../trainer-screens/edit-program-screen/Constants/Styles"
-import { icons } from "../../../trainer-screens/edit-program-screen/Constants"
+import iStyles from "../../../../components3/Constants/Styles"
+import { icons } from "../../../../components3/Constants"
 
 import {
   Text,
@@ -14,7 +14,7 @@ import {
   PickAnItem,
 } from "../../../trainer-screens/edit-program-screen/ProgramsTool - Helper functions"
 
-import { useGlobalState } from "../../../../models/global-state-regular"
+import { useGlobalState } from "../../../../components3/globalState/global-state-regular"
 
 type EditClientModalProps = {
   isVisible?: boolean

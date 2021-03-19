@@ -4,7 +4,7 @@ import { Button, TextInput } from "react-native-paper"
 import firestore from "@react-native-firebase/firestore"
 
 import { Text } from "../../../screens/trainer-screens/edit-program-screen/ProgramsTool - Helper functions/smallWrappers"
-import { useGlobalState, getState } from "../../../models/global-state-regular"
+import { useGlobalState, getState } from "../../../components3/globalState/global-state-regular"
 import { ShowDiaryDays, DiarySettingsButton, WeightGraph } from "./Components"
 import { DiaryType, defaultSettings } from "./diaryTypes"
 

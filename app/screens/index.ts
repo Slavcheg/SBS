@@ -6,19 +6,7 @@ export * from "./auth-screens/signin-screen/signin-screen"
 export * from "./auth-screens/registration-screen/registration-screen"
 export * from "./auth-screens/welcome-screen/welcome-screen"
 
-// export * from "./client-screens/home-screen/home-screen.cl"
-// export * from "./client-screens/renew-card-screen/renew-card-screen"
-// export * from "./client-screens/contact-us-screen/contact-us-screen.cl"
-// export * from "./client-screens/trainings-history-screen/trainings-history-screen"
-// export * from "./client-screens/cards-history-screen/cards-history-screen"
-// export * from "./client-screens/diary-screen/diary-screen"
-
 export * from "./trainer-screens/home-screen/home-screen.tr"
-export * from "./trainer-screens/clients-list-screen/clients-list-screen.tr"
-export * from "./trainer-screens/clients-list-screen/trainings-history-screen.tr"
-export * from "./trainer-screens/training-today-screen/training-today-screen.tr"
-export * from "./trainer-screens/client-multi-screen/client-multi-screen"
-
 // Данчо маже
 export * from "./admin-screens/exerciseDatabase-screen/exerciseDatabase-screen"
 export * from "./admin-screens/other-screen/other-screen"
@@ -28,6 +16,11 @@ export * from "./trainer-screens/training-programs-screen/training-programs-scre
 export * from "./trainer-screens/edit-program-screen/edit-program-screen.tr"
 export * from "./trainer-screens/train-clients-screen/train-clients-screen.tr"
 export * from "./client2-screens"
+export * from "./trainer-screens/mark-sessions-screen/MarkSessionsScreen"
+export * from "./admin-screens/CardTypes/CardTypesScreen"
+export * from "./admin-screens/ManageCardsScreen/ManageCardsScreen"
+export * from "./trainer-screens/measure-clients-screen"
+export * from "./trainer-screens/choose-program-screen/choose-program"
 
 export * from "./admin-screens/home-screen/home-screen.ad"
 export * from "./admin-screens/menu-screens/trainers-list-screen"

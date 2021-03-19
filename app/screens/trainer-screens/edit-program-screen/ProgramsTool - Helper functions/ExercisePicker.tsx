@@ -2,19 +2,19 @@ import React, { useState, useEffect, useCallback } from "react"
 import { View, FlatList, Pressable, Text, StyleSheet, Modal, Alert } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
-import iStyles from "../Constants/Styles"
+import iStyles from "../../../../components3/Constants/Styles"
 import { StoreContext } from "../../StoreProvider"
-import { useGlobalState } from "../../../../models/global-state-regular"
+import { useGlobalState } from "../../../../components3/globalState/global-state-regular"
 // import { Picker } from "@react-native-community/picker"
 import { Picker } from "@react-native-picker/picker"
 
-import { COLLECTION, DB_EXERCISE_COLLECTION, YOUTUBE_API_KEY } from "../Constants/DatabaseConstants"
+import { YOUTUBE_API_KEY } from "../../../../components3/Constants/DatabaseConstants"
 import YouTube, { YouTubeStandaloneAndroid } from "react-native-youtube"
 import { getVideoID, getVideoTime } from "./smallFunctions"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 
 import { EditableText, PressableTextPickerCustomColors, getColorByMuscleName } from "./index"
-import { muscleGroups, muscleGroups2 } from "../Constants"
+import { muscleGroups, muscleGroups2 } from "../../../../components3/Constants"
 
 import {
   return_todays_datestamp,

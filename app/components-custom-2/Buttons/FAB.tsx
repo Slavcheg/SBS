@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { View, useWindowDimensions } from "react-native"
 import { Button } from "react-native-paper"
 
-import { colors, icons } from "../../screens/trainer-screens/edit-program-screen/Constants"
+import { colors, icons } from "../../components3/Constants"
 
 type FAB_Props = {
   message?: string

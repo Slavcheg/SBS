@@ -21,12 +21,12 @@ import {
   PressableModalPicker,
 } from "."
 
-import iStyles from "../Constants/Styles"
+import iStyles from "../../../../components3/Constants/Styles"
 
 import { DEFAULT_SET_DATA2 } from "../../../../components3"
 
-import { MAX_SETS, MAX_REPS } from "../Constants/programCreationConstants"
-import { icons, colors, fonts } from "../Constants/"
+import { MAX_SETS, MAX_REPS } from "../../../../components3/Constants/programCreationConstants"
+import { icons, colors, fonts } from "../../../../components3/Constants"
 
 type EditExerciseModalProps = {
   visible: boolean
@@ -44,10 +44,9 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
   const [weightArrow, setWeightArrow] = useState(-1)
   const [repsArrow, setRepsArrow] = useState(-1)
 
-  React.useMemo(() => {
-    const newEx = _.cloneDeep(props.exercise)
-    setExerciseState(newEx)
-  }, [visible])
+  React.useEffect(() => {
+    setExerciseState(props.exercise)
+  }, [props.exercise])
 
   const onChangeNumberOfSets = newNumberOfSets => {
     const newSets = []
@@ -73,8 +72,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
 
   const onSpreadWeight = (setIndex: number) => {
     let newSets = [...exerciseState.Sets]
-    for (let i = setIndex; i < exerciseState.Sets.length; i++)
-      newSets[i].Weight = newSets[i - 1].Weight
+    for (let i = setIndex; i < exerciseState.Sets.length; i++) newSets[i].Weight = newSets[i - 1].Weight
     setExerciseState({ ...exerciseState, Sets: [...newSets] })
     setWeightArrow(-1)
   }
@@ -335,7 +333,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                         style={{ ...textStyle1, color: colors.color1 }}
                         isNumber={true}
                         convertToString={true}
-                        startingValue={exerciseState.Sets[setIndex].Weight}
+                        startingValue={`${exerciseState.Sets[setIndex].Weight}`}
                         onEnd={value => {
                           onChangeWeight(value, setIndex)
                           // dispatch({
