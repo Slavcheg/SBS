@@ -15,7 +15,7 @@ import { useBackButtonHandler } from "./navigation/use-back-button-handler"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models/root-store"
 // добавям си малко стандартен Global State, да тествам с него дали ще се оправям по-добре
 import { getState, GlobalStateProvider, useGlobalState } from "./components3/globalState/global-state-regular"
-import { GlobalStateProvider3 } from "./components3"
+import { GlobalStateProvider3, useAsyncState3, useGlobalState3 } from "./components3"
 import * as storage from "./utils/storage"
 import getActiveRouteName from "./navigation/get-active-routename"
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -57,11 +57,6 @@ const App: React.FunctionComponent<{}> = () => {
   const [initialNavigationState, setInitialNavigationState] = useState()
   const [isRestoringNavigationState, setIsRestoringNavigationState] = useState(true)
 
-  // const [globalState, setGlobalState] = useGlobalState()
-  // useEffect(() => {
-  //   getState(setGlobalState)
-  // }, [])
-
   setRootNavigation(navigationRef)
   useBackButtonHandler(navigationRef, canExit)
 
@@ -98,7 +93,6 @@ const App: React.FunctionComponent<{}> = () => {
   //   const restoreState = async () => {
   //     try {
   //       const state = await storage.load(NAVIGATION_PERSISTENCE_KEY)
-
   //       if (state) {
   //         setInitialNavigationState(state)
   //       }
@@ -132,16 +126,14 @@ const App: React.FunctionComponent<{}> = () => {
 
   // otherwise, we're ready to render the app
   return (
-    <RootStoreProvider value={rootStore}>
-      {/* Добавен от мен GlobalState да тествам дали ще се оправям по-добре. Сори за мазалото xD*/}
-      <GlobalStateProvider>
-        <GlobalStateProvider3>
-          <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
-            <RootNavigator ref={navigationRef} initialState={initialNavigationState} onStateChange={onNavigationStateChange} />
-          </SafeAreaProvider>
-        </GlobalStateProvider3>
-      </GlobalStateProvider>
-    </RootStoreProvider>
+    // {/* Добавен от мен GlobalState да тествам дали ще се оправям по-добре. Сори за мазалото xD*/}
+    <GlobalStateProvider>
+      <GlobalStateProvider3>
+        <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>
+          <RootNavigator ref={navigationRef} initialState={initialNavigationState} onStateChange={onNavigationStateChange} />
+        </SafeAreaProvider>
+      </GlobalStateProvider3>
+    </GlobalStateProvider>
   )
 }
 

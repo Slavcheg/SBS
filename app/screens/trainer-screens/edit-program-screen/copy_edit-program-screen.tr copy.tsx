@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback, useRef, useMemo, useLayoutEffect } from "react"
+import React, { useState, useEffect, useReducer, useCallback, useRef, useMemo } from "react"
 import { useFocusEffect } from "@react-navigation/native"
 
 import firestore from "@react-native-firebase/firestore"
@@ -13,8 +13,6 @@ import {
   Text,
   AlertButton,
   useWindowDimensions,
-  ScrollResponderEvent,
-  NativeScrollEvent,
 } from "react-native"
 
 import _ from "lodash"
@@ -48,7 +46,7 @@ import {
 import iStyles from "../../../components3/Constants/Styles"
 import { NO_CLIENT_YET } from "../../../components3/Constants"
 
-import { state, TRAINING_PROGRAMS_COLLECTION, T_Program, useGlobalState3 } from "../../../components3"
+import { state, TRAINING_PROGRAMS_COLLECTION } from "../../../components3"
 
 interface EditProgramScreenProps extends NavigationProps {}
 
@@ -101,6 +99,7 @@ const changeUserAlert = (onRemove: Function) => {
     { cancelable: true },
   )
 }
+let scrollEnabled = true
 
 type ShowProgramProps = {
   state: state
@@ -143,7 +142,7 @@ const ShowProgramFakeDays: React.FC<ShowProgramDaysProps> = props => {
 //   }, [props.state.currentProgram.programChangeID])
 // }
 
-const ShowProgram: React.FC<ShowProgramProps> = props => {
+const ShowProgram: React.FC<ShowProgramProps> = observer(props => {
   const {
     onRemoveDay,
     onAddNewDay,
@@ -168,9 +167,62 @@ const ShowProgram: React.FC<ShowProgramProps> = props => {
 
   const windowWidth = useWindowDimensions().width
 
-  const scrollRef2 = useRef<ScrollView>()
-  const pageRef = useRef(0)
+  const scrollRef = useRef()
 
+  useEffect(() => {
+    const onBackPress = () => {
+      if (props.scrollPosition === 1) {
+        scroll(-1)
+        return true
+        // } else if (state.isEditExerciseModalVisible) {
+        //   dispatch({ type: "stop editing an exercise" })
+        //   return true
+      } else return false
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", onBackPress)
+
+    return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
+  }, [props.scrollPosition])
+
+  const onScroll = obj => {
+    if (obj.nativeEvent.contentOffset.x > 0) {
+      if (props.scrollPosition !== 1) props.changeScroll(1)
+    } else {
+      if (props.scrollPosition !== 0) props.changeScroll(0)
+    }
+  }
+
+  const scroll = page => {
+    if (scrollRef.current) scrollRef.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
+  }
+
+  // useEffect(() => {
+  //   returnScrollToStart()
+  // }, [])
+
+  const SCROLL_SIZE = 3
+
+  const scrollRef2 = useRef()
+  const onScroll2 = obj => {
+    console.log(obj.nativeEvent.contentOffset.x)
+    // if (scrollEnabled) {
+    //   if (obj.nativeEvent.contentOffset.x > SCROLL_SIZE + 1) {
+    //     onChangeWeek({ type: "increase" })
+    //     console.log("tried changing one up")
+    //     scrollEnabled = false
+    //     setTimeout(() => (scrollEnabled = true), 300)
+    //   }
+    //   if (obj.nativeEvent.contentOffset.x < SCROLL_SIZE - 1) {
+    //     onChangeWeek({ type: "decrease" })
+    //     console.log("tried changing one down")
+    //     scrollEnabled = false
+    //     setTimeout(() => (scrollEnabled = true), 300)
+    //   }
+    // }
+    // returnScrollToStart()
+  }
+  const [currentScrolledPage, setCurrentScrolledPage] = useState(0)
   const onScroll2End = obj => {
     const pageIndex = Math.round(obj.nativeEvent.contentOffset.x / windowWidth)
     onChangeWeek({
@@ -178,40 +230,30 @@ const ShowProgram: React.FC<ShowProgramProps> = props => {
       weekValue: pageIndex,
       dayValue: 0,
     })
-    pageRef.current = pageIndex
+    setCurrentScrolledPage(pageIndex)
   }
 
   const scroll2to = page => {
-    console.log("tried scorlling to: ", page * windowWidth)
-    scrollRef2.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
-    pageRef.current = page
-    // setCurrentScrolledPage(page)
+    if (scrollRef2.current) {
+      scrollRef2.current.scrollTo({ x: page * windowWidth, y: 0, animated: true })
+      setCurrentScrolledPage(page)
+    }
   }
 
-  // useEffect(() => {
-  //   //find first uncompleted day and scroll to that day's screen
-  //   if (currentProgram) {
-  //     let newWeekIndex = 0
-  //     newWeekIndex = getInitialState(currentProgram).currentWeekIndex
-  //     scroll2to(newWeekIndex)
-  //   }
-  // }, [currentProgram])
-
-  // useEffect(() => {
-  //   console.log("went here, currentScrolledPage = ", currentScrolledPage)
-  //   console.log("went here, currentWeekIndex = ", currentWeekIndex)
-  //   if (currentProgram) {
-  //     if (currentScrolledPage !== currentWeekIndex) scroll2to(currentWeekIndex)
-  //     // if (currentScrolledPage !== currentWeekIndex) scroll2to(currentWeekIndex)
-  //   }
-  // }, [currentWeekIndex])
+  useEffect(() => {
+    //find first uncompleted day and scroll to that day's screen
+    if (currentProgram) {
+      let newWeekIndex = 0
+      newWeekIndex = getInitialState(currentProgram).currentWeekIndex
+      scroll2to(newWeekIndex)
+    }
+  }, [currentProgram])
 
   useEffect(() => {
-    if (currentProgram)
-      if (pageRef.current !== currentWeekIndex)
-        //  page = scrollRef2.current
-        scroll2to(currentWeekIndex)
-  })
+    if (currentProgram) {
+      if (currentScrolledPage !== currentWeekIndex) scroll2to(currentWeekIndex)
+    }
+  }, [currentWeekIndex])
 
   const isCloseWeekstate = (currIndex, index) => {
     if (currIndex === index || currIndex + 1 === index || currIndex - 1 === index) return true
@@ -289,20 +331,18 @@ const ShowProgram: React.FC<ShowProgramProps> = props => {
       </ScrollView>
     </View>
   )
-}
+})
 
-export const EditProgramScreen: React.FC<EditProgramScreenProps> = props => {
+export const EditProgramScreen: React.FC<EditProgramScreenProps> = observer(props => {
   const { navigation, route } = props
   const { programID, otherProgramIDs, trainerID } = route.params
   const [globalState, setGlobalState] = useGlobalState()
   const [scrollPosition, setScrollPosition] = useState(0)
-  const { state: global3, dispatch: setGlobal3 } = useGlobalState3()
   // const  = route.params.otherProgramIDs
 
   const initialState = {
     selectedMuscleGroup: "chest",
 
-    // currentProgram: global3.programs.find(program => program.ID === programID) || null,
     // currentProgram: globalState.allPrograms.find(program => program.id === programID).item || null,
     currentProgram: null,
     programID: route.params.programID,
@@ -353,32 +393,31 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = props => {
   }, [])
 
   useEffect(() => {
-    if (global3.programs) {
-      const allProgramsDownloaded = global3.programs
-      const ourProgram = global3.programs.find(program => program.ID === programID)
-      const oldPrograms = getOtherPrograms(allProgramsDownloaded, ourProgram.ID)
+    if (globalState.allPrograms.length > 0) {
+      const allProgramsDownloaded = globalState.allPrograms
+      const ourProgram = _.cloneDeep(allProgramsDownloaded.find(program => program.id === globalState.currentProgramID))
+      const oldPrograms = getOtherPrograms(allProgramsDownloaded, ourProgram.id)
       dispatch({
         type: "update current program",
-        value: ourProgram,
+        value: ourProgram.item,
         oldPrograms: oldPrograms,
-        allPrograms: allProgramsDownloaded,
-        allUsers: global3.loggedUser.Clients,
-        exercises: global3.exercises.allExercises,
+        allPrograms: globalState.allPrograms,
+        allUsers: globalState.allUsers,
+        exercises: globalState.allExercises,
       })
       console.log("updated programs from state")
     }
-  }, [programID])
-  // }, [global3.programs])
+  }, [globalState.allPrograms])
 
-  // useEffect(() => {
-  //   const onTimePassed = () => {
-  //     if (mounted && globalState.allPrograms.length === 0) {
-  //       navigation.goBack()
-  //     }
-  //   }
+  useEffect(() => {
+    const onTimePassed = () => {
+      if (mounted && globalState.allPrograms.length === 0) {
+        navigation.goBack()
+      }
+    }
 
-  //   setTimeout(onTimePassed, 5000)
-  // }, [])
+    setTimeout(onTimePassed, 5000)
+  }, [])
 
   useEffect(() => {
     const onBackPress = () => {
@@ -409,9 +448,14 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = props => {
 
   const onSaveProgramHandler = async () => {
     if (currentProgram) {
+      setGlobalState({
+        type: "update one program",
+        programID: globalState.currentProgramID,
+        value: _.cloneDeep(currentProgram),
+      })
       await firestore()
         .collection(TRAINING_PROGRAMS_COLLECTION)
-        .doc(currentProgram.ID)
+        .doc(globalState.currentProgramID)
         .update(currentProgram)
         .catch(err => console.error(err))
     }
@@ -595,6 +639,9 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = props => {
     })
   }
 
+  // const filteredAll = filteredByMuscleGroup(globalState.allExercises)
+  const filteredAll = globalState.filteredExercises || []
+
   return (
     <View style={iStyles.screenViewWrapper}>
       <EditProgramHeader onPressBack={onGoBackHandler} onPressMenu={onPressHeaderMenu} />
@@ -614,7 +661,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = props => {
         onCopyWholeProgram={onCopyProgram}
       />
       <ExercisePicker
-        selectedMuscleGroup={state.selectedMuscleGroup}
+        shownArray={filteredAll[state.selectedMuscleGroup]}
         onClickMainText={onAddNewExerciseHandler}
         isVisible={state.isExercisePickerShown}
         autoFocusSearch={state.autoFocusSearch}
@@ -677,7 +724,7 @@ export const EditProgramScreen: React.FC<EditProgramScreenProps> = props => {
       </View>
     </View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   programStyle: {
@@ -689,13 +736,13 @@ const styles = StyleSheet.create({
   },
 })
 
-const getOtherPrograms = (allPrograms: T_Program[], thisProgramID: string) => {
+const getOtherPrograms = (allPrograms, thisProgramID) => {
   console.log("trying to get old programs, allPrograms, thisProgramID")
   console.log(allPrograms.length, thisProgramID)
-  const editedProgram: T_Program = allPrograms.find(program => program.ID === thisProgramID)
-  if (editedProgram.Client === NO_CLIENT_YET) return []
-  const thisClientAllPrograms = allPrograms.filter(program => program.Client === editedProgram.Client)
-  const thisClientOtherPrograms = thisClientAllPrograms.filter(program => program.ID != thisProgramID)
+  const editedProgram = allPrograms.find(program => program.id === thisProgramID)
+  if (editedProgram.item.Client === NO_CLIENT_YET) return []
+  const thisClientAllPrograms = allPrograms.filter(program => program.item.Client === editedProgram.item.Client)
+  const thisClientOtherPrograms = thisClientAllPrograms.filter(program => program.id != thisProgramID)
   console.log(thisClientOtherPrograms)
   return thisClientOtherPrograms
 }

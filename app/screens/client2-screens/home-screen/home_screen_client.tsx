@@ -32,10 +32,13 @@ export const HomeScreenClient2 = props => {
         .where("clientIDs", "array-contains", globalState.loggedUser.ID)
         .onSnapshot(query => {
           const downloadedCards = []
-          query.forEach(doc => {
-            downloadedCards.push(doc.data())
-          })
-          handleChange(downloadedCards)
+
+          if (!query.empty) {
+            query.forEach(doc => {
+              downloadedCards.push(doc.data())
+            })
+            handleChange(downloadedCards)
+          }
         })
     }
     return () => {
@@ -45,8 +48,11 @@ export const HomeScreenClient2 = props => {
 
   useFocusEffect(() => {
     const backAction = () => {
-      BackHandler.exitApp()
-      return true
+      if (!globalState.loggedUser.isTrainer) {
+        BackHandler.exitApp()
+        return true
+      }
+      return false
     }
 
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction)

@@ -16,14 +16,10 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { EditableText, PressableTextPickerCustomColors, getColorByMuscleName } from "./index"
 import { muscleGroups, muscleGroups2 } from "../../../../components3/Constants"
 
-import {
-  return_todays_datestamp,
-  displayDateFromTimestamp2,
-  return_timeStamp_x_days_ago,
-} from "../../../../global-helper"
+import { return_todays_datestamp, displayDateFromTimestamp2, return_timeStamp_x_days_ago } from "../../../../global-helper"
 
 import _ from "lodash"
-import { type } from "ramda"
+import { useGlobalState3, refreshExercises } from "../../../../components3"
 
 const EXERCISE_ITEM_HEIGHT = 30
 
@@ -50,25 +46,25 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
   // console.log('rendered ExercisePicker');
   const emptyExercise = { Name: "", Coefs: {}, MainMuscleGroup: props.state.selectedMuscleGroup }
 
+  const { state: global3, dispatch: setGlobal3 } = useGlobalState3()
+  const { state } = props
+  const filteredAllExercises = global3.exercises.allExercisesFiltered || []
   const [searchText, setSearchText] = useState("")
-  const [currentArray, setCurrentArray] = useState(props.shownArray)
+  const [currentArray, setCurrentArray] = useState(filteredAllExercises[props.selectedMuscleGroup])
   const [selectedExercise, setSelectedExercise] = useState(emptyExercise)
   const [isExerciseModalVisible, setIsExerciseModalVisible] = useState(false)
-  const [globalState, setGlobalState] = useGlobalState()
 
-  const allExercises = globalState.allExercises
+  const allExercises = global3.exercises.allExercises
+  const customExercises = global3.exercises.downloadedPersonal
 
   useEffect(() => {
-    setCurrentArray(props.shownArray)
-    return () => {
+    if (props.isVisible) {
+      setCurrentArray(filteredAllExercises[state.selectedMuscleGroup])
+    } else {
+      setSearchText("")
       setCurrentArray(props.shownArray)
     }
-  }, [props.shownArray])
-
-  useEffect(() => {
-    setSearchText("")
-    setCurrentArray(props.shownArray)
-  }, [props.isVisible])
+  }, [props.selectedMuscleGroup, props.isVisible, global3.exercises.downloadedPersonal, global3.exercises.downloadedGlobal])
 
   const onCancelHandler = useCallback(() => {
     setSearchText("")
@@ -81,40 +77,26 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
   }, [])
 
   const onDeleteExercise = exercise => {
-    const where = whereDoesExerciseExist(exercise, allExercises, globalState.customExercises)
-    console.log(allExercises.length, globalState.customExercises.length)
+    const where = whereDoesExerciseExist(exercise, allExercises, customExercises)
+    console.log(allExercises.length, customExercises.length)
     console.log(exercise)
     console.log(where)
 
     const onDeleteOwn = () => {
-      setGlobalState({
-        type: "remove one exercise from own collection",
-        exercise: exercise,
-        userID: globalState.loggedUser.ID,
-      })
+      setGlobal3({ type: "remove one exercise from own collection", exercise })
     }
 
     if (where === "custom") {
       Alert.alert(
         "Внимание",
         `Сигурен ли си, че искаш да си изтриеш упражнението ${exercise.Name}`,
-        [
-          { text: "Не искам да го трия" },
-          { text: "Да, искам да го изтрия!", onPress: onDeleteOwn },
-        ],
+        [{ text: "Не искам да го трия" }, { text: "Да, искам да го изтрия!", onPress: onDeleteOwn }],
         { cancelable: true },
       )
     }
     if (where === "all") {
-      Alert.alert(
-        "Внимание",
-        "Не може да се трият от основните упражнения",
-        [{ text: "Еми добре" }],
-        { cancelable: true },
-      )
+      Alert.alert("Внимание", "Не може да се трият от основните упражнения", [{ text: "Еми добре" }], { cancelable: true })
     }
-
-    console.log("tried deleting ", exercise.Name)
   }
 
   const renderExerciseDB = ({ item }) => {
@@ -134,19 +116,9 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
   }
 
   const onConfirmAddEditExercise = exercise => {
-    const newEx = exercise
-    const userID = globalState.loggedUser.ID
-
-    const where = whereDoesExerciseExist(exercise, allExercises, globalState.customExercises)
-    if (where === "nowhere") {
-      setGlobalState({
-        type: "add one exercise",
-        exercise: { ...newEx },
-        userID: userID,
-      })
-    }
-    if (where === "custom")
-      setGlobalState({ type: "update custom exercise", exercise: newEx, userID: userID })
+    const where = whereDoesExerciseExist(exercise, allExercises, customExercises)
+    if (where === "nowhere") setGlobal3({ type: "add one personal exercise", exercise: exercise })
+    if (where === "custom") setGlobal3({ type: "update custom exercise in own collection", exercise })
 
     setIsExerciseModalVisible(false)
   }
@@ -157,15 +129,10 @@ export const ExercisePicker = React.memo(function ExercisePicker(props: any) {
   }
 
   const onEditExercise = exercise => {
-    const where = whereDoesExerciseExist(exercise, allExercises, globalState.customExercises)
+    const where = whereDoesExerciseExist(exercise, allExercises, customExercises)
 
     if (where === "all") {
-      Alert.alert(
-        "Внимание",
-        "Не може да се редактират от основните упражнения",
-        [{ text: "Еми добре" }],
-        { cancelable: true },
-      )
+      Alert.alert("Внимание", "Не може да се редактират от основните упражнения", [{ text: "Еми добре" }], { cancelable: true })
     }
 
     if (where === "custom") {
@@ -297,9 +264,7 @@ const ExpandableExercise: React.FC<ExpandableExerciseProps> = props => {
 
   return (
     <View>
-      <View style={{ position: "absolute", top: "1%", left: "1%" }}>
-        {isNew && <Text style={iStyles.text2}>New</Text>}
-      </View>
+      <View style={{ position: "absolute", top: "1%", left: "1%" }}>{isNew && <Text style={iStyles.text2}>New</Text>}</View>
       {!isExpanded && (
         <View style={{ width: "100%", alignContent: "center" }}>
           <Pressable onPress={onLongPress} onLongPress={onLongPress}>
@@ -333,12 +298,7 @@ const ExpandableExercise: React.FC<ExpandableExerciseProps> = props => {
             >
               {}
             </Button>
-            <Button
-              onPress={() => playVideo(item)}
-              color={iStyles.text1.color}
-              icon="video"
-              labelStyle={{ fontSize: 30 }}
-            >
+            <Button onPress={() => playVideo(item)} color={iStyles.text1.color} icon="video" labelStyle={{ fontSize: 30 }}>
               {}
             </Button>
             <Button
@@ -486,12 +446,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = props => {
         >
           {coefValueRange.map((value, index) => {
             return (
-              <Picker.Item
-                key={`${value}+${index.toString()}`}
-                label={value.toString()}
-                value={value}
-                color={rightStyle.color}
-              />
+              <Picker.Item key={`${value}+${index.toString()}`} label={value.toString()} value={value} color={rightStyle.color} />
             )
           })}
         </Picker>
@@ -535,9 +490,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = props => {
             <Text style={{ ...iStyles.text2, ...iStyles.text0 }}>ID</Text>
             <Text style={iStyles.text2}>{exerciseState.ID}</Text>
           </View>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-          >
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             <Text style={{ ...iStyles.text2, ...iStyles.text0 }}>YT Link</Text>
             {/* <Text style={{ ...iStyles.text2, fontSize: 12, textAlignVertical: "center" }}> */}
             <View style={{ width: "80%" }}>
@@ -586,18 +539,11 @@ const ExerciseModal: React.FC<ExerciseModalProps> = props => {
               itemStyle={{ color: iStyles.text1.color }}
             >
               {muscleGroups.map(value => (
-                <Picker.Item
-                  key={value}
-                  label={value}
-                  value={value}
-                  color={getColorByMuscleName(value)}
-                />
+                <Picker.Item key={value} label={value} value={value} color={getColorByMuscleName(value)} />
               ))}
             </Picker>
           </View>
-          <Text style={{ textAlign: "center", fontSize: 24, color: iStyles.text1.color }}>
-            Coefs
-          </Text>
+          <Text style={{ textAlign: "center", fontSize: 24, color: iStyles.text1.color }}>Coefs</Text>
           <FlatList
             data={coefArray}
             renderItem={RenderCoefs}
@@ -621,12 +567,17 @@ const ExerciseModal: React.FC<ExerciseModalProps> = props => {
 }
 
 const whereDoesExerciseExist = (exercise, allExercises, customExercises) => {
-  let returnValue = "nowhere"
-  allExercises.forEach(allEx => {
-    if (allEx.ID === exercise.ID) returnValue = "all"
-  })
+  type returnValueT = "nowhere" | "all" | "custom"
+  let returnValue: returnValueT
+
   customExercises.forEach(customEx => {
     if (customEx.ID === exercise.ID) returnValue = "custom"
   })
+
+  if (!returnValue)
+    allExercises.forEach(allEx => {
+      if (allEx.ID === exercise.ID) returnValue = "all"
+    })
+  if (!returnValue) returnValue = "nowhere"
   return returnValue
 }

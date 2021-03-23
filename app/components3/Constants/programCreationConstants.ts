@@ -5,6 +5,7 @@ const MAX_WEIGHT_NUMBER = 300
 import _ from "lodash"
 import { NO_CLIENT_YET } from "./DatabaseConstants"
 import * as dateHelpers from "../../global-helper/global-date-helper/global-date-helper"
+import { T_Program } from "../types/exerciseProgram"
 // to use Picker component properly we need an array of elements. We create these arrays by getMAX function
 const getMAX = (maxNumber: number, toString = false) => {
   let newArray = []
@@ -33,11 +34,7 @@ export const DEFAULT_EXERCISE_DATA = {
   isExpanded: false,
   increaseReps: 1,
   increaseWeight: 0,
-  Sets: [
-    { ..._.cloneDeep(DEFAULT_SET_DATA) },
-    { ..._.cloneDeep(DEFAULT_SET_DATA) },
-    { ..._.cloneDeep(DEFAULT_SET_DATA) },
-  ],
+  Sets: [{ ..._.cloneDeep(DEFAULT_SET_DATA) }, { ..._.cloneDeep(DEFAULT_SET_DATA) }, { ..._.cloneDeep(DEFAULT_SET_DATA) }],
 }
 
 export const DEFAULT_ONE_DAY_DATA = {
@@ -140,7 +137,7 @@ export const DEFAULT_EXERCISE_DATA2 = {
 }
 
 export type state = {
-  currentProgram: any
+  currentProgram: T_Program
   currentProgramID: string
   currentWeekIndex: number
   currentDayIndex: number

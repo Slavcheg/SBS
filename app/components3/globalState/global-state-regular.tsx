@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from "react"
 import { Text } from "react-native"
 
-import firestore, { firebase } from "@react-native-firebase/firestore"
+import firestore from "@react-native-firebase/firestore"
 import { return_todays_datestamp } from "../../global-helper"
 import { GoogleSignOut } from "../../services/auth/auth.service"
 
@@ -269,41 +269,41 @@ const Reducer = (state: globalStore, action) => {
     //   break
     // }
 
-    case "update one program": {
-      const programID = action.programID
-      const foundIndex = state.allPrograms.findIndex(program => program.id === programID)
-      state.allPrograms[foundIndex].item = _.cloneDeep(action.value)
+    // case "update one program": {
+    //   const programID = action.programID
+    //   const foundIndex = state.allPrograms.findIndex(program => program.ID === programID)
+    //   state.allPrograms[foundIndex] = _.cloneDeep(action.value)
 
-      break
-    }
+    //   break
+    // }
 
-    case "update custom exercises": {
-      state.customExercises = action.exercises
-      state.filteredExercisesCustom = action.filtered
-      break
-    }
+    // case "update custom exercises": {
+    //   state.customExercises = action.exercises
+    //   state.filteredExercisesCustom = action.filtered
+    //   break
+    // }
 
-    case "update all exercises": {
-      state.allExercises = action.allExercises
+    // case "update all exercises": {
+    //   state.allExercises = action.allExercises
 
-      //съединяваме 2та обекта от филтрирани упражнения
-      const customEx = state.filteredExercisesCustom
-      const regularEx = state.filteredExercisesRegular
+    //   //съединяваме 2та обекта от филтрирани упражнения
+    //   const customEx = state.filteredExercisesCustom
+    //   const regularEx = state.filteredExercisesRegular
 
-      state.filteredExercises = regularEx
+    //   state.filteredExercises = regularEx
 
-      for (const muscle in regularEx) {
-        //ако случайно се добави мускул в custom, който да липсва в Regular - ще се счупи
+    //   for (const muscle in regularEx) {
+    //     //ако случайно се добави мускул в custom, който да липсва в Regular - ще се счупи
 
-        if (customEx[muscle]) state.filteredExercises[muscle] = [...regularEx[muscle], ...customEx[muscle]]
-      }
-      break
-    }
+    //     if (customEx[muscle]) state.filteredExercises[muscle] = [...regularEx[muscle], ...customEx[muscle]]
+    //   }
+    //   break
+    // }
 
-    case "update filtered exercises (regular)": {
-      state.filteredExercisesRegular = action.filteredObj
-      break
-    }
+    // case "update filtered exercises (regular)": {
+    //   state.filteredExercisesRegular = action.filteredObj
+    //   break
+    // }
 
     case "add one exercise": {
       const { exercise, userID } = action

@@ -1,7 +1,9 @@
+export type T_WeightType = "pureWeight" | "other"
+
 export type T_Set = {
   Reps: number
   Weight: string
-  WeightType: "pureWeight" | "other"
+  WeightType: T_WeightType
   Rest: string
 }
 
@@ -44,4 +46,5 @@ export type T_Exercise_In_Database = {
   ID: string
   MainMuscleGroup: string
   Coefs: ExerciseCoefs
+  AddedOn?: number
 }

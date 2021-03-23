@@ -67,6 +67,7 @@ import {
   state,
   TRAINING_PROGRAMS_COLLECTION,
   DEFAULT_SET_DATA2,
+  useGlobalState3,
 } from "../../../components3"
 import * as fb from "../../../services/firebase/firebase.service"
 
@@ -85,9 +86,7 @@ const Header = props => {
   let greyStyle = iStyles.greyText
 
   let lockIcon = props.state.locked ? "lock-open-variant-outline" : "lock-outline"
-  let lockText = props.state.locked
-    ? translate("trainClientsScreen.Unlock")
-    : translate("trainClientsScreen.Lock")
+  let lockText = props.state.locked ? translate("trainClientsScreen.Unlock") : translate("trainClientsScreen.Lock")
   let lockColor = props.state.locked ? text2.color : "red"
   let lockButtonMode: any = props.state.locked ? "contained" : "text"
   let style1 = props.state.locked ? greyStyle : text1
@@ -168,7 +167,7 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
     props.programs.forEach(program => {
       programColorsByID = {
         ...programColorsByID,
-        [program.id]: colorArray[Math.floor(Math.random() * 18)],
+        [program.ID]: colorArray[Math.floor(Math.random() * 18)],
       }
     })
   }, [props.programs])
@@ -188,9 +187,7 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
           }}
         >
           <View>
-            <Text style={{ ...text1, textAlign: "center", textAlignVertical: "center" }}>
-              {item.item.Name}
-            </Text>
+            <Text style={{ ...text1, textAlign: "center", textAlignVertical: "center" }}>{item.Name}</Text>
             {/* <Text style={{ ...text1, textAlign: "center", textAlignVertical: "center" }}>
               {index + 1}
             </Text> */}
@@ -219,10 +216,8 @@ const ProgramArrangeBox: React.FC<ProgramArrangeBoxProps> = props => {
             <DraggableFlatList
               data={props.programs}
               numColumns={1}
-              keyExtractor={item => item.id}
-              renderItem={({ item, index, drag, isActive }) =>
-                renderPrograms({ item, index, drag, isActive })
-              }
+              keyExtractor={item => item.ID}
+              renderItem={({ item, index, drag, isActive }) => renderPrograms({ item, index, drag, isActive })}
               onDragEnd={({ data }) => {
                 props.onReArrange(data)
               }}
@@ -242,19 +237,9 @@ const ProgramView = props => {
   const [state, setState] = useState(() => getInitialState(props.program))
   const [globalState, setGlobalState] = useGlobalState()
 
-  const {
-    currentWeekIndex,
-    currentDayIndex,
-    currentExerciseIndex,
-    isExerciseModalVisible,
-    locked,
-    currentProgram,
-  } = state
+  const { currentWeekIndex, currentDayIndex, currentExerciseIndex, isExerciseModalVisible, locked, currentProgram } = state
 
-  const dayEmpty =
-    state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length === 0
-      ? true
-      : false
+  const dayEmpty = state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length === 0 ? true : false
 
   const onToggleLockedHandler = () => {
     let newState = state
@@ -264,11 +249,9 @@ const ProgramView = props => {
 
   const onToggleDayCompletedHandler = (dayIndex, newDate) => {
     let newState = currentProgram
-    newState.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted = !newState.Weeks[
-      currentWeekIndex
-    ].Days[currentDayIndex].isCompleted
-    const updatedDate =
-      newDate || newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn
+    newState.Weeks[currentWeekIndex].Days[currentDayIndex].isCompleted = !newState.Weeks[currentWeekIndex].Days[currentDayIndex]
+      .isCompleted
+    const updatedDate = newDate || newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn
 
     newState.Weeks[currentWeekIndex].Days[currentDayIndex].completedOn = updatedDate
     saveProgram(newState)
@@ -306,9 +289,7 @@ const ProgramView = props => {
 
   const onCloseExerciseModal = newExercise => {
     let newProgram = currentProgram
-    newProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
-      currentExerciseIndex
-    ] = newExercise
+    newProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex] = newExercise
     if (currentWeekIndex < currentProgram.Weeks.length - 1)
       newProgram = updateFollowingWeeks({ ...state, currentProgram: newProgram })
     setState({ ...state, isExerciseModalVisible: false, currentProgram: newProgram })
@@ -317,18 +298,13 @@ const ProgramView = props => {
 
   return (
     <ScrollView style={{ height: "100%" }}>
-      {currentProgram &&
-        currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
-          <EditExerciseModal
-            visible={state.isExerciseModalVisible}
-            exercise={
-              currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[
-                currentExerciseIndex
-              ]
-            }
-            onClose={onCloseExerciseModal}
-          />
-        )}
+      {currentProgram && currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises.length > 0 && (
+        <EditExerciseModal
+          visible={state.isExerciseModalVisible}
+          exercise={currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises[currentExerciseIndex]}
+          onClose={onCloseExerciseModal}
+        />
+      )}
       <Header
         //   client={client}
         state={state}
@@ -363,9 +339,7 @@ const ProgramView = props => {
         />
       )}
       {dayEmpty && (
-        <Text style={{ ...iStyles.greyText, color: "red" }}>
-          This day is empty. Go to program and add some exercises
-        </Text>
+        <Text style={{ ...iStyles.greyText, color: "red" }}>This day is empty. Go to program and add some exercises</Text>
       )}
     </ScrollView>
   )
@@ -374,9 +348,7 @@ const ProgramView = props => {
 export const TrainClientsScreen = ({ navigation, route }) => {
   const [programs, setPrograms] = useState([])
   const [isRearranging, setIsRearranging] = useState(false)
-  const [globalState, setGlobalState] = useGlobalState()
-
-  const rootStore = useStores()
+  const { state: global3, dispatch: setGlobal3 } = useGlobalState3()
 
   const getPrograms = () => {
     console.log("went to get programs")
@@ -385,26 +357,9 @@ export const TrainClientsScreen = ({ navigation, route }) => {
       programIDsArray.push(route.params[key])
     })
 
-    let allPrograms = globalState.allPrograms
-    let newProgramsArray = allPrograms.filter(program => programIDsArray.includes(program.id))
+    let newProgramsArray = global3.programs.filter(program => programIDsArray.includes(program.ID))
     setPrograms([...newProgramsArray])
   }
-
-  useEffect(() => {
-    console.log("went here")
-    setTimeout(() => {
-      if (globalState.allPrograms.length === 0) navigation.goBack()
-    }, 1000)
-  }, [])
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (programs.length === 0) {
-        console.log("programs got with useEffect []")
-        getPrograms()
-      }
-    }, 100)
-  }, [])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -437,14 +392,8 @@ export const TrainClientsScreen = ({ navigation, route }) => {
   return (
     <ScrollView horizontal={true} pagingEnabled={true}>
       {programs.map(program => (
-        <View key={program.id} style={styles.container}>
-          {!isRearranging && (
-            <ProgramView
-              program={program.item}
-              programID={program.id}
-              onGoBack={() => navigation.goBack()}
-            />
-          )}
+        <View key={program.ID} style={styles.container}>
+          {!isRearranging && <ProgramView program={program} programID={program.ID} onGoBack={() => navigation.goBack()} />}
           {/* <Button onPress={testHandler}>test</Button> */}
           {programs.length > 1 && (
             <ProgramArrangeBox

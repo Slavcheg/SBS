@@ -1,10 +1,19 @@
-import { Button, Portal, Modal, TextInput, Checkbox } from "react-native-paper"
+import { Portal, Modal, TextInput, Checkbox } from "react-native-paper"
 
 import firestore from "@react-native-firebase/firestore"
-import React, { useState, useEffect, useReducer, FunctionComponent, ReactNode, useRef, useMemo } from "react"
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  FunctionComponent,
+  ReactNode,
+  useRef,
+  useMemo,
+  VoidFunctionComponent,
+} from "react"
 
 import { useStores } from "../../../../models/root-store"
-import { state } from "../../../../components3"
+import { state, T_Exercise, useGlobalState3, Button } from "../../../../components3"
 
 import { useGlobalState } from "../../../../components3/globalState/global-state-regular"
 
@@ -28,6 +37,7 @@ import {
   useColorScheme,
   Animated,
   Easing,
+  TextStyle,
 } from "react-native"
 
 import {
@@ -76,7 +86,6 @@ import {
   displayDateFromTimestamp2,
 } from "../../../../global-helper"
 import { icons, fonts, colors } from "../../../../components3/Constants"
-import { Touch } from "react-powerplug"
 import { firebase } from "@react-native-firebase/firestore"
 
 type ExerciseMoreInfoButtonsProps = {
@@ -243,8 +252,9 @@ export const getAverageWeight = sets => {
     averageWeight += parseFloat(set.Weight)
   })
   averageWeight /= sets.length
-  if (Math.round(averageWeight) === averageWeight) return Math.round(averageWeight)
-  else return averageWeight.toPrecision(3)
+  if (averageWeight < 10) return `${Math.round(averageWeight * 100) / 100}`
+  else if (averageWeight < 100) return `${Math.round(averageWeight * 10) / 10}`
+  else return `${Math.round(averageWeight)}`
 }
 
 export const ShowAllSets = props => {
@@ -384,10 +394,27 @@ export const SetsAndReps = props => {
 export const ShowExercise = props => {
   return useMemo(() => {
     return <ShowExerciseMemo {...props} />
-  }, [props.item, props.item.Position])
+  }, [props.item, props.item.Position, props.item.isExpanded])
 }
 
-export const ShowExerciseMemo = observer(props => {
+type ShowExerciseProps = {
+  item: T_Exercise
+  onPressIn: () => any
+  onPressPosition: () => any
+  onPressExercise: () => any
+  onDeleteExercise: () => any
+  onPressSetsAndReps: () => any
+  isDragged: boolean
+  isClickable: boolean
+  showVolume: boolean
+  isGreyedOut: boolean
+  showDoneBefore: boolean
+  oldExercise: any
+  textStyle?: TextStyle
+}
+
+// export const ShowExerciseMemo: React.FC<ShowExerciseProps> = props => {
+export const ShowExerciseMemo: React.FC<ShowExerciseProps> = props => {
   const DELAY_LONG_PRESS = 0
 
   const {
@@ -412,11 +439,12 @@ export const ShowExerciseMemo = observer(props => {
   const [showMoreInfoBaloon, setShowMoreInfoBaloon] = useState(false)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
 
-  const [globalState, setGlobalState] = useGlobalState()
+  const { state: global3 } = useGlobalState3()
 
-  let volumeText = getVolumeStrings(item, globalState.allExercises)
+  let volumeText
+  if (item.isExpanded) volumeText = getVolumeStrings(item, global3.exercises.allExercises)
 
-  let textStyle = props.textStyle ? props.textStyle : someStyle
+  let textStyle: TextStyle = props.textStyle ? props.textStyle : someStyle
 
   textStyle.color = props.textStyle.color ? props.textStyle.color : someStyle.color
 
@@ -557,7 +585,7 @@ export const ShowExerciseMemo = observer(props => {
       </Pressable>
     </View>
   )
-})
+}
 
 export const ShowWeekName = props => {
   const { isCurrent, index, onPress } = props
@@ -664,19 +692,19 @@ export const ProgramNotes: React.FC<ProgramNotesType> = ({ clientID }) => {
   const [downloadedNote, setDownloadedNote] = useState({ noteContent: "", noteClientName: "" })
   const [savable, setSavable] = useState(false)
   const [programHasClient, setProgramHasClient] = useState(false)
-  const [globalState, setGlobalState] = useGlobalState()
+  const { state: global3, dispatch: setGlobal3 } = useGlobalState3()
 
   useEffect(() => {
     if (clientID) {
       if (clientID === NO_CLIENT_YET) setProgramHasClient(false)
       else {
-        downloadClientNotes(clientID, globalState.loggedUser.ID, afterDownloadingClients)
+        downloadClientNotes(clientID, global3.loggedUser.ID, afterDownloadingClients)
       }
     }
   }, [clientID])
 
   const afterDownloadingClients = clientNote => {
-    const client = globalState.allUsers.find(user => user.ID === clientID)
+    const client = global3.loggedUser.Clients.find(user => user.ID === clientID)
 
     const downloadedDoc = clientNote
 
@@ -744,18 +772,17 @@ type ShowProgramMoreInfoProps = {
 export const ShowProgramMoreInfo: React.FC<ShowProgramMoreInfoProps> = props => {
   return useMemo(() => {
     return <ShowProgramMoreInfoMemoed {...props} />
-  }, [props.state.currentProgram])
+  }, [props.state.currentProgram, props.state.currentProgram.Client, props.state.renders.programChangeID])
 }
 
+const HEIGHT_SEPERATOR = () => {
+  return <View style={{ height: 15 }}></View>
+}
 export const ShowProgramMoreInfoMemoed: React.FC<ShowProgramMoreInfoProps> = props => {
   const { state } = props
   const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
 
   if (!currentProgram) return <View></View>
-
-  const HEIGHT_SEPERATOR = () => {
-    return <View style={{ height: 15 }}></View>
-  }
 
   return (
     <ScrollView style={{ flex: 1, padding: 2 }}>
@@ -794,8 +821,9 @@ const ProgramVolumeTable = props => {
 
   const muscles = state.muscles ? state.muscles : muscleGroups
   const [globalState, setGlobalState] = useGlobalState()
+  const { state: global3, dispatch: setGobal3 } = useGlobalState3()
 
-  const coefsArray = getProgramVolume(state, globalState.allExercises)
+  const coefsArray = getProgramVolume(state, global3.exercises.allExercises)
 
   const columnsCount = currentProgram.Weeks[currentWeekIndex].Days.length + 1
   const deviceWidth = useWindowDimensions().width
@@ -930,9 +958,9 @@ export const getProgramInfo = (program: any, returnObject?: boolean) => {
 const ProgramGeneralInfo = props => {
   const { state } = props
   const { currentProgram, currentWeekIndex, currentDayIndex } = props.state
-  const [globalState, setGlobalState] = useGlobalState()
+  const { state: global3, dispatch: setGlobal3 } = useGlobalState3()
 
-  const thisClientPrograms = globalState.allPrograms.filter(program => program.item.Client === currentProgram.Client)
+  const thisClientPrograms = global3.programs.filter(program => program.Client === currentProgram.Client)
 
   const [programInfo, setProgramInfo] = useState([
     ...getProgramInfo(currentProgram),
@@ -998,13 +1026,13 @@ const ProgramInfoOldPrograms = props => {
       {oldPrograms.length === 0 && <Text style={iStyles.text0}>No other programs found :(</Text>}
       {oldPrograms.map((program, index) => {
         return (
-          <ExpandableContent title={program.item.Name} titleStyle={iStyles.text1} key={index} startMinimized={true}>
+          <ExpandableContent title={program.Name} titleStyle={iStyles.text1} key={index} startMinimized={true}>
             <ShowProgramDays
               mode="smallPreview"
               state={{
                 ...state,
-                currentProgram: program.item,
-                currentWeekIndex: program.item.Weeks.length - 1,
+                currentProgram: program,
+                currentWeekIndex: program.Weeks.length - 1,
               }}
             />
           </ExpandableContent>

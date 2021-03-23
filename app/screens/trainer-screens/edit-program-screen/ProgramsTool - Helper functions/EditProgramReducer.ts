@@ -5,6 +5,7 @@ import { DEFAULT_SET_DATA2, DEFAULT_EXERCISE_DATA2, DEFAULT_ONE_DAY_DATA2 } from
 import { updateFollowingWeeks, updateOldExercises, getProgressions } from "./index"
 
 import _ from "lodash"
+import { T_Program } from "../../../../components3"
 
 export type T_Dispatch_EditProgram = React.Dispatch<T_Action_EditProgram>
 type T_Action_EditProgram = {
@@ -46,6 +47,19 @@ type T_Action_EditProgram = {
   value?: any
   dayIndex?: number
   weekIndex?: number
+}
+
+type state = {
+  currentProgram: T_Program
+  currentDayIndex: number
+  currentWeekIndex: number
+  currentProgramID: string
+  currentExerciseIndex: number
+  isEditExerciseModalVisible: boolean
+  isKeyboardActive: boolean
+  isButtonsRowShown: boolean
+  isProgramSaving: boolean
+  isProgramSaved: boolean
 }
 
 export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
@@ -112,7 +126,7 @@ export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
     }
 
     case "toggle program completed status": {
-      state.currentProgram.isCompleted = !state.currentProgram.isCompleted
+      state.currentProgram = { ...currentProgram, isCompleted: !state.currentProgram.isCompleted }
       break
     }
 
@@ -236,7 +250,7 @@ export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
     }
 
     case "copy program and close ProgramPicker": {
-      const copiedWeek = action.value.item.Weeks[0]
+      const copiedWeek = action.value.Weeks[0]
 
       state.currentProgram.Weeks[currentWeekIndex].Days = _.cloneDeep(copiedWeek.Days)
       state.currentProgram.Weeks[currentWeekIndex].Days.forEach((day, dayIndex) => {
@@ -357,19 +371,9 @@ export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
       // state.currentProgram = updateFollowingWeeks(state)
 
       // get latest uncompleted day
-
-      let breakFlag = false
-      for (let weekIndex = 0; weekIndex < currentProgram.Weeks.length; weekIndex++) {
-        if (breakFlag === true) break
-        for (let dayIndex = 0; dayIndex < currentProgram.Weeks[weekIndex].Days.length; dayIndex++) {
-          if (breakFlag) break
-          if (currentProgram.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
-            breakFlag = true
-            state.currentWeekIndex = weekIndex
-            state.currentDayIndex = dayIndex
-          }
-        }
-      }
+      // const last = getLastCompletedDay(currentProgram)
+      // state.currentWeekIndex = last.WeekIndex
+      // state.currentDayIndex = last.DayIndex
 
       // // update exercise ID to match one in DB (temporarily, to not lose data)
       // currentProgram.Weeks.forEach((week, weekIndex) => {
@@ -456,10 +460,10 @@ export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
       // newArray[action.value].isExpanded = !newArray[action.value].isExpanded
 
       // state.currentProgram.Weeks[currentWeekIndex].Days[currentDayIndex].Exercises = newArray
-
-      state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises[action.value].isExpanded = !state
-        .currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises[action.value].isExpanded
-
+      const isExpanded = state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises[action.value].isExpanded
+        ? true
+        : false
+      state.currentProgram.Weeks[currentWeekIndex].Days[action.dayIndex].Exercises[action.value].isExpanded = !isExpanded
       break
     }
 
@@ -550,8 +554,8 @@ export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
       state.currentProgram.Client = newUser.ID
 
       if (newUser.Name !== NO_CLIENT_YET) {
-        state.oldPrograms = state.allPrograms.filter(program => program.item.Client === newUser.ID)
-        state.oldPrograms = state.oldPrograms.filter(program => program.id != state.programID)
+        state.oldPrograms = state.allPrograms.filter(program => program.Client === newUser.ID)
+        state.oldPrograms = state.oldPrograms.filter(program => program.ID != state.programID)
         state.currentProgram.Name = `${newUser.Name} ${state.oldPrograms.length + 1}`
         state.oldExercises = updateOldExercises(state)
       } else {
@@ -814,8 +818,26 @@ export const EditProgramReducer = (state, action: T_Action_EditProgram) => {
     case "update current program":
     case "update current program2": {
       state.renders.programChangeID = Math.random()
+      console.log("newRenderID")
       break
     }
   }
   return { ...state }
+}
+
+const getLastCompletedDay = (currentProgram: T_Program) => {
+  let returnDayWeekIndex = { DayIndex: 0, WeekIndex: 0 }
+  let breakFlag = false
+  for (let weekIndex = 0; weekIndex < currentProgram.Weeks.length; weekIndex++) {
+    if (breakFlag === true) break
+    for (let dayIndex = 0; dayIndex < currentProgram.Weeks[weekIndex].Days.length; dayIndex++) {
+      if (breakFlag) break
+      if (currentProgram.Weeks[weekIndex].Days[dayIndex].isCompleted !== true) {
+        breakFlag = true
+        returnDayWeekIndex.WeekIndex = weekIndex
+        returnDayWeekIndex.DayIndex = dayIndex
+      }
+    }
+  }
+  return returnDayWeekIndex
 }

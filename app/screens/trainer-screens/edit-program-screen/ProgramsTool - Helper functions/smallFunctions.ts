@@ -7,6 +7,7 @@ import _ from "lodash"
 import { repComparisonCoefs as repComp, colors, state } from "../../../../components3/Constants"
 
 import { muscleGroups2, muscleGroupsObject } from "../../../../components3/Constants/MuscleGroups"
+import { T_Exercise_In_Database } from "../../../../components3"
 
 export function omit(obj, props) {
   props = props instanceof Array ? props : [props]
@@ -51,14 +52,8 @@ export const getProgressions = (lastWeekExercise: any) => {
 
   progressions.newReps = averageReps + lastWeekExercise.increaseReps
   if (isPure) {
-    const averageWeight = getAverageWeightFromExercise(
-      lastWeekExercise,
-      RELATIVE_CALCULATION,
-      averageReps,
-    )
-    progressions.newWeight = `${(
-      averageWeight + parseFloat(lastWeekExercise.increaseWeight)
-    ).toPrecision(5)}`
+    const averageWeight = getAverageWeightFromExercise(lastWeekExercise, RELATIVE_CALCULATION, averageReps)
+    progressions.newWeight = `${(averageWeight + parseFloat(lastWeekExercise.increaseWeight)).toPrecision(5)}`
   } else progressions.newWeight = lastWeekExercise.Sets[0].Weight
 
   return progressions
@@ -183,16 +178,66 @@ export const getVolumeStrings = (exerciseWithSets, allExercises) => {
   volumesArray.sort(sortFunction)
 
   for (let i = 0; i <= volumesArray.length; i++) {
-    if (volumesArray[i].value === 0 || i >= 4) break //максимална бройка на мускулните групи, които да показва
-    let oneVolumeString = volumesArray[i].value
-    if (!Number.isInteger(volumesArray[i].value)) oneVolumeString = volumesArray[i].value.toFixed(1)
-    volumesString += `${volumesArray[i].muscleName} ${oneVolumeString} `
+    if (volumesArray[i]) {
+      if (volumesArray[i].value === 0 || i >= 4) break //максимална бройка на мускулните групи, които да показва
+      let oneVolumeString = volumesArray[i].value
+      if (!Number.isInteger(volumesArray[i].value)) oneVolumeString = volumesArray[i].value.toFixed(1)
+      volumesString += `${volumesArray[i].muscleName} ${oneVolumeString} `
+    }
   }
 
   return volumesString
 }
+export type coefsArrayItemType = {
+  muscleName: string
+  weeklyVolume: number[]
+  programVolume: number
+}
 
-export const getProgramVolume = (state, allExercises) => {
+export const getProgramVolume = (state, allExercises: T_Exercise_In_Database[]) => {
+  const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = state
+  let coefsArray: coefsArrayItemType[] = []
+  type programCoefsT = {
+    [key: string]: number
+  }
+
+  let programCoefs: programCoefsT = {}
+  let weeklyCoefs: programCoefsT[] = []
+
+  currentProgram.Weeks[currentWeekIndex].Days.map((day, dayIndex) => {
+    day.Exercises.forEach((exercise, exerciseIndex) => {
+      let exerciseVolumes = getExerciseVolume(exercise, allExercises)
+      for (const muscle in exerciseVolumes) {
+        if (programCoefs[muscle]) programCoefs[muscle] += exerciseVolumes[muscle]
+        else programCoefs[muscle] = exerciseVolumes[muscle]
+
+        if (!weeklyCoefs[dayIndex]) weeklyCoefs.push({})
+        if (!weeklyCoefs[dayIndex][muscle]) weeklyCoefs[dayIndex][muscle] = 0 //zero out value if undefined
+        weeklyCoefs[dayIndex][muscle] += exerciseVolumes[muscle]
+      }
+    })
+  })
+
+  for (const muscleName in programCoefs) {
+    coefsArray.push({
+      muscleName: muscleName,
+      programVolume: Math.round(programCoefs[muscleName] * 10) / 10,
+      weeklyVolume: [],
+    })
+    weeklyCoefs.forEach((week, index) => {
+      coefsArray[coefsArray.length - 1].weeklyVolume.push(Math.round(weeklyCoefs[index][muscleName] * 10) / 10)
+    })
+  }
+
+  const sortFunction = (a, b) => {
+    return b.programVolume - a.programVolume
+  }
+
+  coefsArray.sort(sortFunction)
+  return coefsArray
+}
+
+export const getProgramVolume2 = (state, allExercises) => {
   const { currentProgram, currentWeekIndex, currentDayIndex, currentExerciseIndex } = state
 
   //get muscle groups and set volume to zero
@@ -232,18 +277,15 @@ export const getProgramVolume = (state, allExercises) => {
 
   //reduce float numbers to 1 digit
   for (const property in programCoefs) {
-    if (!Number.isInteger(programCoefs[property]))
-      programCoefs[property] = parseFloat(programCoefs[property].toFixed(1))
+    if (!Number.isInteger(programCoefs[property])) programCoefs[property] = parseFloat(programCoefs[property].toFixed(1))
     weeklyCoefs.forEach((coef, index) => {
       if (weeklyCoefs[index].coefs[property])
         if (!Number.isInteger(weeklyCoefs[index].coefs[property]))
-          weeklyCoefs[index].coefs[property] = parseFloat(
-            weeklyCoefs[index].coefs[property].toFixed(1),
-          )
+          weeklyCoefs[index].coefs[property] = parseFloat(weeklyCoefs[index].coefs[property].toFixed(1))
     })
   }
 
-  let volumeArray = []
+  let volumeArray: coefsArrayItemType[] = []
   let i = 0
   for (const muscleName in programCoefs) {
     volumeArray.push({
@@ -284,11 +326,7 @@ export const filteredByMuscleGroup = allExercises => {
   return filtered
 }
 
-export const getWeightEquivalent = (
-  originalWeight: number,
-  originalReps: number,
-  toNumberOfReps: number,
-) => {
+export const getWeightEquivalent = (originalWeight: number, originalReps: number, toNumberOfReps: number) => {
   if (originalReps > 30) return 0
 
   const weightRepCoef = repComp.find(el => el.Reps === Math.round(originalReps))
@@ -305,11 +343,7 @@ export const getAverageReps = exercise => {
   return parseFloat((average / exercise.Sets.length).toPrecision(5))
 }
 
-export const getAverageWeightFromExercise = (
-  exercise,
-  calculateRelative = false,
-  repEqualizer: number = 8,
-) => {
+export const getAverageWeightFromExercise = (exercise, calculateRelative = false, repEqualizer: number = 8) => {
   let weightSum = 0
   exercise.Sets.forEach(set => {
     const absoluteWeight = parseFloat(set.Weight)
@@ -357,11 +391,8 @@ export const updateFollowingWeeks = state => {
   ) {
     // всяка седмица напред се копира да е същата, като настоящата, освен 'Days[x].isCompleted
     newProgram.Weeks[i].Days.forEach((day, dayIndex) => {
-      newProgram.Weeks[i].Days[dayIndex].Exercises = _.cloneDeep(
-        currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises,
-      )
-      newProgram.Weeks[i].Days[dayIndex].DayName =
-        currentProgram.Weeks[currentWeekIndex].Days[dayIndex].DayName
+      newProgram.Weeks[i].Days[dayIndex].Exercises = _.cloneDeep(currentProgram.Weeks[currentWeekIndex].Days[dayIndex].Exercises)
+      newProgram.Weeks[i].Days[dayIndex].DayName = currentProgram.Weeks[currentWeekIndex].Days[dayIndex].DayName
     })
   }
 
@@ -414,8 +445,7 @@ export const updateFollowingWeeks = state => {
 export const getLatestCompletedWeekIndexForOneDay = (program: any, dayIndex: number) => {
   let weekIndex = -1 //stays -1 if no weeks found
   program.Weeks.forEach((week, wIndex) => {
-    if (program.Weeks[wIndex].Days[dayIndex])
-      if (program.Weeks[wIndex].Days[dayIndex].isCompleted) weekIndex = wIndex
+    if (program.Weeks[wIndex].Days[dayIndex]) if (program.Weeks[wIndex].Days[dayIndex].isCompleted) weekIndex = wIndex
   })
   return weekIndex
 }
@@ -465,37 +495,35 @@ export const updateOldExercises = state => {
 
   state.oldPrograms.forEach((program, index) => {
     markedThisProgram = []
-    program.item.Weeks.forEach((week, weekIndex) => {
-      program.item.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
-        if (program.item.Weeks[weekIndex].Days[dayIndex].isCompleted)
+    program.Weeks.forEach((week, weekIndex) => {
+      program.Weeks[weekIndex].Days.forEach((day, dayIndex) => {
+        if (program.Weeks[weekIndex].Days[dayIndex].isCompleted)
           //only count exercises on days we've completed
-          program.item.Weeks[weekIndex].Days[dayIndex].Exercises.forEach(
-            (exercise, exerciseIndex) => {
-              let newLatestSet: latestSet = getExerciseLatestSet(exercise, day)
-              if (!oldExercisesNames.includes(exercise.Name)) {
-                //if we haven't done it already - we push a new exercise
+          program.Weeks[weekIndex].Days[dayIndex].Exercises.forEach((exercise, exerciseIndex) => {
+            let newLatestSet: latestSet = getExerciseLatestSet(exercise, day)
+            if (!oldExercisesNames.includes(exercise.Name)) {
+              //if we haven't done it already - we push a new exercise
 
-                oldExercises.push({
-                  ...exercise,
-                  doneBefore: 1,
+              oldExercises.push({
+                ...exercise,
+                doneBefore: 1,
 
-                  latestSet: newLatestSet,
-                })
-                oldExercisesNames.push(exercise.Name)
-                markedThisProgram.push(exercise.Name)
-              } else {
-                //if we've pushed this exercise already - we increase the 'doneBefore' count per program, and get latestWeight/WeightType always
+                latestSet: newLatestSet,
+              })
+              oldExercisesNames.push(exercise.Name)
+              markedThisProgram.push(exercise.Name)
+            } else {
+              //if we've pushed this exercise already - we increase the 'doneBefore' count per program, and get latestWeight/WeightType always
 
-                let foundIndex = oldExercises.findIndex(ex => ex.Name === exercise.Name)
+              let foundIndex = oldExercises.findIndex(ex => ex.Name === exercise.Name)
 
-                oldExercises[foundIndex].latestSet = newLatestSet
+              oldExercises[foundIndex].latestSet = newLatestSet
 
-                if (!markedThisProgram.includes(exercise.Name))
-                  // if exercise exists in oldExercises but we haven't counted it for this program yet
-                  oldExercises[foundIndex].doneBefore++
-              }
-            },
-          )
+              if (!markedThisProgram.includes(exercise.Name))
+                // if exercise exists in oldExercises but we haven't counted it for this program yet
+                oldExercises[foundIndex].doneBefore++
+            }
+          })
       })
     })
   })

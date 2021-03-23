@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react"
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import {
   View,
   FlatList,
@@ -33,7 +33,7 @@ import { imgs } from "../../../../assets"
 import { YOUTUBE_API_KEY } from "../../../../components3/Constants/DatabaseConstants"
 import { getVideoID, getVideoTime, getColorByExercisePosition } from "./smallFunctions"
 import iStyles from "../../../../components3/Constants/Styles"
-import { icons, colors, fonts } from "../../../../components3/Constants"
+import { icons, colors, fonts, state } from "../../../../components3/Constants"
 
 const windowWidth = Dimensions.get("window").width
 const windowHeight = Dimensions.get("window").height
@@ -55,6 +55,7 @@ import {
 } from "./index"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { MediumButtonIcon } from "./smallComponents"
+import { T_Exercise, useGlobalState3 } from "../../../../components3"
 
 type HeaderProps = {
   state: any
@@ -179,8 +180,7 @@ export type ShowProgramDaysProps = {
   onToggleReorder?: Function
   onAddExercise?: Function
 }
-
-export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = observer(props => {
+export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = props => {
   const {
     state,
     onChangeDay,
@@ -208,11 +208,13 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
 
   const [globalState, setGlobalState] = useGlobalState()
 
+  const { state: global3, dispatch: setGlobal3 } = useGlobalState3()
+
   let doneTextStyle = iStyles.greyText
   let dayDone = false
 
   const viewVideoHandler = exercise => {
-    const ex = globalState.allExercises.find(ex => ex.ID === exercise.ID)
+    const ex = global3.exercises.allExercises.find(ex => ex.ID === exercise.ID)
     if (!ex) console.log("exercise not found")
     else {
       const videoLink = ex.YouTubeLink
@@ -553,7 +555,7 @@ export const ShowProgramDays: React.FunctionComponent<ShowProgramDaysProps> = ob
   } else {
     return <View></View>
   }
-})
+}
 
 type ShowDayExercisesProps = {
   exercises: any

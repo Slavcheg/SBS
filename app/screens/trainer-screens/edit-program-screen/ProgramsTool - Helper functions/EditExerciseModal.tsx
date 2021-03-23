@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react"
 
 import { Picker } from "@react-native-picker/picker"
 
-import { View, ScrollView, useWindowDimensions, Modal, TextStyle } from "react-native"
+import { View, ScrollView, useWindowDimensions, Modal, TextStyle, KeyboardAvoidingView } from "react-native"
 
 import { Text } from "./index"
 
 import _ from "lodash"
 
-import { Button, TextInput, Checkbox } from "react-native-paper"
+import { Checkbox } from "react-native-paper"
 
 import {
   ExercisePicker,
@@ -23,14 +23,14 @@ import {
 
 import iStyles from "../../../../components3/Constants/Styles"
 
-import { DEFAULT_SET_DATA2 } from "../../../../components3"
+import { DEFAULT_SET_DATA2, GetSomeNumber, T_Exercise, T_Set, T_WeightType, TextInput, Button } from "../../../../components3"
 
 import { MAX_SETS, MAX_REPS } from "../../../../components3/Constants/programCreationConstants"
 import { icons, colors, fonts } from "../../../../components3/Constants"
 
 type EditExerciseModalProps = {
   visible: boolean
-  exercise: any
+  exercise: T_Exercise
   onClose: (state: object) => void
   onRequestClose: () => void
 }
@@ -40,7 +40,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
   const windowWidth = useWindowDimensions().width
   const windowHeight = useWindowDimensions().height
 
-  const [exerciseState, setExerciseState] = useState(_.cloneDeep(props.exercise))
+  const [exerciseState, setExerciseState] = useState<T_Exercise>(_.cloneDeep(props.exercise))
   const [weightArrow, setWeightArrow] = useState(-1)
   const [repsArrow, setRepsArrow] = useState(-1)
 
@@ -93,12 +93,20 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
     //if is not a number > change type to 'other'
     //if first set > change all sets
 
-    if (Number.isNaN(parseInt(newValue))) {
-      for (let i = 0; i < dummyExercise.Sets.length; i++) dummyExercise.Sets[i].WeightType = "other"
+    if (exerciseState.Sets[0].WeightType === "pureWeight") {
+      if (Number.isNaN(parseInt(newValue))) {
+        for (let i = 0; i < dummyExercise.Sets.length; i++) {
+          dummyExercise.Sets[i].WeightType = "other"
+        }
+      }
+    } else {
+      if (newValue === parseInt(newValue).toString()) {
+        for (let i = 0; i < dummyExercise.Sets.length; i++) dummyExercise.Sets[i].WeightType = "pureWeight"
+      }
     }
 
-    if (parseFloat(newValue).toString().length === newValue.toString().length)
-      dummyExercise.Sets[setIndex].WeightType = "pureWeight"
+    // if (parseFloat(newValue).toString().length === newValue.toString().length)
+    //   dummyExercise.Sets[setIndex].WeightType = "pureWeight"
 
     dummyExercise.Sets[setIndex].Weight = newValue
 
@@ -110,6 +118,18 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
   }
   const onUpdateWeightProgression = newValue => {
     setExerciseState({ ...exerciseState, increaseWeight: newValue })
+  }
+
+  const onChangeExerciseWeightType = () => {
+    let newWeightType: T_WeightType = exerciseState.Sets[0].WeightType === "pureWeight" ? "other" : "pureWeight"
+    const newSets: T_Set[] = []
+    exerciseState.Sets.forEach(set => {
+      let newWeight = set.Weight
+      if (newWeightType === "pureWeight") newWeight = `${Math.round(parseFloat(newWeight) * 1000) / 1000}`
+      if (newWeight === "NaN") newWeight = "0"
+      newSets.push({ ...set, WeightType: newWeightType, Weight: newWeight })
+    })
+    setExerciseState({ ...exerciseState, Sets: [...newSets] })
   }
 
   const onClose = () => {
@@ -148,7 +168,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
             backgroundColor: colors.grey1,
           }}
         >
-          <View
+          <KeyboardAvoidingView
             style={{
               // // position: "absolute",
               // top: 10,
@@ -158,6 +178,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
               height: windowHeight * 0.85,
               // width: windowWidth,
             }}
+            behavior={"height"}
           >
             <ScrollView style={{ width: windowWidth - 20 }}>
               <Text style={textStyle1}>{exerciseState.Name}</Text>
@@ -219,7 +240,7 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                     easyNumbers={[0, 1, 2.5]}
                     easyMode="horizontal"
                     onLongPressMode="get text"
-                    isActive={exerciseState.WeightType === "pureWeight" ? false : true}
+                    isActive={exerciseState.Sets[0].WeightType === "pureWeight" ? true : false}
                     currentlySelected={exerciseState.increaseWeight}
                     onChange={value => {
                       onUpdateWeightProgression(value)
@@ -228,6 +249,16 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                     inactiveTextStyle={{ ...textStyle1, color: colors.grey1 }}
                     separatorMargin={4}
                   />
+                  // </View>
+                )}
+              />
+              <TwoColumns
+                leftWidth="30%"
+                rightWidth="70%"
+                LeftContent={() => <Text style={textStyle2}>isWeight</Text>}
+                RightContent={() => (
+                  // <View style={iStyles.smallImputBox}>
+                  <Button onPress={onChangeExerciseWeightType}>{exerciseState.Sets[0].WeightType}</Button>
                   // </View>
                 )}
               />
@@ -329,7 +360,12 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
 
                     <View style={iStyles.smallImputBox}>
                       {/* <View style={iStyles.smallerOutlineOverInputBox}> */}
-                      <GetText
+                      <TextInput
+                        value={`${exerciseState.Sets[setIndex].Weight}`}
+                        onChangeText={newText => onChangeWeight(newText, setIndex)}
+                        // keyboardType={set.WeightType === "pureWeight" ? "decimal-pad" : "default"}
+                      />
+                      {/* <GetText
                         style={{ ...textStyle1, color: colors.color1 }}
                         isNumber={true}
                         convertToString={true}
@@ -341,15 +377,15 @@ export const EditExerciseModal = (props: EditExerciseModalProps) => {
                           //   value: value,
                           //   currentSetIndex: setIndex,
                           // });
-                        }}
-                      />
+                        }} */}
+
                       {/* </View> */}
                     </View>
                   </View>
                 </View>
               ))}
             </ScrollView>
-          </View>
+          </KeyboardAvoidingView>
           <FAB message="" onPress={onClose} />
         </View>
       </Modal>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Text, View, BackHandler } from "react-native"
+import { Text, View, BackHandler, ScrollView } from "react-native"
 import { Button } from "react-native-paper"
 import { spacing, color } from "../../../theme"
 import { Screen, MainHeader_Tr, ButtonSquare } from "../../../components"
@@ -56,7 +56,7 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
   const [isUserLoaded, setIsUserLoaded] = useState(false)
 
   // const { state, dispatch } = useGlobalState3()
-  useAsyncState3()
+  // useAsyncState3()
   useEffect(() => {
     if (!isUserLoaded) {
       if (!globalState.loggedUser.ID) {
@@ -79,17 +79,18 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
   })
 
   return (
-    <Screen
-      preset="scroll"
-      unsafe={false}
-      style={{
-        flexGrow: 1,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        backgroundColor: color.palette.transparent,
-      }}
-    >
+    // <Screen
+    //   preset="scroll"
+    //   unsafe={false}
+    //   style={{
+    //     flexGrow: 1,
+    //     flexDirection: "column",
+    //     alignItems: "center",
+    //     justifyContent: "flex-start",
+    //     backgroundColor: color.palette.transparent,
+    //   }}
+    // >
+    <ScrollView>
       <MainHeader_Tr navigation={navigation} style={{ paddingHorizontal: 25 }} />
       <ShowSessions />
       <MenuButtonsList navigation={navigation} />
@@ -100,10 +101,10 @@ export const HomeScreenTrainer: React.FunctionComponent<HomeScreenTrainerProps> 
           onPress={() => navigation.navigate("exerciseDatabase_admin")}
         ></ButtonSquare>
       )}
-      {globalState.loggedUser.isAdmin && (
+      {/* {globalState.loggedUser.isAdmin && (
         <ButtonSquare title={"Тренировки 2"} onPress={() => navigation.navigate("choose_Program_Screen_trainer")}></ButtonSquare>
-      )}
+      )} */}
       <ButtonSquare title={"Към клиентско меню"} onPress={() => navigation.navigate("homeScreenClient2")}></ButtonSquare>
-    </Screen>
+    </ScrollView>
   )
 }

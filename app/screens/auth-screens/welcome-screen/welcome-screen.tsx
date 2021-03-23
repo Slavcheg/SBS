@@ -20,36 +20,35 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
 
   useEffect(() => {
     googleInitialize()
-    rootStore.hideLoader()
   }, [])
 
   return (
-    <Screen
-      preset="scroll"
-      unsafe={true}
+    // <Screen
+    //   preset="scroll"
+    //   unsafe={true}
+    //   style={{
+    //     flex: 1,
+    //     alignItems: "center",
+    //     justifyContent: "flex-start",
+    //     backgroundColor: "white",
+    //   }}
+    // >
+    <ImageBackground
+      source={imgs.bg}
       style={{
         flex: 1,
+        width: "100%",
         alignItems: "center",
-        justifyContent: "flex-start",
-        backgroundColor: "white",
       }}
+      resizeMode="cover"
     >
-      <ImageBackground
-        source={imgs.bg}
+      <View
         style={{
           flex: 1,
-          width: "100%",
-          alignItems: "center",
         }}
-        resizeMode="cover"
-      >
-        <View
-          style={{
-            flex: 1,
-          }}
-        ></View>
+      ></View>
 
-        {/* <Button
+      {/* <Button
         style={{
           width: '90%',
           marginTop: spacing[8],
@@ -63,7 +62,7 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
         tx={'welcomeScreen.registrationBtn'}
         onPress={()=> navigation.navigate('registration')} 
       />     */}
-        {/* <Button
+      {/* <Button
           style={{
             width: "90%",
             marginTop: spacing[6],
@@ -79,10 +78,10 @@ export const WelcomeScreen: React.FunctionComponent<WelcomeScreenProps> = observ
             navigation.navigate("signin")
           }}
         /> */}
-        <GoogleLogin navigation={navigation} />
-        {/* <PaperButton onPress={() => fixTrainees(() => console.log("fixed"))}> test</PaperButton> */}
-        <View style={{ marginBottom: "10%" }}></View>
-      </ImageBackground>
-    </Screen>
+      <GoogleLogin navigation={navigation} />
+      {/* <PaperButton onPress={() => fixTrainees(() => console.log("fixed"))}> test</PaperButton> */}
+      <View style={{ marginBottom: "10%" }}></View>
+    </ImageBackground>
+    // </Screen>
   )
 })

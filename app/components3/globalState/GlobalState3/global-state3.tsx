@@ -14,13 +14,16 @@ import firestore from "@react-native-firebase/firestore"
 import * as exerciseFuncs from "./functions/exercises"
 
 import { T_Exercise_In_Database } from "../../../components3"
-import { TRAINING_PROGRAMS_COLLECTION } from "../../Constants"
+import { EXERCISES_GLOBAL_COLLECTION, EXERCISES_PERSONAL_COLLECTION, TRAINING_PROGRAMS_COLLECTION } from "../../Constants"
 import { T_Program } from "../../types"
 
 export type exercisesStore = {
   allExercises: T_Exercise_In_Database[]
   downloadedGlobal: T_Exercise_In_Database[]
   downloadedPersonal: T_Exercise_In_Database[]
+  allExercisesFiltered: {
+    [key: string]: T_Exercise_In_Database[]
+  }
 }
 
 export type T_Global_State = {
@@ -39,6 +42,7 @@ const initialExercises: exercisesStore = {
   allExercises: null,
   downloadedGlobal: null,
   downloadedPersonal: null,
+  allExercisesFiltered: null,
 }
 
 const initialState: T_Global_State = {
@@ -121,10 +125,11 @@ export const useAsyncState3 = () => {
     dispatch({ type: "update programs from firestore", value: programs })
   }
   const onUpdateFromStorage = (state: T_Global_State) => {
-    if (state && state.loggedUser) {
+    if (state && state.loggedUser && state.loggedUser.isTrainer) {
+      console.log("went reducer here", state.loggedUser.ID)
       // if (state && !state.exercises) exerciseFuncs.getExercises(state.loggedUser.ID, onDownloadMainExercises)
-      exerciseFuncs.getGlobalExercises(state.loggedUser.ID, onDownloadMainExercises)
-      exerciseFuncs.getPersonalExercises(state.loggedUser.ID, onDownloadPersonalExercises)
+      // exerciseFuncs.getGlobalExercises(state.loggedUser.ID, onDownloadMainExercises)
+      // exerciseFuncs.getPersonalExercises(state.loggedUser.ID, onDownloadPersonalExercises)
     }
   }
 
@@ -132,15 +137,15 @@ export const useAsyncState3 = () => {
     dispatch({ type: "update global exercises from firestore", value: exercises })
   }
   const onDownloadPersonalExercises = exercises => {
+    console.log("exercisesPersonal: ", exercises)
     dispatch({ type: "update personal exercises from firestore", value: exercises })
   }
 
   useTrainerPrograms(onUpdatePrograms)
+  useExercises(onDownloadMainExercises, onDownloadPersonalExercises)
 }
 
-export const refreshExercises = () => {
-  const { state, dispatch } = useGlobalState3()
-
+export const refreshExercises = (loggedUserID, dispatch) => {
   const onDownloadMainExercises = exercises => {
     dispatch({ type: "update global exercises from firestore", value: exercises })
   }
@@ -148,17 +153,16 @@ export const refreshExercises = () => {
     dispatch({ type: "update personal exercises from firestore", value: exercises })
   }
 
-  exerciseFuncs.getGlobalExercises(state.loggedUser.ID, onDownloadMainExercises)
-  exerciseFuncs.getPersonalExercises(state.loggedUser.ID, onDownloadPersonalExercises)
+  exerciseFuncs.getGlobalExercises(loggedUserID, onDownloadMainExercises)
+  exerciseFuncs.getPersonalExercises(loggedUserID, onDownloadPersonalExercises)
 }
 
 export const useTrainerPrograms = onRefresh => {
   const { state } = useGlobalState3()
 
   useEffect(() => {
-    console.log("useTrainerProgramsEffect", state.loggedUser)
     let subscriber
-    if (state.loggedUser && state.loggedUser.ID)
+    if (state.loggedUser && state.loggedUser.ID && state.loggedUser.isTrainer)
       subscriber = firestore()
         .collection(TRAINING_PROGRAMS_COLLECTION)
         .where("Trainers", "array-contains", state.loggedUser.ID)
@@ -168,6 +172,42 @@ export const useTrainerPrograms = onRefresh => {
             programs.push({ ...doc.data(), ID: doc.id })
           })
           onRefresh(programs)
+        })
+    return () => {
+      if (subscriber) subscriber()
+    }
+  }, [state.loggedUser])
+}
+
+export const useExercises = (onRefreshGlobal, onRefreshPersonal) => {
+  const { state } = useGlobalState3()
+  useEffect(() => {
+    let subscriber
+    if (state.loggedUser && state.loggedUser.ID)
+      subscriber = firestore()
+        .collection(EXERCISES_PERSONAL_COLLECTION)
+        .doc(state.loggedUser.ID)
+        .onSnapshot(docRef => {
+          const personalExercises: T_Exercise_In_Database[] = docRef ? [...docRef.data().exercises] : []
+          onRefreshPersonal(personalExercises)
+        })
+    return () => {
+      if (subscriber) subscriber()
+    }
+  }, [state.loggedUser])
+
+  useEffect(() => {
+    let subscriber
+    if (state.loggedUser && state.loggedUser.ID)
+      subscriber = firestore()
+        .collection(EXERCISES_GLOBAL_COLLECTION)
+        .onSnapshot(docsRef => {
+          let exercises: T_Exercise_In_Database[] = []
+          docsRef.docs.forEach(doc => {
+            const exercisesInDoc: T_Exercise_In_Database[] = doc.data().exercises
+            exercises = [...exercises, ...exercisesInDoc]
+          })
+          onRefreshGlobal(exercises)
         })
     return () => {
       if (subscriber) subscriber()
